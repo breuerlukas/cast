@@ -43,7 +43,7 @@ public final class StockAlgorithm {
     var buyEvaluationDataset = createDataset(symbol, TradeType.BUY, ModelState.EVALUATING);
     buyNetwork.train(EPOCHS, buyEvaluationDataset.stream().filter(entry -> entry.getValue() == 1).findFirst().get());
     System.out.println("EVALUATE BUY NETWORK");
-    displayGraph(symbol, buyNetwork, buyEvaluationDataset, 0.8f, 200, "BUY");
+    displayGraph(symbol, buyNetwork, buyEvaluationDataset, 0.3f, 200, "BUY");
     System.out.println("TRAIN SELL NETWORK");
     var sellEvaluationDataset = createDataset(symbol, TradeType.SELL, ModelState.EVALUATING);
     sellNetwork.train(EPOCHS, sellEvaluationDataset.stream().filter(entry -> entry.getValue() == 1).findFirst().get());
@@ -56,9 +56,16 @@ public final class StockAlgorithm {
 
     for (var i = 0; i < dataset.size() - 1; i++) {
       var drawIndex = i + 21 + DAY_REVIEW;
-      if (network.evaluate(drawIndex, dataset.get(i)) > minPrediction && (network.evaluate(drawIndex - 1, dataset.get(i - 1)) > 0.2 || network.evaluate(drawIndex + 1, dataset.get(i + 1)) > 0.2)) {
-        plot.plot().add(List.of(drawIndex, drawIndex), List.of(0, scale));
-        System.out.println("Add Line " + i + " To Graph");
+      if (minPrediction < 0.8) {
+        if (network.evaluate(drawIndex, dataset.get(i)) > minPrediction && (network.evaluate(drawIndex - 1, dataset.get(i - 1)) > 0.1 && network.evaluate(drawIndex + 1, dataset.get(i + 1)) > 0.1)) {
+          plot.plot().add(List.of(drawIndex, drawIndex), List.of(0, scale));
+          System.out.println("Add Line " + i + " To Graph");
+        }
+      } else {
+        if (network.evaluate(drawIndex, dataset.get(i)) > minPrediction) {
+          plot.plot().add(List.of(drawIndex, drawIndex), List.of(0, scale));
+          System.out.println("Add Line " + i + " To Graph");
+        }
       }
       if (dataset.get(i).getValue() == 1) {
         plot.plot().add(List.of(drawIndex, drawIndex), List.of(scale / 2, scale + (scale / 4)));
@@ -91,7 +98,7 @@ public final class StockAlgorithm {
   private static NeuralNetwork buildBuyNetwork(Symbol symbol) {
     var dataset = createDataset(symbol, TradeType.BUY, ModelState.TRAINING);
     return NeuralNetwork.create(dataset, "StockAlgorithm",
-      INPUT_SIZE_PER_DAY * DAY_REVIEW, new int[] {1024, 1024}, 1);
+      INPUT_SIZE_PER_DAY * DAY_REVIEW, new int[] {512, 1024, 512}, 1);
     /*var iterator = HistoryIterator.create(dataset, BATCH_SIZE,
       TOTAL_BATCHES);
     var network = NeuralNetwork.create(SEED, LEARNING_RATE, DROPOUT_RATE,
@@ -103,7 +110,7 @@ public final class StockAlgorithm {
   private static NeuralNetwork buildSellNetwork(Symbol symbol) {
     var dataset = createDataset(symbol, TradeType.SELL, ModelState.TRAINING);
     return NeuralNetwork.create(dataset, "StockAlgorithm",
-      INPUT_SIZE_PER_DAY * DAY_REVIEW, new int[] {1024, 1024}, 1);
+      INPUT_SIZE_PER_DAY * DAY_REVIEW, new int[] {512, 1024, 512}, 1);
     /*var iterator = HistoryIterator.create(dataset, BATCH_SIZE,
       TOTAL_BATCHES);
     var network = NeuralNetwork.create(SEED, LEARNING_RATE, DROPOUT_RATE,
