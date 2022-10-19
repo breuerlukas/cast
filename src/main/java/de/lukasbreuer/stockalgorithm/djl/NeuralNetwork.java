@@ -49,7 +49,7 @@ public final class NeuralNetwork {
     for (var i = 0; i < epochs; i++) {
       EasyTrain.fit(trainer, i, dataset, null);
       System.out.println(i);
-      evaluate(0, entry);
+      //evaluate(0, entry);
     }
   }
 
@@ -83,10 +83,10 @@ public final class NeuralNetwork {
   ) {
     var block = new SequentialBlock();
     block.add(Blocks.batchFlattenBlock(inputNeurons));
-    block.add(Activation::relu);
+    block.add(Activation::tanh);
     for (var hiddenSize : hiddenNeurons) {
       block.add(Linear.builder().setUnits(hiddenSize).build());
-      block.add(Activation::relu);
+      block.add(Activation::tanh);
     }
     block.add(Linear.builder().setUnits(outputNeurons).build());
     return block;
