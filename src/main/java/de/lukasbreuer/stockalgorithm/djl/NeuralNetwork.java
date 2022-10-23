@@ -14,13 +14,13 @@ import ai.djl.training.EasyTrain;
 import ai.djl.training.TrainingConfig;
 import ai.djl.training.evaluator.Accuracy;
 import ai.djl.training.loss.Loss;
-import ai.djl.training.optimizer.Optimizer;
-import ai.djl.training.tracker.Tracker;
 import ai.djl.translate.Batchifier;
 import ai.djl.translate.Translator;
 import ai.djl.translate.TranslatorContext;
 import lombok.RequiredArgsConstructor;
 
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -30,9 +30,11 @@ public final class NeuralNetwork {
   public static NeuralNetwork create(
     List<Map.Entry<List<double[]>, Double>> data, String modelName, int inputNeurons,
     int[] hiddenNeurons, int outputNeurons
-  ) {
+  ) throws Exception {
     var model = Model.newInstance(modelName);
     model.setBlock(createNetwork(inputNeurons, hiddenNeurons, outputNeurons));
+    //var modelPath = Paths.get("build/neuralnetwork");
+    //model.load(modelPath);
     return create(StockDataset.create(data),
       inputNeurons, hiddenNeurons, outputNeurons, model);
   }
@@ -48,9 +50,10 @@ public final class NeuralNetwork {
     trainer.initialize(new Shape(inputNeurons));
     for (var i = 0; i < epochs; i++) {
       EasyTrain.fit(trainer, i, dataset, null);
-      System.out.println(i);
-      //evaluate(0, entry);
+      System.out.println(i + 1);
+      evaluate(0, entry);
     }
+    safe();
   }
 
   private TrainingConfig configureTrainer() {
@@ -78,15 +81,21 @@ public final class NeuralNetwork {
     return prediction;
   }
 
+  public void safe() throws Exception {
+    var modelPath = Paths.get("build/neuralnetwork");
+    Files.createDirectories(modelPath);
+    model.save(modelPath, model.getName());
+  }
+
   private static SequentialBlock createNetwork(
     int inputNeurons, int[] hiddenNeurons, int outputNeurons
   ) {
     var block = new SequentialBlock();
     block.add(Blocks.batchFlattenBlock(inputNeurons));
-    block.add(Activation::tanh);
+    block.add(Activation::relu);
     for (var hiddenSize : hiddenNeurons) {
       block.add(Linear.builder().setUnits(hiddenSize).build());
-      block.add(Activation::tanh);
+      block.add(Activation::relu);
     }
     block.add(Linear.builder().setUnits(outputNeurons).build());
     return block;
