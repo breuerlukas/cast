@@ -3,8 +3,11 @@ package de.lukasbreuer.stockalgorithm;
 import ai.djl.engine.Engine;
 import com.clearspring.analytics.util.Lists;
 import com.github.sh0nk.matplotlib4j.Plot;
-import de.lukasbreuer.stockalgorithm.djl.NeuralNetwork;
+import com.google.common.collect.Maps;
+import de.lukasbreuer.stockalgorithm.dl4j.HistoryIterator;
+import de.lukasbreuer.stockalgorithm.dl4j.NeuralNetwork;
 import lombok.SneakyThrows;
+import org.nd4j.linalg.factory.Nd4j;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -14,10 +17,10 @@ public final class StockAlgorithm {
   private static final float LEARNING_RATE = 0.05f;
   private static final float DROPOUT_RATE = 1f;
   private static final int ITERATIONS = 1;
-  private static final int EPOCHS = 30;
-  private static final int[] HIDDEN_NEURONS = new int[] {1024, 1024};
-  private static final int BATCH_SIZE = 10;
-  private static final int TOTAL_BATCHES = 500;
+  private static final int EPOCHS = 20;
+  private static final int[] HIDDEN_NEURONS = new int[] {512, 1024, 512};
+  private static final int BATCH_SIZE = 20;
+  private static final int TOTAL_BATCHES = 200;
   private static final int INPUT_SIZE_PER_DAY = 29; //29
   private static final int DAY_REVIEW = 1;
   private static final int TRAIN_DAYS = 365 * 8;
@@ -29,9 +32,10 @@ public final class StockAlgorithm {
 
   public static void main(String[] args) throws Exception {
     Engine.getInstance().setRandomSeed(SEED);
+    Nd4j.getRandom().setSeed(SEED);
     var symbol = Symbol.createAndFetch(STOCK);
     System.out.println(Arrays.toString(createSingleInputData(symbol.findPartOfHistory(365),
-      symbol.findPartOfHistory(365).stream().mapToDouble(HistoryEntry::close).max().getAsDouble(), 21, 0)));
+      symbol.findPartOfHistory(365).stream().mapToDouble(HistoryEntry::close).max().getAsDouble(), 21)));
     for (var trade : findBestTrades(symbol.findPartOfHistory(TRAIN_DAYS + EVALUATION_DAYS).stream().skip(TRAIN_DAYS).collect(Collectors.toList()), EVALUATION_MAX_TRADES)) {
       System.out.println(calculateDayFromStep(trade.buyTime() + 1, GENERALISATION_STEP_SIZE) + ":" + calculateDayFromStep(trade.sellTime() + 1, GENERALISATION_STEP_SIZE));
     }
@@ -41,28 +45,54 @@ public final class StockAlgorithm {
     System.out.println("");
     System.out.println("TRAIN BUY NETWORK");
     var buyEvaluationDataset = createDataset(symbol, TradeType.BUY, ModelState.EVALUATING);
-    buyNetwork.train(EPOCHS, buyEvaluationDataset.stream().filter(entry -> entry.getValue() == 1).findFirst().get());
+    buyNetwork.train(/*EPOCHS, */buyEvaluationDataset.stream().filter(entry -> entry.getValue() == 1).findFirst().get());
     System.out.println("EVALUATE BUY NETWORK");
-    displayGraph(symbol, buyNetwork, buyEvaluationDataset, 0.4f, 200, "BUY");
+    displayGraph(symbol, buyNetwork, buyEvaluationDataset, 0.01f, 200, "BUY");
     System.out.println("TRAIN SELL NETWORK");
     var sellEvaluationDataset = createDataset(symbol, TradeType.SELL, ModelState.EVALUATING);
-    sellNetwork.train(EPOCHS, sellEvaluationDataset.stream().filter(entry -> entry.getValue() == 1).findFirst().get());
+    sellNetwork.train(/*EPOCHS, */sellEvaluationDataset.stream().filter(entry -> entry.getValue() == 1).findFirst().get());
     System.out.println("EVALUATE SELL NETWORK");
-    displayGraph(symbol, sellNetwork, sellEvaluationDataset, 0.5f, 200, "SELL");
+    displayGraph(symbol, sellNetwork, sellEvaluationDataset, 0.1f, 200, "SELL");
   }
 
   private static void displayGraph(Symbol symbol, NeuralNetwork network, List<Map.Entry<List<double[]>, Double>> dataset, float minPrediction, int scale, String title) throws Exception {
     Plot plot = Plot.create();
 
+    var allValues = Maps.<Integer, Float>newHashMap();
+
     for (var i = 1; i < dataset.size() - 1; i++) {
       var drawIndex = i + 21 + DAY_REVIEW;
-      if (network.evaluate(drawIndex, dataset.get(i)) > minPrediction && (network.evaluate(drawIndex - 1, dataset.get(i - 1)) > 0.1 || network.evaluate(drawIndex + 1, dataset.get(i + 1)) > 0.1)) {
+      allValues.put(drawIndex, network.evaluate(drawIndex, dataset.get(i)));
+      /*if (network.evaluate(drawIndex, dataset.get(i)) > minPrediction && (network.evaluate(drawIndex - 1, dataset.get(i - 1)) > 0.0 || network.evaluate(drawIndex + 1, dataset.get(i + 1)) > 0.0)) {
         plot.plot().add(List.of(drawIndex, drawIndex), List.of(0, scale));
         System.out.println("Add Line " + i + " To Graph");
-      }
+      }*/
       if (dataset.get(i).getValue() == 1) {
-        plot.plot().add(List.of(drawIndex, drawIndex), List.of(scale / 2, scale + (scale / 4)));
+        plot.plot().add(List.of(drawIndex, drawIndex), List.of(scale / 4, scale + (scale / 4)));
       }
+    }
+
+    System.out.println("Highest values: ");
+
+    var addedTrades = Lists.<Integer>newArrayList();
+
+    for (var entry : allValues.entrySet().stream().sorted(Map.Entry.<Integer, Float>comparingByValue().reversed()).collect(Collectors.toList())) {
+      var isTooClose = false;
+      for (var addedTrade : addedTrades) {
+        if (Math.abs(entry.getKey() - addedTrade) < 20) {
+          isTooClose = true;
+          break;
+        }
+      }
+      if (isTooClose) {
+        continue;
+      }
+      plot.plot().add(List.of(entry.getKey(), entry.getKey()), List.of(0, scale));
+      addedTrades.add(entry.getKey());
+      if (addedTrades.size() == EVALUATION_MAX_TRADES) {
+        break;
+      }
+      System.out.println(entry.getKey() + ": " + entry.getValue());
     }
 
     var closeData = symbol.findPartOfHistory(TRAIN_DAYS + EVALUATION_DAYS).stream().skip(TRAIN_DAYS).map(HistoryEntry::close).collect(Collectors.toList());
@@ -88,28 +118,28 @@ public final class StockAlgorithm {
     }).start();
   }
 
-  private static NeuralNetwork buildBuyNetwork(Symbol symbol) {
+  private static NeuralNetwork buildBuyNetwork(Symbol symbol) throws Exception {
     var dataset = createDataset(symbol, TradeType.BUY, ModelState.TRAINING);
-    return NeuralNetwork.create(dataset, "StockAlgorithm",
-      INPUT_SIZE_PER_DAY * DAY_REVIEW, HIDDEN_NEURONS, 1);
-    /*var iterator = HistoryIterator.create(dataset, BATCH_SIZE,
+    /*return NeuralNetwork.create(dataset, "buy",
+      INPUT_SIZE_PER_DAY * DAY_REVIEW, HIDDEN_NEURONS, 1);*/
+    var iterator = HistoryIterator.create(dataset, BATCH_SIZE,
       TOTAL_BATCHES);
     var network = NeuralNetwork.create(SEED, LEARNING_RATE, DROPOUT_RATE,
-      ITERATIONS, EPOCHS, INPUT_SIZE_PER_DAY * DAY_REVIEW, HIDDEN_NEURONS, 1, iterator);
+      ITERATIONS, EPOCHS, INPUT_SIZE_PER_DAY * DAY_REVIEW, HIDDEN_NEURONS, 2, iterator);
     network.build();
-    return network;*/
+    return network;
   }
 
-  private static NeuralNetwork buildSellNetwork(Symbol symbol) {
+  private static NeuralNetwork buildSellNetwork(Symbol symbol) throws Exception {
     var dataset = createDataset(symbol, TradeType.SELL, ModelState.TRAINING);
-    return NeuralNetwork.create(dataset, "StockAlgorithm",
-      INPUT_SIZE_PER_DAY * DAY_REVIEW, HIDDEN_NEURONS, 1);
-    /*var iterator = HistoryIterator.create(dataset, BATCH_SIZE,
+    /*return NeuralNetwork.create(dataset, "sell",
+      INPUT_SIZE_PER_DAY * DAY_REVIEW, HIDDEN_NEURONS, 1);*/
+    var iterator = HistoryIterator.create(dataset, BATCH_SIZE,
       TOTAL_BATCHES);
     var network = NeuralNetwork.create(SEED, LEARNING_RATE, DROPOUT_RATE,
-      ITERATIONS, EPOCHS, INPUT_SIZE_PER_DAY * DAY_REVIEW, HIDDEN_NEURONS, 1, iterator);
+      ITERATIONS, EPOCHS, INPUT_SIZE_PER_DAY * DAY_REVIEW, HIDDEN_NEURONS, 2, iterator);
     network.build();
-    return network;*/
+    return network;
   }
 
   private static List<Map.Entry<List<double[]>, Double>> createDataset(Symbol symbol, TradeType tradeType, ModelState modelState) {
@@ -126,9 +156,8 @@ public final class StockAlgorithm {
     var bestTradeDates = tradeType == TradeType.BUY ?
       findBestBuyDates(trainData, maxTrades) : findBestSellDates(trainData, maxTrades);
     for (var i = 21 + DAY_REVIEW; i < trainData.size(); i++) {
-      var output = calculateOutputTradeValue(bestTradeDates, i);
-      result.add(new AbstractMap.SimpleEntry<>(createInputData(trainData, priceMaximum, i, output),
-        output));
+      result.add(new AbstractMap.SimpleEntry<>(createInputData(trainData, priceMaximum, i),
+        calculateOutputTradeValue(bestTradeDates, i)));
     }
     return result;
   }
@@ -211,15 +240,15 @@ public final class StockAlgorithm {
     return step * stepSize - (stepSize > 1 ? ((stepSize - 1) / 2) : 0);
   }
 
-  private static List<double[]> createInputData(List<HistoryEntry> data, double priceMaximum, int index, double value) {
+  private static List<double[]> createInputData(List<HistoryEntry> data, double priceMaximum, int index) {
     var inputData = Lists.<double[]>newArrayList();
     for (var i = 0; i < DAY_REVIEW; i++) {
-      inputData.add(createSingleInputData(data, priceMaximum, index - i, value));
+      inputData.add(createSingleInputData(data.stream().limit(index - i + 1).collect(Collectors.toList()), priceMaximum, index - i));
     }
     return inputData;
   }
 
-  private static double[] createSingleInputData(List<HistoryEntry> data, double priceMaximum, int index, double value) {
+  private static double[] createSingleInputData(List<HistoryEntry> data, double priceMaximum, int index) {
     var dayData = new double[INPUT_SIZE_PER_DAY];
     var closePrices = data.stream().map(HistoryEntry::close).collect(Collectors.toList());
     dayData[0] = calculateChange(closePrices, index, 1);
@@ -233,10 +262,10 @@ public final class StockAlgorithm {
     dayData[8] = calculateROC(closePrices, index, 9);
     dayData[9] = calculateROC(closePrices, index, 14);
     dayData[10] = calculateROC(closePrices, index, 21);
-    dayData[11] = 0;//calculateRSI(closePrices, index, 6);
-    dayData[12] = 0;//calculateRSI(closePrices, index, 9);
-    dayData[13] = 0;//calculateRSI(closePrices, index, 14);
-    dayData[14] = 0;//calculateRSI(closePrices, index, 21);
+    dayData[11] = calculateRSI(closePrices, index, 6);
+    dayData[12] = calculateRSI(closePrices, index, 9);
+    dayData[13] = calculateRSI(closePrices, index, 14);
+    dayData[14] = calculateRSI(closePrices, index, 21);
     dayData[15] = calculateCCI(data, index, 6);
     dayData[16] = calculateCCI(data, index, 9);
     dayData[17] = calculateCCI(data, index, 14);
@@ -344,6 +373,9 @@ public final class StockAlgorithm {
         individualGains++;
       }
     }
+    if (individualGains == 0) {
+      return 0;
+    }
     return totalGain / individualGains;
   }
 
@@ -358,6 +390,9 @@ public final class StockAlgorithm {
         totalLoss += change;
         individualLooses++;
       }
+    }
+    if (individualLooses == 0) {
+      return 0;
     }
     return Math.abs(totalLoss / individualLooses);
   }
