@@ -2,9 +2,6 @@ package de.lukasbreuer.stockalgorithm;
 
 import com.github.sh0nk.matplotlib4j.Plot;
 import com.google.common.collect.Lists;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.experimental.Accessors;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;
