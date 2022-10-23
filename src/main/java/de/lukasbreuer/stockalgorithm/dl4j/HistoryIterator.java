@@ -7,7 +7,9 @@ import org.nd4j.linalg.dataset.api.MultiDataSetPreProcessor;
 import org.nd4j.linalg.dataset.api.iterator.MultiDataSetIterator;
 import org.nd4j.linalg.factory.Nd4j;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 @RequiredArgsConstructor(staticName = "create")
 public final class HistoryIterator implements MultiDataSetIterator {
@@ -26,19 +28,15 @@ public final class HistoryIterator implements MultiDataSetIterator {
     while (currentCount < sampleSize) {
       var entry = dataset.get(currentDatasetStep);
       inputSeqList.add(buildInputVector(entry.getKey()));
-      //outputSeqList.add(buildOutputVector(entry.getValue()));
       outputSeqList.add(buildOutputVector(entry.getValue()));
       currentDatasetStep++;
       if (currentDatasetStep == dataset.size()) {
         currentDatasetStep = 0;
-        //System.out.println("RESET DATASET STEP");
       }
       currentCount++;
     }
 
     currentBatch++;
-
-    //System.out.println(currentBatch);
 
     inputSeq = Nd4j.vstack(inputSeqList);
     outputSeq = Nd4j.vstack(outputSeqList);
@@ -60,8 +58,9 @@ public final class HistoryIterator implements MultiDataSetIterator {
   }
 
   public INDArray buildOutputVector(double data) {
-    INDArray result = Nd4j.zeros(1);
+    INDArray result = Nd4j.zeros(2);
     result.putScalar(0, data);
+    result.putScalar(1, 1 - data);
     return result;
   }
 
