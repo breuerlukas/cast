@@ -35,10 +35,10 @@ public final class NeuralNetwork {
     NeuralNetConfiguration.ListBuilder configurationBuilder = new NeuralNetConfiguration.Builder()
       .seed(seed)
       .optimizationAlgo(OptimizationAlgorithm.STOCHASTIC_GRADIENT_DESCENT)
-      .weightInit(WeightInit.XAVIER)
-      .learningRate(1e-5)
+      .weightInit(WeightInit.RELU)
+      .learningRate(1e-6)
       .updater(Updater.NESTEROVS)
-      .iterations(2)
+      .iterations(5)
       .list();
     configurationBuilder.layer(0, new DenseLayer.Builder()
       .nIn(inputSize)

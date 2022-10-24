@@ -18,7 +18,7 @@ public final class StockAlgorithm {
   private static final float DROPOUT_RATE = 1f;
   private static final int ITERATIONS = 1;
   private static final int EPOCHS = 20;
-  private static final int[] HIDDEN_NEURONS = new int[] {512, 1024, 512};
+  private static final int[] HIDDEN_NEURONS = new int[] {1024, 1024, 1024};
   private static final int BATCH_SIZE = 20;
   private static final int TOTAL_BATCHES = 200;
   private static final int INPUT_SIZE_PER_DAY = 29; //29
