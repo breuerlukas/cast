@@ -58,7 +58,7 @@ public final class Symbol {
 
   private String fetchData() throws Exception {
     var result = new StringBuilder();
-    var url = new URL(String.format(DATA_FETCH_FORMAT, name, "20y", "1d"));
+    var url = new URL(String.format(DATA_FETCH_FORMAT, name, "100y", "1d"));
     var connection = (HttpURLConnection) url.openConnection();
     connection.setRequestMethod("GET");
     try (var reader = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
