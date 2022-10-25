@@ -36,9 +36,8 @@ public final class NeuralNetwork {
       .seed(seed)
       .optimizationAlgo(OptimizationAlgorithm.STOCHASTIC_GRADIENT_DESCENT)
       .weightInit(WeightInit.RELU)
-      .learningRate(1e-6)
-      .updater(Updater.NESTEROVS)
-      .iterations(5)
+      .learningRate(1e-4)
+      .updater(Updater.ADAM)
       .list();
     configurationBuilder.layer(0, new DenseLayer.Builder()
       .nIn(inputSize)
@@ -52,7 +51,7 @@ public final class NeuralNetwork {
         .activation(Activation.RELU)
         .build());
     }
-    configurationBuilder.layer(hiddenLayers.length, new OutputLayer.Builder()
+    configurationBuilder.layer(hiddenLayers.length, new OutputLayer.Builder(LossFunctions.LossFunction.NEGATIVELOGLIKELIHOOD)
       .nIn(hiddenLayers[hiddenLayers.length - 1])
       .nOut(outputSize)
       .activation(Activation.SOFTMAX)

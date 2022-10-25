@@ -17,7 +17,7 @@ public final class StockAlgorithm {
   private static final float LEARNING_RATE = 0.05f;
   private static final float DROPOUT_RATE = 1f;
   private static final int ITERATIONS = 1;
-  private static final int EPOCHS = 20;
+  private static final int EPOCHS = 40;
   private static final int[] HIDDEN_NEURONS = new int[] {1024, 1024, 1024};
   private static final int BATCH_SIZE = 20;
   private static final int TOTAL_BATCHES = 200;
@@ -27,15 +27,24 @@ public final class StockAlgorithm {
   private static final int TRAIN_MAX_TRADES = 16;
   private static final int EVALUATION_DAYS = 365 * 2;
   private static final int EVALUATION_MAX_TRADES = 4;
-  private static final int GENERALISATION_STEP_SIZE = 5;
-  private static final String STOCK = "AAPL";
+  private static final int GENERALISATION_STEP_SIZE = 7;
+  private static final String STOCK = "AMZN";
+
+  //TODO: ES WÜRDE DEN TRAININGS PROZESS MÖGLICHERWEISE VERBESSERN,   WENN MAN DAS
+  //      GESAMTE DATASET VOR DEM TRAINING STANDARDISIEREN WÜRDE.
+  //      SOMIT MÜSSTEN ZUNÄCHST ALLE DATEN GESAMMELT WERDEN UND WENN MAN ALLE DATEN
+  //      GESAMMELT HAT, JEDEN EINZELNEN DATENTYP UNTER SICH ZU NORMALISIEREN
+  //      (ALSO ZUM BEISPIEL ALLE ROC'S ODER ALLE CCI'S)
+  //      (IDEE: NICHT JEDEN STEP VON DEN 29 FÜR SICH NORMALISIEREN SONDERN EBEN
+  //      DIESE DATENTYPEN ALS GRUPPE UNTER SICH NORMALISIEREN)
+  //      ZUM NORMALISIEREN EINE FUNKTION WIE TANH VERWENDEN
+  //   -> "The idea of transforming data from a Gaussian-like distribution to uniform distribution"
+  //      GENAUERES IM PAPER ZU FINDEN
 
   public static void main(String[] args) throws Exception {
     Engine.getInstance().setRandomSeed(SEED);
     Nd4j.getRandom().setSeed(SEED);
     var symbol = Symbol.createAndFetch(STOCK);
-    System.out.println(Arrays.toString(createSingleInputData(symbol.findPartOfHistory(365),
-      symbol.findPartOfHistory(365).stream().mapToDouble(HistoryEntry::close).max().getAsDouble(), 21)));
     for (var trade : findBestTrades(symbol.findPartOfHistory(TRAIN_DAYS + EVALUATION_DAYS).stream().skip(TRAIN_DAYS).collect(Collectors.toList()), EVALUATION_MAX_TRADES)) {
       System.out.println(calculateDayFromStep(trade.buyTime() + 1, GENERALISATION_STEP_SIZE) + ":" + calculateDayFromStep(trade.sellTime() + 1, GENERALISATION_STEP_SIZE));
     }
@@ -45,11 +54,13 @@ public final class StockAlgorithm {
     System.out.println("");
     System.out.println("TRAIN BUY NETWORK");
     var buyEvaluationDataset = createDataset(symbol, TradeType.BUY, ModelState.EVALUATING);
+    System.out.println(Arrays.toString(buyEvaluationDataset.get(1).getKey().get(0)));
     buyNetwork.train(/*EPOCHS, */buyEvaluationDataset.stream().filter(entry -> entry.getValue() == 1).findFirst().get());
     System.out.println("EVALUATE BUY NETWORK");
-    displayGraph(symbol, buyNetwork, buyEvaluationDataset, 0.01f, 200, "BUY");
+    displayGraph(symbol, buyNetwork, buyEvaluationDataset, 0.1f, 200, "BUY");
     System.out.println("TRAIN SELL NETWORK");
     var sellEvaluationDataset = createDataset(symbol, TradeType.SELL, ModelState.EVALUATING);
+    System.out.println(Arrays.toString(sellEvaluationDataset.get(1).getKey().get(0)));
     sellNetwork.train(/*EPOCHS, */sellEvaluationDataset.stream().filter(entry -> entry.getValue() == 1).findFirst().get());
     System.out.println("EVALUATE SELL NETWORK");
     displayGraph(symbol, sellNetwork, sellEvaluationDataset, 0.1f, 200, "SELL");
@@ -159,7 +170,42 @@ public final class StockAlgorithm {
       result.add(new AbstractMap.SimpleEntry<>(createInputData(trainData, priceMaximum, i),
         calculateOutputTradeValue(bestTradeDates, i)));
     }
-    return result;
+    return normalizeData(result);
+  }
+
+  private static List<Map.Entry<List<double[]>, Double>> normalizeData(List<Map.Entry<List<double[]>, Double>> data) {
+    var normalizedData = Lists.<Map.Entry<List<double[]>, Double>>newArrayList();
+    double[] maximums = new double[INPUT_SIZE_PER_DAY];
+    Arrays.fill(maximums, 0);
+    double[] minimums = new double[INPUT_SIZE_PER_DAY];
+    Arrays.fill(minimums, Double.MAX_VALUE);
+    for (var entry : data) {
+      for (var dayInputData : entry.getKey()) {
+        for (var i = 0; i < INPUT_SIZE_PER_DAY; i++) {
+          if (dayInputData[i] > maximums[i]) {
+            maximums[i] = dayInputData[i];
+          }
+          if (dayInputData[i] < minimums[i]) {
+            minimums[i] = dayInputData[i];
+          }
+        }
+      }
+    }
+    for (var entry : data) {
+      var inputData = Lists.<double[]>newArrayList();
+      for (var dayInputData : entry.getKey()) {
+        var dayNormalizedInput = new double[INPUT_SIZE_PER_DAY];
+        for (var i = 0; i < INPUT_SIZE_PER_DAY; i++) {
+          if (maximums[i] == 0 || minimums[i] == Double.MAX_VALUE) {
+            continue;
+          }
+          dayNormalizedInput[i] = (dayInputData[i] - minimums[i]) / (maximums[i] - minimums[i]);
+        }
+        inputData.add(dayNormalizedInput);
+      }
+      normalizedData.add(new AbstractMap.SimpleEntry<>(inputData, entry.getValue()));
+    }
+    return normalizedData;
   }
 
   private static double calculateOutputTradeValue(List<Integer> bestDates, int currentDate) {
@@ -254,10 +300,10 @@ public final class StockAlgorithm {
     dayData[0] = calculateChange(closePrices, index, 1);
     dayData[1] = calculateChange(closePrices, index, 2);
     dayData[2] = calculateChange(closePrices, index, 3);
-    dayData[3] = (calculateSMA(closePrices, index - 6, 6) / priceMaximum) * 100;
-    dayData[4] = (calculateSMA(closePrices, index - 9, 9) / priceMaximum) * 100;
-    dayData[5] = (calculateSMA(closePrices, index - 14, 14) / priceMaximum) * 100;
-    dayData[6] = (calculateSMA(closePrices, index - 21, 21) / priceMaximum) * 100;
+    dayData[3] = 0;//(calculateSMA(closePrices, index - 6, 6) / priceMaximum) * 100;
+    dayData[4] = 0;//(calculateSMA(closePrices, index - 9, 9) / priceMaximum) * 100;
+    dayData[5] = 0;//(calculateSMA(closePrices, index - 14, 14) / priceMaximum) * 100;
+    dayData[6] = 0;//(calculateSMA(closePrices, index - 21, 21) / priceMaximum) * 100;
     dayData[7] = calculateROC(closePrices, index, 6);
     dayData[8] = calculateROC(closePrices, index, 9);
     dayData[9] = calculateROC(closePrices, index, 14);
