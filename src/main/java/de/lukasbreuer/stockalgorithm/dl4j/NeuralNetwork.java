@@ -9,10 +9,6 @@ import org.deeplearning4j.nn.conf.layers.OutputLayer;
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
 import org.deeplearning4j.nn.weights.WeightInit;
 import org.nd4j.linalg.activations.Activation;
-import org.nd4j.linalg.api.ops.random.impl.UniformDistribution;
-import org.nd4j.linalg.learning.config.Adam;
-import org.nd4j.linalg.learning.config.Nesterovs;
-import org.nd4j.linalg.learning.config.Sgd;
 import org.nd4j.linalg.lossfunctions.LossFunctions;
 
 import java.util.List;
@@ -35,9 +31,9 @@ public final class NeuralNetwork {
     NeuralNetConfiguration.ListBuilder configurationBuilder = new NeuralNetConfiguration.Builder()
       .seed(seed)
       .optimizationAlgo(OptimizationAlgorithm.STOCHASTIC_GRADIENT_DESCENT)
-      .weightInit(WeightInit.RELU)
-      .learningRate(1e-4)
-      .updater(Updater.ADAM)
+      .weightInit(WeightInit.XAVIER)
+      .learningRate(1e-5)
+      .updater(Updater.NESTEROVS)
       .list();
     configurationBuilder.layer(0, new DenseLayer.Builder()
       .nIn(inputSize)

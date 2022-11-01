@@ -13,33 +13,25 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public final class StockAlgorithm {
-  private static final int SEED = 12345;
+  private static final int SEED = 123;
   private static final float LEARNING_RATE = 0.05f;
   private static final float DROPOUT_RATE = 1f;
   private static final int ITERATIONS = 1;
-  private static final int EPOCHS = 40;
-  private static final int[] HIDDEN_NEURONS = new int[] {1024, 1024, 1024};
-  private static final int BATCH_SIZE = 20;
+  private static final int EPOCHS = 30;
+  private static final int[] HIDDEN_NEURONS = new int[] {256, 512, 256};
+  private static final int BATCH_SIZE = 10;
   private static final int TOTAL_BATCHES = 200;
   private static final int INPUT_SIZE_PER_DAY = 29; //29
   private static final int DAY_REVIEW = 1;
   private static final int TRAIN_DAYS = 365 * 8;
-  private static final int TRAIN_MAX_TRADES = 16;
+  private static final int TRAIN_MAX_TRADES = 8;
   private static final int EVALUATION_DAYS = 365 * 2;
-  private static final int EVALUATION_MAX_TRADES = 4;
-  private static final int GENERALISATION_STEP_SIZE = 7;
-  private static final String STOCK = "AMZN";
+  private static final int EVALUATION_MAX_TRADES = 2;
+  private static final int GENERALISATION_STEP_SIZE = 11;
+  private static final String STOCK = "AAPL";
 
-  //TODO: ES WÜRDE DEN TRAININGS PROZESS MÖGLICHERWEISE VERBESSERN,   WENN MAN DAS
-  //      GESAMTE DATASET VOR DEM TRAINING STANDARDISIEREN WÜRDE.
-  //      SOMIT MÜSSTEN ZUNÄCHST ALLE DATEN GESAMMELT WERDEN UND WENN MAN ALLE DATEN
-  //      GESAMMELT HAT, JEDEN EINZELNEN DATENTYP UNTER SICH ZU NORMALISIEREN
-  //      (ALSO ZUM BEISPIEL ALLE ROC'S ODER ALLE CCI'S)
-  //      (IDEE: NICHT JEDEN STEP VON DEN 29 FÜR SICH NORMALISIEREN SONDERN EBEN
-  //      DIESE DATENTYPEN ALS GRUPPE UNTER SICH NORMALISIEREN)
-  //      ZUM NORMALISIEREN EINE FUNKTION WIE TANH VERWENDEN
-  //   -> "The idea of transforming data from a Gaussian-like distribution to uniform distribution"
-  //      GENAUERES IM PAPER ZU FINDEN
+  //TODO: CODE CLEAN UP (ESPECIALLY StockAlgorithm)
+  //TODO: FIX: BUY & SELL NETWORKS PRODUCE SAME SIGNALS (PROBLEM WITH NORMALIZATION)
 
   public static void main(String[] args) throws Exception {
     Engine.getInstance().setRandomSeed(SEED);
@@ -170,13 +162,13 @@ public final class StockAlgorithm {
       result.add(new AbstractMap.SimpleEntry<>(createInputData(trainData, priceMaximum, i),
         calculateOutputTradeValue(bestTradeDates, i)));
     }
-    return normalizeData(result);
+    return result;//normalizeData(result);
   }
 
   private static List<Map.Entry<List<double[]>, Double>> normalizeData(List<Map.Entry<List<double[]>, Double>> data) {
     var normalizedData = Lists.<Map.Entry<List<double[]>, Double>>newArrayList();
     double[] maximums = new double[INPUT_SIZE_PER_DAY];
-    Arrays.fill(maximums, 0);
+    Arrays.fill(maximums, -Double.MAX_VALUE);
     double[] minimums = new double[INPUT_SIZE_PER_DAY];
     Arrays.fill(minimums, Double.MAX_VALUE);
     for (var entry : data) {
@@ -196,7 +188,7 @@ public final class StockAlgorithm {
       for (var dayInputData : entry.getKey()) {
         var dayNormalizedInput = new double[INPUT_SIZE_PER_DAY];
         for (var i = 0; i < INPUT_SIZE_PER_DAY; i++) {
-          if (maximums[i] == 0 || minimums[i] == Double.MAX_VALUE) {
+          if (maximums[i] == -Double.MAX_VALUE || minimums[i] == Double.MAX_VALUE || (maximums[i] - minimums[i]) == 0) {
             continue;
           }
           dayNormalizedInput[i] = (dayInputData[i] - minimums[i]) / (maximums[i] - minimums[i]);
@@ -300,10 +292,10 @@ public final class StockAlgorithm {
     dayData[0] = calculateChange(closePrices, index, 1);
     dayData[1] = calculateChange(closePrices, index, 2);
     dayData[2] = calculateChange(closePrices, index, 3);
-    dayData[3] = 0;//(calculateSMA(closePrices, index - 6, 6) / priceMaximum) * 100;
-    dayData[4] = 0;//(calculateSMA(closePrices, index - 9, 9) / priceMaximum) * 100;
-    dayData[5] = 0;//(calculateSMA(closePrices, index - 14, 14) / priceMaximum) * 100;
-    dayData[6] = 0;//(calculateSMA(closePrices, index - 21, 21) / priceMaximum) * 100;
+    dayData[3] = (calculateSMA(closePrices, index - 6, 6) / priceMaximum) * 100;
+    dayData[4] = (calculateSMA(closePrices, index - 9, 9) / priceMaximum) * 100;
+    dayData[5] = (calculateSMA(closePrices, index - 14, 14) / priceMaximum) * 100;
+    dayData[6] = (calculateSMA(closePrices, index - 21, 21) / priceMaximum) * 100;
     dayData[7] = calculateROC(closePrices, index, 6);
     dayData[8] = calculateROC(closePrices, index, 9);
     dayData[9] = calculateROC(closePrices, index, 14);
