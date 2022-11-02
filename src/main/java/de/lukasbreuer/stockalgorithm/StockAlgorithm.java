@@ -17,8 +17,8 @@ public final class StockAlgorithm {
   private static final float LEARNING_RATE = 0.05f;
   private static final float DROPOUT_RATE = 1f;
   private static final int ITERATIONS = 1;
-  private static final int EPOCHS = 30;
-  private static final int[] HIDDEN_NEURONS = new int[] {256, 512, 256};
+  private static final int EPOCHS = 100;
+  private static final int[] HIDDEN_NEURONS = new int[] {1024, 1024};
   private static final int BATCH_SIZE = 10;
   private static final int TOTAL_BATCHES = 200;
   private static final int INPUT_SIZE_PER_DAY = 29; //29
@@ -26,8 +26,8 @@ public final class StockAlgorithm {
   private static final int TRAIN_DAYS = 365 * 8;
   private static final int TRAIN_MAX_TRADES = 8;
   private static final int EVALUATION_DAYS = 365 * 2;
-  private static final int EVALUATION_MAX_TRADES = 2;
-  private static final int GENERALISATION_STEP_SIZE = 11;
+  private static final int EVALUATION_MAX_TRADES = 4;
+  private static final int GENERALISATION_STEP_SIZE = 9;
   private static final String STOCK = "AAPL";
 
   //TODO: CODE CLEAN UP (ESPECIALLY StockAlgorithm)

@@ -32,19 +32,19 @@ public final class NeuralNetwork {
       .seed(seed)
       .optimizationAlgo(OptimizationAlgorithm.STOCHASTIC_GRADIENT_DESCENT)
       .weightInit(WeightInit.XAVIER)
-      .learningRate(1e-5)
+      .learningRate(1e-3)
       .updater(Updater.NESTEROVS)
       .list();
     configurationBuilder.layer(0, new DenseLayer.Builder()
       .nIn(inputSize)
       .nOut(hiddenLayers[0])
-      .activation(Activation.RELU)
+      .activation(Activation.SOFTSIGN)
       .build());
     for (var i = 0; i < hiddenLayers.length - 1; i++) {
       configurationBuilder.layer(i + 1, new DenseLayer.Builder()
         .nIn(hiddenLayers[i])
         .nOut(hiddenLayers[i + 1])
-        .activation(Activation.RELU)
+        .activation(Activation.SOFTSIGN)
         .build());
     }
     configurationBuilder.layer(hiddenLayers.length, new OutputLayer.Builder(LossFunctions.LossFunction.NEGATIVELOGLIKELIHOOD)
