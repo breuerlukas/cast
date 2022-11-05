@@ -14,21 +14,21 @@ import java.util.stream.Collectors;
 
 public final class StockAlgorithm {
   private static final int SEED = 123;
-  private static final float LEARNING_RATE = 0.05f;
+  private static final float LEARNING_RATE = 0.01f;
   private static final float DROPOUT_RATE = 1f;
   private static final int ITERATIONS = 1;
-  private static final int EPOCHS = 100;
-  private static final int[] HIDDEN_NEURONS = new int[] {1024, 1024};
+  private static final int EPOCHS = 30;
+  private static final int[] HIDDEN_NEURONS = new int[] {256, 512, 256};
   private static final int BATCH_SIZE = 10;
   private static final int TOTAL_BATCHES = 200;
   private static final int INPUT_SIZE_PER_DAY = 29; //29
-  private static final int DAY_REVIEW = 1;
+  private static final int DAY_REVIEW = 10;
   private static final int TRAIN_DAYS = 365 * 8;
   private static final int TRAIN_MAX_TRADES = 8;
   private static final int EVALUATION_DAYS = 365 * 2;
-  private static final int EVALUATION_MAX_TRADES = 4;
+  private static final int EVALUATION_MAX_TRADES = 2;
   private static final int GENERALISATION_STEP_SIZE = 9;
-  private static final String STOCK = "AAPL";
+  private static final String STOCK = "AMZN";
 
   //TODO: CODE CLEAN UP (ESPECIALLY StockAlgorithm)
   //TODO: FIX: BUY & SELL NETWORKS PRODUCE SAME SIGNALS (PROBLEM WITH NORMALIZATION)
@@ -37,9 +37,6 @@ public final class StockAlgorithm {
     Engine.getInstance().setRandomSeed(SEED);
     Nd4j.getRandom().setSeed(SEED);
     var symbol = Symbol.createAndFetch(STOCK);
-    for (var trade : findBestTrades(symbol.findPartOfHistory(TRAIN_DAYS + EVALUATION_DAYS).stream().skip(TRAIN_DAYS).collect(Collectors.toList()), EVALUATION_MAX_TRADES)) {
-      System.out.println(calculateDayFromStep(trade.buyTime() + 1, GENERALISATION_STEP_SIZE) + ":" + calculateDayFromStep(trade.sellTime() + 1, GENERALISATION_STEP_SIZE));
-    }
     var buyNetwork = buildBuyNetwork(symbol);
     var sellNetwork = buildSellNetwork(symbol);
     System.out.println("TRAINING");
@@ -92,10 +89,10 @@ public final class StockAlgorithm {
       }
       plot.plot().add(List.of(entry.getKey(), entry.getKey()), List.of(0, scale));
       addedTrades.add(entry.getKey());
+      System.out.println(entry.getKey() + ": " + entry.getValue());
       if (addedTrades.size() == EVALUATION_MAX_TRADES) {
         break;
       }
-      System.out.println(entry.getKey() + ": " + entry.getValue());
     }
 
     var closeData = symbol.findPartOfHistory(TRAIN_DAYS + EVALUATION_DAYS).stream().skip(TRAIN_DAYS).map(HistoryEntry::close).collect(Collectors.toList());
@@ -235,7 +232,29 @@ public final class StockAlgorithm {
       data.add(calculateSMA(closeData, entryIndex, GENERALISATION_STEP_SIZE));
     }
     var allTrades = findAllPossibleTrades(data);
-    return filterMostValuableTrades(data, allTrades, maxTrades);
+    var mostValuableTrades = filterMostValuableTrades(data, allTrades, maxTrades);
+    return filterNoiseOutOfTrades(mostValuableTrades, closeData);
+  }
+
+  private static List<Trade> filterNoiseOutOfTrades(List<Trade> trades, List<Double> closeData) {
+    var result = Lists.<Trade>newArrayList();
+    for (var trade : trades) {
+      result.add(Trade.create(calculateNoiselessSignal(trade, closeData, TradeType.BUY),
+        calculateNoiselessSignal(trade, closeData, TradeType.SELL)));
+    }
+    return result;
+  }
+
+  private static int calculateNoiselessSignal(Trade trade, List<Double> closeData, TradeType type) {
+    var initialSignal = type == TradeType.BUY ? trade.buyTime() : trade.sellTime();
+    var lastAverage = calculateSMA(closeData, initialSignal, 5);
+    for (var i = 0; i < closeData.size() - initialSignal - 5; i++) {
+      var average = calculateSMA(closeData, initialSignal + i, 5);
+      if (type == TradeType.BUY ? average > lastAverage : average < lastAverage) {
+        return initialSignal + i;
+      }
+    }
+    return initialSignal;
   }
 
   private static List<Trade> filterMostValuableTrades(

@@ -2,13 +2,15 @@ package de.lukasbreuer.stockalgorithm.dl4j;
 
 import lombok.RequiredArgsConstructor;
 import org.deeplearning4j.nn.api.OptimizationAlgorithm;
+import org.deeplearning4j.nn.conf.MultiLayerConfiguration;
 import org.deeplearning4j.nn.conf.NeuralNetConfiguration;
 import org.deeplearning4j.nn.conf.Updater;
-import org.deeplearning4j.nn.conf.layers.DenseLayer;
-import org.deeplearning4j.nn.conf.layers.OutputLayer;
+import org.deeplearning4j.nn.conf.inputs.InputType;
+import org.deeplearning4j.nn.conf.layers.*;
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
 import org.deeplearning4j.nn.weights.WeightInit;
 import org.nd4j.linalg.activations.Activation;
+import org.nd4j.linalg.learning.config.*;
 import org.nd4j.linalg.lossfunctions.LossFunctions;
 
 import java.util.List;
@@ -30,21 +32,24 @@ public final class NeuralNetwork {
   public void build() {
     NeuralNetConfiguration.ListBuilder configurationBuilder = new NeuralNetConfiguration.Builder()
       .seed(seed)
-      .optimizationAlgo(OptimizationAlgorithm.STOCHASTIC_GRADIENT_DESCENT)
       .weightInit(WeightInit.XAVIER)
-      .learningRate(1e-3)
-      .updater(Updater.NESTEROVS)
+      .activation(Activation.TANH)
+      .updater(Updater.ADAM)
+      .l2(1e-4)
+      .learningRate(1e-4)
+      /*.activation(Activation.TANH)
+      .updater(new Sgd(0.1))
+      .l2(1e-4)
+      .iterations(1)*/
       .list();
     configurationBuilder.layer(0, new DenseLayer.Builder()
       .nIn(inputSize)
       .nOut(hiddenLayers[0])
-      .activation(Activation.SOFTSIGN)
       .build());
     for (var i = 0; i < hiddenLayers.length - 1; i++) {
       configurationBuilder.layer(i + 1, new DenseLayer.Builder()
         .nIn(hiddenLayers[i])
         .nOut(hiddenLayers[i + 1])
-        .activation(Activation.SOFTSIGN)
         .build());
     }
     configurationBuilder.layer(hiddenLayers.length, new OutputLayer.Builder(LossFunctions.LossFunction.NEGATIVELOGLIKELIHOOD)
@@ -52,9 +57,7 @@ public final class NeuralNetwork {
       .nOut(outputSize)
       .activation(Activation.SOFTMAX)
       .build());
-    var configuration = configurationBuilder
-      .backprop(true).pretrain(false)
-      .build();
+    var configuration = configurationBuilder.backprop(true).pretrain(false).build();
     network = new MultiLayerNetwork(configuration);
     network.init();
   }

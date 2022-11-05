@@ -47,11 +47,11 @@ public final class HistoryIterator implements MultiDataSetIterator {
   }
 
   public INDArray buildInputVector(List<double[]> data) {
-    INDArray result = Nd4j.zeros(data.size(), data.get(0).length);
+    INDArray result = Nd4j.zeros(data.size() * data.get(0).length);
     for (int i = 0; i < data.size(); i++) {
       var dayVector = data.get(i);
       for (var j = 0; j < dayVector.length; j++) {
-        result.putScalar(i, j, dayVector[j]);
+        result.putScalar(0, i * dayVector.length +  j, dayVector[j]);
       }
     }
     return result;
