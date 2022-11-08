@@ -1,16 +1,13 @@
 package de.lukasbreuer.stockalgorithm.dl4j;
 
 import lombok.RequiredArgsConstructor;
-import org.deeplearning4j.nn.api.OptimizationAlgorithm;
-import org.deeplearning4j.nn.conf.MultiLayerConfiguration;
 import org.deeplearning4j.nn.conf.NeuralNetConfiguration;
-import org.deeplearning4j.nn.conf.Updater;
-import org.deeplearning4j.nn.conf.inputs.InputType;
-import org.deeplearning4j.nn.conf.layers.*;
+import org.deeplearning4j.nn.conf.layers.DenseLayer;
+import org.deeplearning4j.nn.conf.layers.OutputLayer;
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
 import org.deeplearning4j.nn.weights.WeightInit;
 import org.nd4j.linalg.activations.Activation;
-import org.nd4j.linalg.learning.config.*;
+import org.nd4j.linalg.learning.config.Nesterovs;
 import org.nd4j.linalg.lossfunctions.LossFunctions;
 
 import java.util.List;
@@ -33,31 +30,29 @@ public final class NeuralNetwork {
     NeuralNetConfiguration.ListBuilder configurationBuilder = new NeuralNetConfiguration.Builder()
       .seed(seed)
       .weightInit(WeightInit.XAVIER)
-      .activation(Activation.TANH)
-      .updater(Updater.ADAM)
-      .l2(1e-4)
-      .learningRate(1e-4)
-      /*.activation(Activation.TANH)
-      .updater(new Sgd(0.1))
-      .l2(1e-4)
-      .iterations(1)*/
+      //.learningRate(1e-4)
+      //.iterations(4)
+      //.activation(Activation.TANH)
+      //.updater(new Sgd(0.1))
+      .activation(Activation.RELU)
+      .updater(new Nesterovs(1e-4, 0.9))
       .list();
-    configurationBuilder.layer(0, new DenseLayer.Builder()
+    configurationBuilder.layer(new DenseLayer.Builder()
       .nIn(inputSize)
       .nOut(hiddenLayers[0])
       .build());
     for (var i = 0; i < hiddenLayers.length - 1; i++) {
-      configurationBuilder.layer(i + 1, new DenseLayer.Builder()
+      configurationBuilder.layer(new DenseLayer.Builder()
         .nIn(hiddenLayers[i])
         .nOut(hiddenLayers[i + 1])
         .build());
     }
-    configurationBuilder.layer(hiddenLayers.length, new OutputLayer.Builder(LossFunctions.LossFunction.NEGATIVELOGLIKELIHOOD)
+    configurationBuilder.layer(new OutputLayer.Builder(LossFunctions.LossFunction.NEGATIVELOGLIKELIHOOD)
       .nIn(hiddenLayers[hiddenLayers.length - 1])
       .nOut(outputSize)
       .activation(Activation.SOFTMAX)
       .build());
-    var configuration = configurationBuilder.backprop(true).pretrain(false).build();
+    var configuration = configurationBuilder.build();
     network = new MultiLayerNetwork(configuration);
     network.init();
   }

@@ -17,17 +17,17 @@ public final class StockAlgorithm {
   private static final float LEARNING_RATE = 0.01f;
   private static final float DROPOUT_RATE = 1f;
   private static final int ITERATIONS = 1;
-  private static final int EPOCHS = 30;
-  private static final int[] HIDDEN_NEURONS = new int[] {256, 512, 256};
+  private static final int EPOCHS = 150;
+  private static final int[] HIDDEN_NEURONS = new int[] {32, 64, 32};
   private static final int BATCH_SIZE = 10;
   private static final int TOTAL_BATCHES = 200;
   private static final int INPUT_SIZE_PER_DAY = 29; //29
-  private static final int DAY_REVIEW = 10;
+  private static final int DAY_REVIEW = 1;
   private static final int TRAIN_DAYS = 365 * 8;
   private static final int TRAIN_MAX_TRADES = 8;
   private static final int EVALUATION_DAYS = 365 * 2;
   private static final int EVALUATION_MAX_TRADES = 2;
-  private static final int GENERALISATION_STEP_SIZE = 9;
+  private static final int GENERALISATION_STEP_SIZE = 11;
   private static final String STOCK = "AMZN";
 
   //TODO: CODE CLEAN UP (ESPECIALLY StockAlgorithm)
@@ -77,7 +77,7 @@ public final class StockAlgorithm {
     var addedTrades = Lists.<Integer>newArrayList();
 
     for (var entry : allValues.entrySet().stream().sorted(Map.Entry.<Integer, Float>comparingByValue().reversed()).collect(Collectors.toList())) {
-      var isTooClose = false;
+      /*var isTooClose = false;
       for (var addedTrade : addedTrades) {
         if (Math.abs(entry.getKey() - addedTrade) < 20) {
           isTooClose = true;
@@ -86,7 +86,7 @@ public final class StockAlgorithm {
       }
       if (isTooClose) {
         continue;
-      }
+      }*/
       plot.plot().add(List.of(entry.getKey(), entry.getKey()), List.of(0, scale));
       addedTrades.add(entry.getKey());
       System.out.println(entry.getKey() + ": " + entry.getValue());
@@ -121,7 +121,7 @@ public final class StockAlgorithm {
   private static NeuralNetwork buildBuyNetwork(Symbol symbol) throws Exception {
     var dataset = createDataset(symbol, TradeType.BUY, ModelState.TRAINING);
     /*return NeuralNetwork.create(dataset, "buy",
-      INPUT_SIZE_PER_DAY * DAY_REVIEW, HIDDEN_NEURONS, 1);*/
+      INPUT_SIZE_PER_DAY * DAY_REVIEW, HIDDEN_NEURONS, 2);*/
     var iterator = HistoryIterator.create(dataset, BATCH_SIZE,
       TOTAL_BATCHES);
     var network = NeuralNetwork.create(SEED, LEARNING_RATE, DROPOUT_RATE,
@@ -132,8 +132,8 @@ public final class StockAlgorithm {
 
   private static NeuralNetwork buildSellNetwork(Symbol symbol) throws Exception {
     var dataset = createDataset(symbol, TradeType.SELL, ModelState.TRAINING);
-    /*return NeuralNetwork.create(dataset, "sell",
-      INPUT_SIZE_PER_DAY * DAY_REVIEW, HIDDEN_NEURONS, 1);*/
+   /* return NeuralNetwork.create(dataset, "sell",
+      INPUT_SIZE_PER_DAY * DAY_REVIEW, HIDDEN_NEURONS, 2);*/
     var iterator = HistoryIterator.create(dataset, BATCH_SIZE,
       TOTAL_BATCHES);
     var network = NeuralNetwork.create(SEED, LEARNING_RATE, DROPOUT_RATE,
@@ -214,13 +214,13 @@ public final class StockAlgorithm {
 
   private static List<Integer> findBestBuyDates(List<HistoryEntry> history, int maxTrades) {
     return findBestTrades(history, maxTrades).stream()
-      .map(trade -> calculateDayFromStep(trade.buyTime() + 1, GENERALISATION_STEP_SIZE))
+      .map(Trade::buyTime)
       .collect(Collectors.toList());
   }
 
   private static List<Integer> findBestSellDates(List<HistoryEntry> history, int maxTrades) {
     return findBestTrades(history, maxTrades).stream()
-      .map(trade -> calculateDayFromStep(trade.sellTime() + 1, GENERALISATION_STEP_SIZE))
+      .map(Trade::sellTime)
       .collect(Collectors.toList());
   }
 
@@ -245,14 +245,17 @@ public final class StockAlgorithm {
     return result;
   }
 
+  private static final int NOISE_REMOVAL_STEP_SIZE = 9;
+
   private static int calculateNoiselessSignal(Trade trade, List<Double> closeData, TradeType type) {
     var initialSignal = type == TradeType.BUY ? trade.buyTime() : trade.sellTime();
-    var lastAverage = calculateSMA(closeData, initialSignal, 5);
-    for (var i = 0; i < closeData.size() - initialSignal - 5; i++) {
-      var average = calculateSMA(closeData, initialSignal + i, 5);
+    var lastAverage = calculateSMA(closeData, initialSignal - ((NOISE_REMOVAL_STEP_SIZE - 1) / 2) - 1, NOISE_REMOVAL_STEP_SIZE);
+    for (var i = 0; i < Math.min(closeData.size() - initialSignal - NOISE_REMOVAL_STEP_SIZE, 30); i++) {
+      var average = calculateSMA(closeData, initialSignal - ((NOISE_REMOVAL_STEP_SIZE - 1) / 2) + i, NOISE_REMOVAL_STEP_SIZE);
       if (type == TradeType.BUY ? average > lastAverage : average < lastAverage) {
         return initialSignal + i;
       }
+      lastAverage = average;
     }
     return initialSignal;
   }
@@ -271,6 +274,8 @@ public final class StockAlgorithm {
       .filter(entry -> entry.getValue() > 0)
       .limit(maxTrades)
       .map(Map.Entry::getKey)
+      .map(trade -> Trade.create(calculateDayFromStep(trade.buyTime() + 1, GENERALISATION_STEP_SIZE),
+          calculateDayFromStep(trade.sellTime() + 1, GENERALISATION_STEP_SIZE)))
       .collect(Collectors.toList());
   }
 
