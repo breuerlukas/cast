@@ -58,12 +58,12 @@ public final class NeuralNetwork {
 
   private TrainingConfig configureTrainer() {
     return new DefaultTrainingConfig(
-      Loss.sigmoidBinaryCrossEntropyLoss())
-      //Loss.softmaxCrossEntropyLoss("SOFTMAX", 1, -1, true, true))
+      //Loss.sigmoidBinaryCrossEntropyLoss())
+      Loss.softmaxCrossEntropyLoss("SoftmaxCrossEntropyLoss", 1, -1, false, true))
       .addEvaluator(new Accuracy());
   }
 
-  public double evaluate(int index, Map.Entry<List<double[]>, Double> entry) throws Exception {
+  public float evaluate(int index, Map.Entry<List<double[]>, Double> entry) throws Exception {
     var inputDouble = entry.getKey().toArray(double[][]::new);
     var inputFloat = new float[inputDouble.length][inputDouble[0].length];
     for (var i = 0; i < inputDouble.length; i++) {
@@ -78,7 +78,7 @@ public final class NeuralNetwork {
       prefix = "\u001B[31m";
     }
     System.out.println(prefix + index + ": " + entry.getValue() + " <-> " + prediction + "\u001B[0m");
-    return prediction;
+    return (float) prediction;
   }
 
   public void safe() throws Exception {
@@ -110,9 +110,9 @@ public final class NeuralNetwork {
     @Override
     public double[] processOutput(TranslatorContext ctx, NDList list) {
       //return Arrays.stream(list.get(0).toArray())
-      return Arrays.stream(list.singletonOrThrow().toArray())
+      return Arrays.stream(list.singletonOrThrow().softmax(0).toArray())
         .mapToDouble(Number::doubleValue)
-        .map(value -> (float) (1 / (1 + Math.exp(-value))))
+        //.map(value -> (float) (1 / (1 + Math.exp(-value))))
         .toArray();
     }
 

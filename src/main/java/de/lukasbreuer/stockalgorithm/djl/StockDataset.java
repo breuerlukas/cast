@@ -13,7 +13,7 @@ import java.util.Map;
 
 public final class StockDataset extends RandomAccessDataset {
   public static StockDataset create(List<Map.Entry<List<double[]>, Double>> data) {
-    var processedData = Lists.<Map.Entry<float[][], Float>>newArrayList();
+    var processedData = Lists.<Map.Entry<float[][], float[]>>newArrayList();
     for (var entry : data) {
       var inputDouble = entry.getKey().toArray(double[][]::new);
       var inputFloat = new float[inputDouble.length][inputDouble[0].length];
@@ -22,15 +22,16 @@ public final class StockDataset extends RandomAccessDataset {
           inputFloat[i][j] = (float) inputDouble[i][j];
         }
       }
-      processedData.add(new AbstractMap.SimpleEntry<>(inputFloat, entry.getValue().floatValue()));
+      processedData.add(new AbstractMap.SimpleEntry<>(inputFloat,
+        new float[] {entry.getValue().floatValue(), 1 - entry.getValue().floatValue()}));
     }
-    return new StockDataset(new Builder().setSampling(32, true), processedData);
+    return new StockDataset(new Builder().setSampling(16, true), processedData);
   }
 
-  private final List<Map.Entry<float[][], Float>> data;
+  private final List<Map.Entry<float[][], float[]>> data;
 
   private StockDataset(
-    BaseBuilder<?> builder, List<Map.Entry<float[][], Float>> data
+    BaseBuilder<?> builder, List<Map.Entry<float[][], float[]>> data
   ) {
     super(builder);
     this.data = data;
