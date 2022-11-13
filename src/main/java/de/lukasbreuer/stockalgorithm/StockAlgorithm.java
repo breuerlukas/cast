@@ -13,22 +13,22 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public final class StockAlgorithm {
-  private static final int SEED = 123;
+  private static final int SEED = 12345;
   private static final float LEARNING_RATE = 0.01f;
   private static final float DROPOUT_RATE = 1f;
   private static final int ITERATIONS = 1;
-  private static final int EPOCHS = 150;
-  private static final int[] HIDDEN_NEURONS = new int[] {32, 64, 32};
+  private static final int EPOCHS = 100;
+  private static final int[] HIDDEN_NEURONS = new int[] {32, 32, 32};
   private static final int BATCH_SIZE = 10;
   private static final int TOTAL_BATCHES = 200;
   private static final int INPUT_SIZE_PER_DAY = 29; //29
   private static final int DAY_REVIEW = 1;
-  private static final int TRAIN_DAYS = 365 * 8;
-  private static final int TRAIN_MAX_TRADES = 8;
-  private static final int EVALUATION_DAYS = 365 * 2;
+  private static final int TRAIN_DAYS = 365 * 2;
+  private static final int TRAIN_MAX_TRADES = 4;
+  private static final int EVALUATION_DAYS = 365 * 1;
   private static final int EVALUATION_MAX_TRADES = 2;
-  private static final int GENERALISATION_STEP_SIZE = 11;
-  private static final String STOCK = "AMZN";
+  private static final int GENERALISATION_STEP_SIZE = 9;
+  private static final String STOCK = "AAPL";
 
   //TODO: CODE CLEAN UP (ESPECIALLY StockAlgorithm)
   //TODO: FIX: BUY & SELL NETWORKS PRODUCE SAME SIGNALS (PROBLEM WITH NORMALIZATION)
@@ -39,6 +39,8 @@ public final class StockAlgorithm {
     var symbol = Symbol.createAndFetch(STOCK);
     var buyNetwork = buildBuyNetwork(symbol);
     var sellNetwork = buildSellNetwork(symbol);
+    var closeData = symbol.findPartOfHistory(TRAIN_DAYS + EVALUATION_DAYS).stream().skip(TRAIN_DAYS).collect(Collectors.toList());
+    System.out.println(findBestTrades(closeData, EVALUATION_MAX_TRADES));
     System.out.println("TRAINING");
     System.out.println("");
     System.out.println("TRAIN BUY NETWORK");
@@ -159,7 +161,7 @@ public final class StockAlgorithm {
       result.add(new AbstractMap.SimpleEntry<>(createInputData(trainData, priceMaximum, i),
         calculateOutputTradeValue(bestTradeDates, i)));
     }
-    return result;//normalizeData(result);
+    return result; //normalizeData(result);
   }
 
   private static List<Map.Entry<List<double[]>, Double>> normalizeData(List<Map.Entry<List<double[]>, Double>> data) {
@@ -232,8 +234,8 @@ public final class StockAlgorithm {
       data.add(calculateSMA(closeData, entryIndex, GENERALISATION_STEP_SIZE));
     }
     var allTrades = findAllPossibleTrades(data);
-    var mostValuableTrades = filterMostValuableTrades(data, allTrades, maxTrades);
-    return filterNoiseOutOfTrades(mostValuableTrades, closeData);
+    var noiselessTrades = filterNoiseOutOfTrades(allTrades, closeData);
+    return filterMostValuableTrades(closeData, noiselessTrades, maxTrades);
   }
 
   private static List<Trade> filterNoiseOutOfTrades(List<Trade> trades, List<Double> closeData) {
@@ -242,18 +244,33 @@ public final class StockAlgorithm {
       result.add(Trade.create(calculateNoiselessSignal(trade, closeData, TradeType.BUY),
         calculateNoiselessSignal(trade, closeData, TradeType.SELL)));
     }
-    return result;
+    return result.stream()
+      .filter(trade -> trade.sellTime() > trade.buyTime())
+      .collect(Collectors.toList());
   }
 
-  private static final int NOISE_REMOVAL_STEP_SIZE = 9;
+  private static final int NOISE_REMOVAL_STEP_SIZE = 5;
 
   private static int calculateNoiselessSignal(Trade trade, List<Double> closeData, TradeType type) {
+    var forwardOptimal = calculateDirectionalNoiselessSignal(trade, closeData, type, +1);
+    var forwardPrice = closeData.get(forwardOptimal);
+    var backwardOptimal = calculateDirectionalNoiselessSignal(trade, closeData, type, -1);
+    var backwardPrice = closeData.get(backwardOptimal);
+    if (type == TradeType.BUY && forwardPrice < backwardPrice || type == TradeType.SELL && forwardPrice > backwardPrice) {
+      return forwardOptimal;
+    }
+    return backwardOptimal;
+  }
+
+  private static int calculateDirectionalNoiselessSignal(Trade trade, List<Double> closeData, TradeType type, int direction) {
     var initialSignal = type == TradeType.BUY ? trade.buyTime() : trade.sellTime();
-    var lastAverage = calculateSMA(closeData, initialSignal - ((NOISE_REMOVAL_STEP_SIZE - 1) / 2) - 1, NOISE_REMOVAL_STEP_SIZE);
-    for (var i = 0; i < Math.min(closeData.size() - initialSignal - NOISE_REMOVAL_STEP_SIZE, 30); i++) {
-      var average = calculateSMA(closeData, initialSignal - ((NOISE_REMOVAL_STEP_SIZE - 1) / 2) + i, NOISE_REMOVAL_STEP_SIZE);
+    var lastAverage = calculateSMA(closeData, initialSignal - ((NOISE_REMOVAL_STEP_SIZE - 1) / 2) - direction, NOISE_REMOVAL_STEP_SIZE);
+    var calculationLength = direction > 0 ? Math.min(closeData.size() - initialSignal - NOISE_REMOVAL_STEP_SIZE, 30) :
+      Math.min(initialSignal - 30 - NOISE_REMOVAL_STEP_SIZE, 30);
+    for (var i = 0; i < calculationLength; i++) {
+      var average = calculateSMA(closeData, initialSignal - ((NOISE_REMOVAL_STEP_SIZE - 1) / 2) + i * direction, NOISE_REMOVAL_STEP_SIZE);
       if (type == TradeType.BUY ? average > lastAverage : average < lastAverage) {
-        return initialSignal + i;
+        return initialSignal + i * direction;
       }
       lastAverage = average;
     }
@@ -274,8 +291,6 @@ public final class StockAlgorithm {
       .filter(entry -> entry.getValue() > 0)
       .limit(maxTrades)
       .map(Map.Entry::getKey)
-      .map(trade -> Trade.create(calculateDayFromStep(trade.buyTime() + 1, GENERALISATION_STEP_SIZE),
-          calculateDayFromStep(trade.sellTime() + 1, GENERALISATION_STEP_SIZE)))
       .collect(Collectors.toList());
   }
 
@@ -295,7 +310,10 @@ public final class StockAlgorithm {
       }
     }
     trades.add(Trade.create(buyingTime, sellingTime));
-    return trades;
+    return trades.stream()
+      .map(trade -> Trade.create(calculateDayFromStep(trade.buyTime() + 1, GENERALISATION_STEP_SIZE),
+        calculateDayFromStep(trade.sellTime() + 1, GENERALISATION_STEP_SIZE)))
+      .collect(Collectors.toList());
   }
 
   private static int calculateDayFromStep(int step, int stepSize) {
