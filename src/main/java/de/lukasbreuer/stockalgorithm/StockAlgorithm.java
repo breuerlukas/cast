@@ -13,22 +13,22 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public final class StockAlgorithm {
-  private static final int SEED = 12345;
+  private static final int SEED = 123;
   private static final float LEARNING_RATE = 0.01f;
   private static final float DROPOUT_RATE = 1f;
   private static final int ITERATIONS = 1;
-  private static final int EPOCHS = 100;
-  private static final int[] HIDDEN_NEURONS = new int[] {32, 32, 32};
-  private static final int BATCH_SIZE = 10;
-  private static final int TOTAL_BATCHES = 200;
+  private static final int EPOCHS = 10;
+  private static final int[] HIDDEN_NEURONS = new int[] {64, 64};
   private static final int INPUT_SIZE_PER_DAY = 29; //29
-  private static final int DAY_REVIEW = 1;
-  private static final int TRAIN_DAYS = 365 * 2;
-  private static final int TRAIN_MAX_TRADES = 4;
+  private static final int DAY_REVIEW = 7;
+  private static final int TRAIN_DAYS = 365 * 6;
+  private static final int TRAIN_MAX_TRADES = 12;
   private static final int EVALUATION_DAYS = 365 * 1;
   private static final int EVALUATION_MAX_TRADES = 2;
   private static final int GENERALISATION_STEP_SIZE = 9;
-  private static final String STOCK = "AAPL";
+  private static final int BATCH_SIZE = 10;
+  private static final int TOTAL_BATCHES = TRAIN_DAYS;
+  private static final String STOCK = "AMZN";
 
   //TODO: CODE CLEAN UP (ESPECIALLY StockAlgorithm)
   //TODO: FIX: BUY & SELL NETWORKS PRODUCE SAME SIGNALS (PROBLEM WITH NORMALIZATION)
@@ -124,8 +124,7 @@ public final class StockAlgorithm {
     var dataset = createDataset(symbol, TradeType.BUY, ModelState.TRAINING);
     /*return NeuralNetwork.create(dataset, "buy",
       INPUT_SIZE_PER_DAY * DAY_REVIEW, HIDDEN_NEURONS, 2);*/
-    var iterator = HistoryIterator.create(dataset, BATCH_SIZE,
-      TOTAL_BATCHES);
+    var iterator = HistoryIterator.create(dataset, BATCH_SIZE, TOTAL_BATCHES);
     var network = NeuralNetwork.create(SEED, LEARNING_RATE, DROPOUT_RATE,
       ITERATIONS, EPOCHS, INPUT_SIZE_PER_DAY * DAY_REVIEW, HIDDEN_NEURONS, 2, iterator);
     network.build();
@@ -136,8 +135,7 @@ public final class StockAlgorithm {
     var dataset = createDataset(symbol, TradeType.SELL, ModelState.TRAINING);
    /* return NeuralNetwork.create(dataset, "sell",
       INPUT_SIZE_PER_DAY * DAY_REVIEW, HIDDEN_NEURONS, 2);*/
-    var iterator = HistoryIterator.create(dataset, BATCH_SIZE,
-      TOTAL_BATCHES);
+    var iterator = HistoryIterator.create(dataset, BATCH_SIZE, TOTAL_BATCHES);
     var network = NeuralNetwork.create(SEED, LEARNING_RATE, DROPOUT_RATE,
       ITERATIONS, EPOCHS, INPUT_SIZE_PER_DAY * DAY_REVIEW, HIDDEN_NEURONS, 2, iterator);
     network.build();
@@ -205,10 +203,10 @@ public final class StockAlgorithm {
         return 1;
       }
       if (currentDate == date + 1 || currentDate == date - 1) {
-        return 0.67;
+        return 0.99;
       }
       if (currentDate == date + 2 || currentDate == date - 2) {
-        return 0.33;
+        return 0.99;
       }
     }
     return 0;
@@ -249,26 +247,43 @@ public final class StockAlgorithm {
       .collect(Collectors.toList());
   }
 
-  private static final int NOISE_REMOVAL_STEP_SIZE = 5;
-
   private static int calculateNoiselessSignal(Trade trade, List<Double> closeData, TradeType type) {
-    var forwardOptimal = calculateDirectionalNoiselessSignal(trade, closeData, type, +1);
+    var forwardOptimal = calculateDirectionalNoiselessSignalRepeated(trade, closeData, type, +1);
     var forwardPrice = closeData.get(forwardOptimal);
-    var backwardOptimal = calculateDirectionalNoiselessSignal(trade, closeData, type, -1);
+    var backwardOptimal = calculateDirectionalNoiselessSignalRepeated(trade, closeData, type, -1);
     var backwardPrice = closeData.get(backwardOptimal);
+    if (type == TradeType.BUY && closeData.get(trade.buyTime()) < forwardPrice && closeData.get(trade.buyTime()) < backwardPrice) {
+      return trade.buyTime();
+    }
+    if (type == TradeType.SELL && closeData.get(trade.sellTime()) > forwardPrice && closeData.get(trade.sellTime()) > backwardPrice) {
+      return trade.sellTime();
+    }
     if (type == TradeType.BUY && forwardPrice < backwardPrice || type == TradeType.SELL && forwardPrice > backwardPrice) {
       return forwardOptimal;
     }
     return backwardOptimal;
   }
 
-  private static int calculateDirectionalNoiselessSignal(Trade trade, List<Double> closeData, TradeType type, int direction) {
+  private static final int NOISE_REMOVAL_STEP_SIZE = 7;
+
+  private static int calculateDirectionalNoiselessSignalRepeated(Trade trade, List<Double> closeData, TradeType type, int direction) {
+    var updatedTrade = trade;
+    for (var i = 0; i < (NOISE_REMOVAL_STEP_SIZE - 1) / 2; i++) {
+      var noiselessSignal = calculateDirectionalNoiselessSignal(updatedTrade,
+        closeData, type, NOISE_REMOVAL_STEP_SIZE - 2 * i, direction);
+      updatedTrade = Trade.create(type == TradeType.BUY ? noiselessSignal : trade.buyTime(),
+        type == TradeType.SELL ? noiselessSignal : trade.sellTime());
+    }
+    return type == TradeType.BUY ? updatedTrade.buyTime() : updatedTrade.sellTime();
+  }
+
+  private static int calculateDirectionalNoiselessSignal(Trade trade, List<Double> closeData, TradeType type, int stepSize, int direction) {
     var initialSignal = type == TradeType.BUY ? trade.buyTime() : trade.sellTime();
-    var lastAverage = calculateSMA(closeData, initialSignal - ((NOISE_REMOVAL_STEP_SIZE - 1) / 2) - direction, NOISE_REMOVAL_STEP_SIZE);
-    var calculationLength = direction > 0 ? Math.min(closeData.size() - initialSignal - NOISE_REMOVAL_STEP_SIZE, 30) :
-      Math.min(initialSignal - 30 - NOISE_REMOVAL_STEP_SIZE, 30);
+    var lastAverage = calculateSMA(closeData, initialSignal - ((stepSize - 1) / 2) - direction, stepSize);
+    var calculationLength = direction > 0 ? Math.min(closeData.size() - initialSignal - stepSize, 30) :
+      Math.min(initialSignal - 30 - stepSize, 30);
     for (var i = 0; i < calculationLength; i++) {
-      var average = calculateSMA(closeData, initialSignal - ((NOISE_REMOVAL_STEP_SIZE - 1) / 2) + i * direction, NOISE_REMOVAL_STEP_SIZE);
+      var average = calculateSMA(closeData, initialSignal - ((stepSize - 1) / 2) + i * direction, stepSize);
       if (type == TradeType.BUY ? average > lastAverage : average < lastAverage) {
         return initialSignal + i * direction;
       }

@@ -7,7 +7,9 @@ import org.deeplearning4j.nn.conf.layers.OutputLayer;
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
 import org.deeplearning4j.nn.weights.WeightInit;
 import org.nd4j.linalg.activations.Activation;
+import org.nd4j.linalg.learning.config.Adam;
 import org.nd4j.linalg.learning.config.Nesterovs;
+import org.nd4j.linalg.learning.config.Sgd;
 import org.nd4j.linalg.lossfunctions.LossFunctions;
 
 import java.util.List;
@@ -31,7 +33,7 @@ public final class NeuralNetwork {
       .seed(seed)
       .weightInit(WeightInit.XAVIER)
       //.activation(Activation.TANH)
-      //.updater(new Sgd(1e-4))
+      //.updater(new Sgd(0.1))
       //.l2(1e-4)
       .activation(Activation.RELU)
       .updater(new Nesterovs(1e-4, 0.9))
