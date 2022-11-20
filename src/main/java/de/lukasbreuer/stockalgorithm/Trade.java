@@ -1,15 +1,17 @@
 package de.lukasbreuer.stockalgorithm;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.Accessors;
 
 @Getter
+@Setter
 @Accessors(fluent = true)
-@RequiredArgsConstructor(staticName = "create")
+@AllArgsConstructor(staticName = "create")
 public final class Trade {
-  private final int buyTime;
-  private final int sellTime;
+  private int buyTime;
+  private int sellTime;
 
   @Override
   public boolean equals(Object object) {
