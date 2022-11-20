@@ -30,8 +30,8 @@ public final class NeuralNetwork {
 
   public void build() {
     NeuralNetConfiguration.ListBuilder configurationBuilder = new NeuralNetConfiguration.Builder()
-      .seed(seed)
       .weightInit(WeightInit.XAVIER)
+      .seed(seed)
       //.activation(Activation.TANH)
       //.updater(new Sgd(0.1))
       //.l2(1e-4)
