@@ -13,21 +13,21 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public final class StockAlgorithm {
-  private static final int SEED = 123;
+  private static final int SEED = 4;
   private static final float LEARNING_RATE = 0.01f;
   private static final float DROPOUT_RATE = 1f;
   private static final int ITERATIONS = 1;
-  private static final int EPOCHS = 10;
-  private static final int[] HIDDEN_NEURONS = new int[] {64, 64};
+  private static final int EPOCHS = 100;
+  private static final int[] HIDDEN_NEURONS = new int[] {16, 32, 16};
   private static final int INPUT_SIZE_PER_DAY = 29; //29
-  private static final int DAY_REVIEW = 7;
+  private static final int DAY_REVIEW = 28;
   private static final int TRAIN_DAYS = 365 * 6;
   private static final int TRAIN_MAX_TRADES = 12;
   private static final int EVALUATION_DAYS = 365 * 1;
   private static final int EVALUATION_MAX_TRADES = 2;
   private static final int GENERALISATION_STEP_SIZE = 9;
   private static final int BATCH_SIZE = 10;
-  private static final int TOTAL_BATCHES = TRAIN_DAYS;
+  private static final int TOTAL_BATCHES = 200;
   private static final String STOCK = "AMZN";
 
   //TODO: CODE CLEAN UP (ESPECIALLY StockAlgorithm)
@@ -162,7 +162,7 @@ public final class StockAlgorithm {
     return result; //normalizeData(result);
   }
 
-  private static List<Map.Entry<List<double[]>, Double>> normalizeData(List<Map.Entry<List<double[]>, Double>> data) {
+  /*private static List<Map.Entry<List<double[]>, Double>> normalizeData(List<Map.Entry<List<double[]>, Double>> data) {
     var normalizedData = Lists.<Map.Entry<List<double[]>, Double>>newArrayList();
     double[] maximums = new double[INPUT_SIZE_PER_DAY];
     Arrays.fill(maximums, -Double.MAX_VALUE);
@@ -195,7 +195,7 @@ public final class StockAlgorithm {
       normalizedData.add(new AbstractMap.SimpleEntry<>(inputData, entry.getValue()));
     }
     return normalizedData;
-  }
+  }*/
 
   private static double calculateOutputTradeValue(List<Integer> bestDates, int currentDate) {
     for (var date : bestDates) {
@@ -203,10 +203,16 @@ public final class StockAlgorithm {
         return 1;
       }
       if (currentDate == date + 1 || currentDate == date - 1) {
-        return 0.99;
+        return 0.8;
       }
       if (currentDate == date + 2 || currentDate == date - 2) {
-        return 0.99;
+        return 0.6;
+      }
+      if (currentDate == date + 3 || currentDate == date - 3) {
+        return 0.4;
+      }
+      if (currentDate == date + 4 || currentDate == date - 4) {
+        return 0.2;
       }
     }
     return 0;
@@ -233,7 +239,43 @@ public final class StockAlgorithm {
     }
     var allTrades = findAllPossibleTrades(data);
     var noiselessTrades = filterNoiseOutOfTrades(allTrades, closeData);
-    return filterMostValuableTrades(closeData, noiselessTrades, maxTrades);
+    var collapsedTrades = collapseIntersectingTrades(noiselessTrades);
+    return filterMostValuableTrades(closeData, collapsedTrades, maxTrades);
+  }
+
+  private static List<Trade> collapseIntersectingTrades(List<Trade> trades) {
+    var removed = Lists.<Trade>newArrayList();
+    var result = Lists.<Trade>newArrayList();
+    for (var i = 0; i < trades.size(); i++) {
+      var trade = trades.get(i);
+      if (removed.contains(trade)) {
+        continue;
+      }
+      result.add(trade);
+      for (var j = 0; j < trades.size(); j++) {
+        var reviewedTrade = trades.get(j);
+        if (reviewedTrade.equals(trade) || removed.contains(reviewedTrade)) {
+          continue;
+        }
+        if (reviewedTrade.buyTime() >= trade.buyTime() && reviewedTrade.sellTime() <= trade.sellTime()) {
+          removed.add(reviewedTrade);
+          result.remove(reviewedTrade);
+          continue;
+        }
+        if (reviewedTrade.buyTime() >= trade.buyTime() && reviewedTrade.buyTime() <= trade.sellTime() && reviewedTrade.sellTime() >= trade.sellTime()) {
+          removed.add(reviewedTrade);
+          result.remove(reviewedTrade);
+          trade.sellTime(reviewedTrade.sellTime());
+          continue;
+        }
+        if (reviewedTrade.sellTime() >= trade.buyTime() && reviewedTrade.sellTime() <= trade.sellTime() && reviewedTrade.buyTime() <= trade.buyTime()) {
+          removed.add(reviewedTrade);
+          result.remove(reviewedTrade);
+          trade.buyTime(reviewedTrade.buyTime());
+        }
+      }
+    }
+    return result;
   }
 
   private static List<Trade> filterNoiseOutOfTrades(List<Trade> trades, List<Double> closeData) {
@@ -247,34 +289,40 @@ public final class StockAlgorithm {
       .collect(Collectors.toList());
   }
 
+  private static final int NOISE_REMOVAL_STEP_SIZE = GENERALISATION_STEP_SIZE;
+
   private static int calculateNoiselessSignal(Trade trade, List<Double> closeData, TradeType type) {
-    var forwardOptimal = calculateDirectionalNoiselessSignalRepeated(trade, closeData, type, +1);
+    var updatedTrade = trade;
+    for (var i = 0; i < (NOISE_REMOVAL_STEP_SIZE - 1) / 2; i++) {
+      var forwardOptimal = calculateDirectionalNoiselessSignal(updatedTrade,
+        closeData, type, NOISE_REMOVAL_STEP_SIZE - 2 * i, + 1);
+      var backwardOptimal = calculateDirectionalNoiselessSignal(updatedTrade,
+        closeData, type, NOISE_REMOVAL_STEP_SIZE - 2 * i, - 1);
+      var noiselessSignal = determineOptimalSignal(updatedTrade, closeData, type, forwardOptimal, backwardOptimal);
+      updatedTrade = Trade.create(type == TradeType.BUY ? noiselessSignal : updatedTrade.buyTime(),
+        type == TradeType.SELL ? noiselessSignal : updatedTrade.sellTime());
+    }
+    return type == TradeType.BUY ? updatedTrade.buyTime() : updatedTrade.sellTime();
+  }
+
+  private static int determineOptimalSignal(
+    Trade trade, List<Double> closeData, TradeType type,
+    int forwardOptimal, int backwardOptimal
+  ) {
     var forwardPrice = closeData.get(forwardOptimal);
-    var backwardOptimal = calculateDirectionalNoiselessSignalRepeated(trade, closeData, type, -1);
     var backwardPrice = closeData.get(backwardOptimal);
-    if (type == TradeType.BUY && closeData.get(trade.buyTime()) < forwardPrice && closeData.get(trade.buyTime()) < backwardPrice) {
+    var tradeBuyPrice = closeData.get(trade.buyTime());
+    if (type == TradeType.BUY && tradeBuyPrice < forwardPrice && tradeBuyPrice < backwardPrice) {
       return trade.buyTime();
     }
-    if (type == TradeType.SELL && closeData.get(trade.sellTime()) > forwardPrice && closeData.get(trade.sellTime()) > backwardPrice) {
+    var tradeSellPrice = closeData.get(trade.sellTime());
+    if (type == TradeType.SELL && tradeSellPrice > forwardPrice && tradeSellPrice > backwardPrice) {
       return trade.sellTime();
     }
     if (type == TradeType.BUY && forwardPrice < backwardPrice || type == TradeType.SELL && forwardPrice > backwardPrice) {
       return forwardOptimal;
     }
     return backwardOptimal;
-  }
-
-  private static final int NOISE_REMOVAL_STEP_SIZE = 7;
-
-  private static int calculateDirectionalNoiselessSignalRepeated(Trade trade, List<Double> closeData, TradeType type, int direction) {
-    var updatedTrade = trade;
-    for (var i = 0; i < (NOISE_REMOVAL_STEP_SIZE - 1) / 2; i++) {
-      var noiselessSignal = calculateDirectionalNoiselessSignal(updatedTrade,
-        closeData, type, NOISE_REMOVAL_STEP_SIZE - 2 * i, direction);
-      updatedTrade = Trade.create(type == TradeType.BUY ? noiselessSignal : trade.buyTime(),
-        type == TradeType.SELL ? noiselessSignal : trade.sellTime());
-    }
-    return type == TradeType.BUY ? updatedTrade.buyTime() : updatedTrade.sellTime();
   }
 
   private static int calculateDirectionalNoiselessSignal(Trade trade, List<Double> closeData, TradeType type, int stepSize, int direction) {
@@ -499,6 +547,9 @@ public final class StockAlgorithm {
   private static double calculateSMA(List<Double> prices, int skipDays, int period) {
     double value = 0.0;
     for (int i = skipDays; i < (period + skipDays); i++) {
+      if (i < 0 || i >= prices.size()) {
+        continue;
+      }
       value += prices.get(i);
     }
     value /= period;
