@@ -13,22 +13,22 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public final class StockAlgorithm {
-  private static final int SEED = 4;
+  private static final int SEED = 1;
   private static final float LEARNING_RATE = 0.01f;
   private static final float DROPOUT_RATE = 1f;
   private static final int ITERATIONS = 1;
   private static final int EPOCHS = 100;
-  private static final int[] HIDDEN_NEURONS = new int[] {16, 32, 16};
+  private static final int[] HIDDEN_NEURONS = new int[] {128, 128};
   private static final int INPUT_SIZE_PER_DAY = 29; //29
   private static final int DAY_REVIEW = 28;
   private static final int TRAIN_DAYS = 365 * 6;
-  private static final int TRAIN_MAX_TRADES = 12;
+  private static final int TRAIN_MAX_TRADES = 6;
   private static final int EVALUATION_DAYS = 365 * 1;
   private static final int EVALUATION_MAX_TRADES = 2;
-  private static final int GENERALISATION_STEP_SIZE = 9;
+  private static final int GENERALISATION_STEP_SIZE = 15;
   private static final int BATCH_SIZE = 10;
   private static final int TOTAL_BATCHES = 200;
-  private static final String STOCK = "AMZN";
+  private static final String STOCK = "AAPL";
 
   //TODO: CODE CLEAN UP (ESPECIALLY StockAlgorithm)
   //TODO: FIX: BUY & SELL NETWORKS PRODUCE SAME SIGNALS (PROBLEM WITH NORMALIZATION)
@@ -124,7 +124,7 @@ public final class StockAlgorithm {
     var dataset = createDataset(symbol, TradeType.BUY, ModelState.TRAINING);
     /*return NeuralNetwork.create(dataset, "buy",
       INPUT_SIZE_PER_DAY * DAY_REVIEW, HIDDEN_NEURONS, 2);*/
-    var iterator = HistoryIterator.create(dataset, BATCH_SIZE, TOTAL_BATCHES);
+    var iterator = HistoryIterator.create(dataset, new Random(SEED), BATCH_SIZE, TOTAL_BATCHES);
     var network = NeuralNetwork.create(SEED, LEARNING_RATE, DROPOUT_RATE,
       ITERATIONS, EPOCHS, INPUT_SIZE_PER_DAY * DAY_REVIEW, HIDDEN_NEURONS, 2, iterator);
     network.build();
@@ -135,7 +135,7 @@ public final class StockAlgorithm {
     var dataset = createDataset(symbol, TradeType.SELL, ModelState.TRAINING);
    /* return NeuralNetwork.create(dataset, "sell",
       INPUT_SIZE_PER_DAY * DAY_REVIEW, HIDDEN_NEURONS, 2);*/
-    var iterator = HistoryIterator.create(dataset, BATCH_SIZE, TOTAL_BATCHES);
+    var iterator = HistoryIterator.create(dataset, new Random(SEED), BATCH_SIZE, TOTAL_BATCHES);
     var network = NeuralNetwork.create(SEED, LEARNING_RATE, DROPOUT_RATE,
       ITERATIONS, EPOCHS, INPUT_SIZE_PER_DAY * DAY_REVIEW, HIDDEN_NEURONS, 2, iterator);
     network.build();
@@ -156,8 +156,9 @@ public final class StockAlgorithm {
     var bestTradeDates = tradeType == TradeType.BUY ?
       findBestBuyDates(trainData, maxTrades) : findBestSellDates(trainData, maxTrades);
     for (var i = 21 + DAY_REVIEW; i < trainData.size(); i++) {
-      result.add(new AbstractMap.SimpleEntry<>(createInputData(trainData, priceMaximum, i),
-        calculateOutputTradeValue(bestTradeDates, i)));
+      var entry = new AbstractMap.SimpleEntry<>(createInputData(trainData, priceMaximum, i),
+        calculateOutputTradeValue(bestTradeDates, i));
+      result.add(entry);
     }
     return result; //normalizeData(result);
   }
@@ -203,16 +204,16 @@ public final class StockAlgorithm {
         return 1;
       }
       if (currentDate == date + 1 || currentDate == date - 1) {
-        return 0.8;
+        return 0.9;
       }
       if (currentDate == date + 2 || currentDate == date - 2) {
-        return 0.6;
+        return 0.9;
       }
       if (currentDate == date + 3 || currentDate == date - 3) {
-        return 0.4;
+        return 0.9;
       }
       if (currentDate == date + 4 || currentDate == date - 4) {
-        return 0.2;
+        return 0.9;
       }
     }
     return 0;

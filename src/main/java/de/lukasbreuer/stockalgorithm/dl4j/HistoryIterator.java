@@ -7,13 +7,12 @@ import org.nd4j.linalg.dataset.api.MultiDataSetPreProcessor;
 import org.nd4j.linalg.dataset.api.iterator.MultiDataSetIterator;
 import org.nd4j.linalg.factory.Nd4j;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @RequiredArgsConstructor(staticName = "create")
 public final class HistoryIterator implements MultiDataSetIterator {
   private final List<Map.Entry<List<double[]>, Double>> dataset;
+  private final Random random;
   private final int batchSize;
   private final int totalBatches;
   private int currentBatch = 0;
@@ -32,6 +31,7 @@ public final class HistoryIterator implements MultiDataSetIterator {
       currentDatasetStep++;
       if (currentDatasetStep == dataset.size()) {
         currentDatasetStep = 0;
+        Collections.shuffle(dataset, random);
       }
       currentCount++;
     }
