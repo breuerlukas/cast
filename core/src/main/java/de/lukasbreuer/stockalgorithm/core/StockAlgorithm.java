@@ -1,6 +1,5 @@
 package de.lukasbreuer.stockalgorithm.core;
 
-import ai.djl.engine.Engine;
 import com.clearspring.analytics.util.Lists;
 import com.github.sh0nk.matplotlib4j.Plot;
 import com.google.common.collect.Maps;
@@ -34,7 +33,6 @@ public final class StockAlgorithm {
   //TODO: FIX: BUY & SELL NETWORKS PRODUCE SAME SIGNALS (PROBLEM WITH NORMALIZATION)
 
   public static void main(String[] args) throws Exception {
-    Engine.getInstance().setRandomSeed(SEED);
     Nd4j.getRandom().setSeed(SEED);
     var symbol = Symbol.createAndFetch(STOCK);
     var buyNetwork = buildBuyNetwork(symbol);
@@ -46,13 +44,13 @@ public final class StockAlgorithm {
     System.out.println("TRAIN BUY NETWORK");
     var buyEvaluationDataset = createDataset(symbol, TradeType.BUY, ModelState.EVALUATING);
     System.out.println(Arrays.toString(buyEvaluationDataset.get(1).getKey().get(0)));
-    buyNetwork.train(/*EPOCHS, */buyEvaluationDataset.stream().filter(entry -> entry.getValue() == 1).findFirst().get());
+    buyNetwork.train(buyEvaluationDataset.stream().filter(entry -> entry.getValue() == 1).findFirst().get());
     System.out.println("EVALUATE BUY NETWORK");
     displayGraph(symbol, buyNetwork, buyEvaluationDataset, 0.1f, 200, "BUY");
     System.out.println("TRAIN SELL NETWORK");
     var sellEvaluationDataset = createDataset(symbol, TradeType.SELL, ModelState.EVALUATING);
     System.out.println(Arrays.toString(sellEvaluationDataset.get(1).getKey().get(0)));
-    sellNetwork.train(/*EPOCHS, */sellEvaluationDataset.stream().filter(entry -> entry.getValue() == 1).findFirst().get());
+    sellNetwork.train(sellEvaluationDataset.stream().filter(entry -> entry.getValue() == 1).findFirst().get());
     System.out.println("EVALUATE SELL NETWORK");
     displayGraph(symbol, sellNetwork, sellEvaluationDataset, 0.1f, 200, "SELL");
   }
@@ -122,8 +120,6 @@ public final class StockAlgorithm {
 
   private static NeuralNetwork buildBuyNetwork(Symbol symbol) throws Exception {
     var dataset = createDataset(symbol, TradeType.BUY, ModelState.TRAINING);
-    /*return NeuralNetwork.create(dataset, "buy",
-      INPUT_SIZE_PER_DAY * DAY_REVIEW, HIDDEN_NEURONS, 2);*/
     var iterator = HistoryIterator.create(dataset, new Random(SEED), BATCH_SIZE, TOTAL_BATCHES);
     var network = NeuralNetwork.create(SEED, LEARNING_RATE, DROPOUT_RATE,
       ITERATIONS, EPOCHS, INPUT_SIZE_PER_DAY * DAY_REVIEW, HIDDEN_NEURONS, 2, iterator);
@@ -133,8 +129,6 @@ public final class StockAlgorithm {
 
   private static NeuralNetwork buildSellNetwork(Symbol symbol) throws Exception {
     var dataset = createDataset(symbol, TradeType.SELL, ModelState.TRAINING);
-   /* return NeuralNetwork.create(dataset, "sell",
-      INPUT_SIZE_PER_DAY * DAY_REVIEW, HIDDEN_NEURONS, 2);*/
     var iterator = HistoryIterator.create(dataset, new Random(SEED), BATCH_SIZE, TOTAL_BATCHES);
     var network = NeuralNetwork.create(SEED, LEARNING_RATE, DROPOUT_RATE,
       ITERATIONS, EPOCHS, INPUT_SIZE_PER_DAY * DAY_REVIEW, HIDDEN_NEURONS, 2, iterator);
