@@ -7,11 +7,10 @@ import org.deeplearning4j.nn.conf.layers.OutputLayer;
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
 import org.deeplearning4j.nn.weights.WeightInit;
 import org.nd4j.linalg.activations.Activation;
-import org.nd4j.linalg.learning.config.Adam;
 import org.nd4j.linalg.learning.config.Nesterovs;
-import org.nd4j.linalg.learning.config.Sgd;
 import org.nd4j.linalg.lossfunctions.LossFunctions;
 
+import java.io.File;
 import java.util.List;
 import java.util.Map;
 
@@ -59,6 +58,10 @@ public final class NeuralNetwork {
     network.init();
   }
 
+  public void load(String path) throws Exception {
+    network = MultiLayerNetwork.load(new File(path), true);
+  }
+
   public void train(Map.Entry<List<double[]>, Double> entry) {
     var epochCount = 0;
     while (epochCount < epochs) {
@@ -79,5 +82,9 @@ public final class NeuralNetwork {
     }
     System.out.println(prefix + index + ": " + entry.getValue() + " <-> " + prediction + "\u001B[0m");
     return prediction;
+  }
+
+  public void save(String path) throws Exception {
+    network.save(new File(path));
   }
 }
