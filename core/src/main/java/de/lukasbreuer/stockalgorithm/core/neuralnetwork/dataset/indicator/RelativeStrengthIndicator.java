@@ -34,7 +34,7 @@ public final class RelativeStrengthIndicator extends ReviewIndicator {
       calculateAverageChange(prices(), index, review, ChangeType.LOSS))));
   }
 
-  private static double calculateAverageChange(
+  private double calculateAverageChange(
     List<Double> prices, int index, int review, ChangeType changeType
   ) {
     var accumulatedValue = 0D;
