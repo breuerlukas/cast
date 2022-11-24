@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 @Accessors(fluent = true)
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public abstract class Indicator {
+  @Getter
   private final List<HistoryEntry> data;
   @Getter
   private List<Double> prices;
@@ -22,4 +23,18 @@ public abstract class Indicator {
   }
 
   protected abstract double calculate(int index);
+
+  protected double calculateMovingAverage(
+    List<Double> prices, int skipDays, int period
+  ) {
+    var value = 0.0D;
+    for (var i = skipDays; i < (period + skipDays); i++) {
+      if (i < 0 || i >= prices.size()) {
+        continue;
+      }
+      value += prices.get(i);
+    }
+    value /= period;
+    return value;
+  }
 }

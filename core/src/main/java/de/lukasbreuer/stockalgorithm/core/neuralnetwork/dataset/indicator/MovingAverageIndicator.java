@@ -17,16 +17,4 @@ public final class MovingAverageIndicator extends ReviewIndicator {
   public double calculate(int index, int review) {
     return (calculateMovingAverage(prices(), index - review, review) / priceMaximum) * 100;
   }
-
-  private double calculateMovingAverage(List<Double> prices, int skipDays, int period) {
-    var value = 0.0D;
-    for (var i = skipDays; i < (period + skipDays); i++) {
-      if (i < 0 || i >= prices.size()) {
-        continue;
-      }
-      value += prices.get(i);
-    }
-    value /= period;
-    return value;
-  }
 }
