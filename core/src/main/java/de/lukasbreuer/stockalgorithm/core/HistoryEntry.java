@@ -1,4 +1,4 @@
-package de.lukasbreuer.stockalgorithm;
+package de.lukasbreuer.stockalgorithm.core;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

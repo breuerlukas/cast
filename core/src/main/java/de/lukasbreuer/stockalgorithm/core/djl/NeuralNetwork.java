@@ -1,4 +1,4 @@
-package de.lukasbreuer.stockalgorithm.djl;
+package de.lukasbreuer.stockalgorithm.core.djl;
 
 import ai.djl.Model;
 import ai.djl.ndarray.NDArray;

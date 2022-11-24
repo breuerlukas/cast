@@ -1,11 +1,11 @@
-package de.lukasbreuer.stockalgorithm;
+package de.lukasbreuer.stockalgorithm.core;
 
 import ai.djl.engine.Engine;
 import com.clearspring.analytics.util.Lists;
 import com.github.sh0nk.matplotlib4j.Plot;
 import com.google.common.collect.Maps;
-import de.lukasbreuer.stockalgorithm.dl4j.HistoryIterator;
-import de.lukasbreuer.stockalgorithm.dl4j.NeuralNetwork;
+import de.lukasbreuer.stockalgorithm.core.dl4j.HistoryIterator;
+import de.lukasbreuer.stockalgorithm.core.dl4j.NeuralNetwork;
 import lombok.SneakyThrows;
 import org.nd4j.linalg.factory.Nd4j;
 

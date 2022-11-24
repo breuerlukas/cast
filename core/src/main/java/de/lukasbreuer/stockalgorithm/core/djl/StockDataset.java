@@ -1,4 +1,4 @@
-package de.lukasbreuer.stockalgorithm.djl;
+package de.lukasbreuer.stockalgorithm.core.djl;
 
 import ai.djl.ndarray.NDList;
 import ai.djl.ndarray.NDManager;

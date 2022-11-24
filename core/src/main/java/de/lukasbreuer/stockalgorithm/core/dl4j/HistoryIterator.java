@@ -1,4 +1,4 @@
-package de.lukasbreuer.stockalgorithm.dl4j;
+package de.lukasbreuer.stockalgorithm.core.dl4j;
 
 import lombok.RequiredArgsConstructor;
 import org.nd4j.linalg.api.ndarray.INDArray;

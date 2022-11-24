@@ -1,4 +1,4 @@
-package de.lukasbreuer.stockalgorithm;
+package de.lukasbreuer.stockalgorithm.core;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
