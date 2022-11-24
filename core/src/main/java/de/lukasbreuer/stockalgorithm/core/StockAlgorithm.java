@@ -3,8 +3,13 @@ package de.lukasbreuer.stockalgorithm.core;
 import com.clearspring.analytics.util.Lists;
 import com.github.sh0nk.matplotlib4j.Plot;
 import com.google.common.collect.Maps;
-import de.lukasbreuer.stockalgorithm.core.dl4j.HistoryIterator;
-import de.lukasbreuer.stockalgorithm.core.dl4j.NeuralNetwork;
+import de.lukasbreuer.stockalgorithm.core.neuralnetwork.ModelState;
+import de.lukasbreuer.stockalgorithm.core.neuralnetwork.NeuralNetwork;
+import de.lukasbreuer.stockalgorithm.core.neuralnetwork.dataset.HistoryIterator;
+import de.lukasbreuer.stockalgorithm.core.symbol.HistoryEntry;
+import de.lukasbreuer.stockalgorithm.core.symbol.Symbol;
+import de.lukasbreuer.stockalgorithm.core.trade.Trade;
+import de.lukasbreuer.stockalgorithm.core.trade.TradeType;
 import lombok.SneakyThrows;
 import org.nd4j.linalg.factory.Nd4j;
 
