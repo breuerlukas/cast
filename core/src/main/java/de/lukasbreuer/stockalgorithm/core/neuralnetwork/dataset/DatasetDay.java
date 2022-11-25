@@ -10,19 +10,20 @@ import java.util.List;
 public final class DatasetDay {
   private final int index;
   private final IndicatorRepository indicatorRepository;
+  private double[] data;
 
-  public double[] build() {
-    var data = Lists.<Double>newArrayList();
-    data.addAll(createReviewIndicatorBundle(ChangeIndicator.class, new int[] {1, 2, 3}));
-    data.addAll(createRegularReviewIndicatorBundle(MovingAverageIndicator.class));
-    data.addAll(createRegularReviewIndicatorBundle(ChangeRateIndicator.class));
-    data.addAll(createRegularReviewIndicatorBundle(RelativeStrengthIndicator.class));
-    data.addAll(createRegularReviewIndicatorBundle(CommodityChannelIndicator.class));
-    data.addAll(createRegularReviewIndicatorBundle(StochasticOscillatorIndicator.class));
-    data.addAll(createRegularReviewIndicatorBundle(AverageRangeIndicator.class));
-    data.add(indicatorRepository.find(BullishPatternIndicator.class).calculate(index));
-    data.add(indicatorRepository.find(BearishPatternIndicator.class).calculate(index));
-    return data.stream().mapToDouble(value -> value).toArray();
+  public void build() {
+    var calculations = Lists.<Double>newArrayList();
+    calculations.addAll(createReviewIndicatorBundle(ChangeIndicator.class, new int[] {1, 2, 3}));
+    calculations.addAll(createRegularReviewIndicatorBundle(MovingAverageIndicator.class));
+    calculations.addAll(createRegularReviewIndicatorBundle(ChangeRateIndicator.class));
+    calculations.addAll(createRegularReviewIndicatorBundle(RelativeStrengthIndicator.class));
+    calculations.addAll(createRegularReviewIndicatorBundle(CommodityChannelIndicator.class));
+    calculations.addAll(createRegularReviewIndicatorBundle(StochasticOscillatorIndicator.class));
+    calculations.addAll(createRegularReviewIndicatorBundle(AverageRangeIndicator.class));
+    calculations.add(indicatorRepository.find(BullishPatternIndicator.class).calculate(index));
+    calculations.add(indicatorRepository.find(BearishPatternIndicator.class).calculate(index));
+    data = calculations.stream().mapToDouble(value -> value).toArray();
   }
 
   private <T extends ReviewIndicator> List<Double> createRegularReviewIndicatorBundle(
@@ -39,5 +40,9 @@ public final class DatasetDay {
       bundle.add(indicatorRepository.find(indicatorType).calculate(index, review));
     }
     return bundle;
+  }
+
+  public double[] raw() {
+    return data;
   }
 }
