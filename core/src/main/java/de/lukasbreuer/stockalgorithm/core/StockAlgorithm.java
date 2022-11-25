@@ -17,28 +17,39 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public final class StockAlgorithm {
-  private static final int SEED = 1;
   private static final float LEARNING_RATE = 0.01f;
   private static final float DROPOUT_RATE = 1f;
   private static final int ITERATIONS = 1;
-  private static final int EPOCHS = 100;
-  private static final int[] HIDDEN_NEURONS = new int[] {128, 128};
+  private static final int EPOCHS = 10;
+  private static final int[] HIDDEN_NEURONS = new int[] {32, 32};
   private static final int INPUT_SIZE_PER_DAY = 29; //29
-  private static final int DAY_REVIEW = 28;
-  private static final int TRAIN_DAYS = 365 * 6;
-  private static final int TRAIN_MAX_TRADES = 6;
+  private static final int DAY_REVIEW = 7;
+  private static final int TRAIN_DAYS = 365 * 4;
+  private static final int TRAIN_MAX_TRADES = 8;
   private static final int EVALUATION_DAYS = 365 * 1;
   private static final int EVALUATION_MAX_TRADES = 2;
   private static final int GENERALISATION_STEP_SIZE = 15;
   private static final int BATCH_SIZE = 10;
-  private static final int TOTAL_BATCHES = 200;
+  private static final int TOTAL_BATCHES = TRAIN_DAYS;
   private static final String STOCK = "AAPL";
+  private static int seed = 1;
 
   //TODO: CODE CLEAN UP (ESPECIALLY StockAlgorithm)
   //TODO: FIX: BUY & SELL NETWORKS PRODUCE SAME SIGNALS (PROBLEM WITH NORMALIZATION)
 
   public static void main(String[] args) throws Exception {
-    Nd4j.getRandom().setSeed(SEED);
+    beginSimultaneously();
+  }
+
+  private static void beginSimultaneously() throws Exception {
+    for (var i = 0; i < 20; i++) {
+      begin();
+      seed += 1;
+    }
+  }
+
+  private static void begin() throws Exception {
+    Nd4j.getRandom().setSeed(seed);
     var symbol = Symbol.createAndFetch(STOCK);
     var buyNetwork = buildBuyNetwork(symbol);
     var sellNetwork = buildSellNetwork(symbol);
@@ -52,12 +63,12 @@ public final class StockAlgorithm {
     buyNetwork.train(buyEvaluationDataset.stream().filter(entry -> entry.getValue() == 1).findFirst().get());
     System.out.println("EVALUATE BUY NETWORK");
     displayGraph(symbol, buyNetwork, buyEvaluationDataset, 0.1f, 200, "BUY");
-    System.out.println("TRAIN SELL NETWORK");
+    /*System.out.println("TRAIN SELL NETWORK");
     var sellEvaluationDataset = createDataset(symbol, TradeType.SELL, ModelState.EVALUATING);
     System.out.println(Arrays.toString(sellEvaluationDataset.get(1).getKey().get(0)));
     sellNetwork.train(sellEvaluationDataset.stream().filter(entry -> entry.getValue() == 1).findFirst().get());
     System.out.println("EVALUATE SELL NETWORK");
-    displayGraph(symbol, sellNetwork, sellEvaluationDataset, 0.1f, 200, "SELL");
+    displayGraph(symbol, sellNetwork, sellEvaluationDataset, 0.1f, 200, "SELL");*/
   }
 
   private static void displayGraph(Symbol symbol, NeuralNetwork network, List<Map.Entry<List<double[]>, Double>> dataset, float minPrediction, int scale, String title) throws Exception {
@@ -107,6 +118,8 @@ public final class StockAlgorithm {
       averageData.add(new AbstractMap.SimpleEntry<>(calculateDayFromStep(i, GENERALISATION_STEP_SIZE), calculateSMA(closeData, entryIndex, GENERALISATION_STEP_SIZE)));
     }
 
+    var currentSeed = seed;
+
     new Thread(new Runnable() {
       @SneakyThrows
       @Override
@@ -117,7 +130,7 @@ public final class StockAlgorithm {
           .linestyle("-");
         plot.xlabel("Time");
         plot.ylabel("Value");
-        plot.title(title);
+        plot.title(title + " (SEED: " + currentSeed + ")");
         plot.show();
       }
     }).start();
@@ -125,8 +138,12 @@ public final class StockAlgorithm {
 
   private static NeuralNetwork buildBuyNetwork(Symbol symbol) throws Exception {
     var dataset = createDataset(symbol, TradeType.BUY, ModelState.TRAINING);
-    var iterator = HistoryIterator.create(dataset, new Random(SEED), BATCH_SIZE, TOTAL_BATCHES);
-    var network = NeuralNetwork.create(SEED, LEARNING_RATE, DROPOUT_RATE,
+    var tradeSignals = dataset.stream().filter(entry -> entry.getValue() > 0).collect(Collectors.toList());
+    for (var i = 0; i < 4; i++) {
+      dataset.addAll(tradeSignals);
+    }
+    var iterator = HistoryIterator.create(dataset, new Random(seed), BATCH_SIZE, TOTAL_BATCHES);
+    var network = NeuralNetwork.create(seed, LEARNING_RATE, DROPOUT_RATE,
       ITERATIONS, EPOCHS, INPUT_SIZE_PER_DAY * DAY_REVIEW, HIDDEN_NEURONS, 2, iterator);
     network.build();
     return network;
@@ -134,8 +151,8 @@ public final class StockAlgorithm {
 
   private static NeuralNetwork buildSellNetwork(Symbol symbol) throws Exception {
     var dataset = createDataset(symbol, TradeType.SELL, ModelState.TRAINING);
-    var iterator = HistoryIterator.create(dataset, new Random(SEED), BATCH_SIZE, TOTAL_BATCHES);
-    var network = NeuralNetwork.create(SEED, LEARNING_RATE, DROPOUT_RATE,
+    var iterator = HistoryIterator.create(dataset, new Random(seed), BATCH_SIZE, TOTAL_BATCHES);
+    var network = NeuralNetwork.create(seed, LEARNING_RATE, DROPOUT_RATE,
       ITERATIONS, EPOCHS, INPUT_SIZE_PER_DAY * DAY_REVIEW, HIDDEN_NEURONS, 2, iterator);
     network.build();
     return network;
@@ -203,16 +220,10 @@ public final class StockAlgorithm {
         return 1;
       }
       if (currentDate == date + 1 || currentDate == date - 1) {
-        return 0.9;
+        return 0.67;
       }
       if (currentDate == date + 2 || currentDate == date - 2) {
-        return 0.9;
-      }
-      if (currentDate == date + 3 || currentDate == date - 3) {
-        return 0.9;
-      }
-      if (currentDate == date + 4 || currentDate == date - 4) {
-        return 0.9;
+        return 0.33;
       }
     }
     return 0;
