@@ -6,6 +6,12 @@ import java.util.List;
 import java.util.stream.DoubleStream;
 
 public final class MovingAverageIndicator extends ReviewIndicator {
+  public static MovingAverageIndicator create(List<HistoryEntry> data) {
+    var indicator = new MovingAverageIndicator(data);
+    indicator.initialize();
+    return indicator;
+  }
+
   private final double priceMaximum;
 
   private MovingAverageIndicator(List<HistoryEntry> data) {

@@ -9,9 +9,9 @@ public abstract class ReviewIndicator extends Indicator {
     super(data);
   }
 
-  protected abstract double calculate(int index, int review);
+  public abstract double calculate(int index, int review);
 
-  protected double calculate(int index) {
+  public double calculate(int index) {
     return -1;
   }
 }

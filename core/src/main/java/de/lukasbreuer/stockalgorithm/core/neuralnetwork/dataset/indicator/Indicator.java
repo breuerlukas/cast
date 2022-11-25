@@ -12,9 +12,9 @@ import java.util.stream.Collectors;
 @Accessors(fluent = true)
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public abstract class Indicator {
-  @Getter
+  @Getter(AccessLevel.PROTECTED)
   private final List<HistoryEntry> data;
-  @Getter
+  @Getter(AccessLevel.PROTECTED)
   private List<Double> prices;
 
   public void initialize() {
@@ -22,7 +22,7 @@ public abstract class Indicator {
       .collect(Collectors.toList());
   }
 
-  protected abstract double calculate(int index);
+  public abstract double calculate(int index);
 
   protected double calculateMovingAverage(
     List<Double> prices, int skipDays, int period
