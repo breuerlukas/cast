@@ -1,15 +1,22 @@
-package de.lukasbreuer.stockalgorithm.core.neuralnetwork.dataset;
+package de.lukasbreuer.stockalgorithm.core.neuralnetwork.dataset.optimal;
 
 import com.clearspring.analytics.util.Lists;
 import de.lukasbreuer.stockalgorithm.core.symbol.HistoryEntry;
 import de.lukasbreuer.stockalgorithm.core.trade.Trade;
 import de.lukasbreuer.stockalgorithm.core.trade.TradeType;
+import lombok.RequiredArgsConstructor;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
 //TODO: REWRITE CODE TO ACHIEVE GREATER CLARITY
+@RequiredArgsConstructor(staticName = "create")
 public class OptimalTrade {
+  private final List<HistoryEntry> data;
+  private final int maximumTrades;
+  private final int generalisationStepSize;
+  private final int noiseRemovalStepSize;
+
   private static final int GENERALISATION_STEP_SIZE = 15;
 
   public List<Trade> findBestTrades(List<HistoryEntry> history, int maxTrades) {
@@ -17,7 +24,7 @@ public class OptimalTrade {
     var data = Lists.<Double>newArrayList();
     for (var i = 1; i < history.size() / GENERALISATION_STEP_SIZE; i++) {
       var entryIndex = i * GENERALISATION_STEP_SIZE;
-      data.add(calculateSMA(closeData, entryIndex, GENERALISATION_STEP_SIZE));
+      data.add(calculateMovingAverage(closeData, entryIndex, GENERALISATION_STEP_SIZE));
     }
     var allTrades = findAllPossibleTrades(data);
     var noiselessTrades = filterNoiseOutOfTrades(allTrades, closeData);
@@ -109,11 +116,11 @@ public class OptimalTrade {
 
   private int calculateDirectionalNoiselessSignal(Trade trade, List<Double> closeData, TradeType type, int stepSize, int direction) {
     var initialSignal = type == TradeType.BUY ? trade.buyTime() : trade.sellTime();
-    var lastAverage = calculateSMA(closeData, initialSignal - ((stepSize - 1) / 2) - direction, stepSize);
+    var lastAverage = calculateMovingAverage(closeData, initialSignal - ((stepSize - 1) / 2) - direction, stepSize);
     var calculationLength = direction > 0 ? Math.min(closeData.size() - initialSignal - stepSize, 30) :
       Math.min(initialSignal - 30 - stepSize, 30);
     for (var i = 0; i < calculationLength; i++) {
-      var average = calculateSMA(closeData, initialSignal - ((stepSize - 1) / 2) + i * direction, stepSize);
+      var average = calculateMovingAverage(closeData, initialSignal - ((stepSize - 1) / 2) + i * direction, stepSize);
       if (type == TradeType.BUY ? average > lastAverage : average < lastAverage) {
         return initialSignal + i * direction;
       }
@@ -165,9 +172,9 @@ public class OptimalTrade {
     return step * stepSize - (stepSize > 1 ? ((stepSize - 1) / 2) : 0);
   }
 
-  private static double calculateSMA(List<Double> prices, int skipDays, int period) {
-    double value = 0.0;
-    for (int i = skipDays; i < (period + skipDays); i++) {
+  private double calculateMovingAverage(List<Double> prices, int skipDays, int period) {
+    var value = 0.0;
+    for (var i = skipDays; i < (period + skipDays); i++) {
       if (i < 0 || i >= prices.size()) {
         continue;
       }
