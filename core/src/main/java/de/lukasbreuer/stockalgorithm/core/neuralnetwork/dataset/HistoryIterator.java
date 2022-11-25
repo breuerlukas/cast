@@ -18,6 +18,7 @@ public final class HistoryIterator implements MultiDataSetIterator {
   private int currentBatch = 0;
   private int currentDatasetStep = 0;
 
+  //TODO: REWRITE
   @Override
   public MultiDataSet next(int sampleSize) {
     INDArray inputSeq, outputSeq;
@@ -51,7 +52,7 @@ public final class HistoryIterator implements MultiDataSetIterator {
     for (int i = 0; i < data.size(); i++) {
       var dayVector = data.get(i);
       for (var j = 0; j < dayVector.length; j++) {
-        result.putScalar(0, i * dayVector.length +  j, dayVector[j]);
+        result.putScalar(0, (long) i * dayVector.length + j, dayVector[j]);
       }
     }
     return result;
