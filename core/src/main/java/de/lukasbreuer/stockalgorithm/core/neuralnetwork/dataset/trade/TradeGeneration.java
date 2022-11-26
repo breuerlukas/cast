@@ -1,4 +1,4 @@
-package de.lukasbreuer.stockalgorithm.core.neuralnetwork.dataset.optimal;
+package de.lukasbreuer.stockalgorithm.core.neuralnetwork.dataset.trade;
 
 import com.clearspring.analytics.util.Lists;
 import de.lukasbreuer.stockalgorithm.core.symbol.HistoryEntry;
@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 
 //TODO: REWRITE CODE TO ACHIEVE GREATER CLARITY
 @RequiredArgsConstructor(staticName = "create")
-public class OptimalTrade {
+public class TradeGeneration {
   private final List<HistoryEntry> data;
   private final int maximumTrades;
   private final int generalisationStepSize;

@@ -1,4 +1,4 @@
-package de.lukasbreuer.stockalgorithm.core.neuralnetwork.dataset.optimal.filter;
+package de.lukasbreuer.stockalgorithm.core.neuralnetwork.dataset.trade.filter;
 
 import de.lukasbreuer.stockalgorithm.core.trade.Trade;
 
