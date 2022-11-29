@@ -8,27 +8,27 @@ import java.util.stream.Collectors;
 
 public final class TradeProfitFilter extends TradeFilter {
   public static TradeProfitFilter create(
-    List<Trade> initialTrades, List<Double> prices, int maxTrades
+    List<Trade> initialTrades, List<Double> prices, int maximumTrades
   ) {
-    return new TradeProfitFilter(initialTrades, prices, maxTrades);
+    return new TradeProfitFilter(initialTrades, prices, maximumTrades);
   }
 
   private final List<Double> prices;
-  private final int maxTrades;
+  private final int maximumTrades;
 
   private TradeProfitFilter(
-    List<Trade> initialTrades, List<Double> prices, int maxTrades
+    List<Trade> initialTrades, List<Double> prices, int maximumTrades
   ) {
     super(initialTrades);
     this.prices = prices;
-    this.maxTrades = maxTrades;
+    this.maximumTrades = maximumTrades;
   }
 
   @Override
   public List<Trade> filter() {
     return tradeProfitAllocation().stream()
       .filter(entry -> entry.getValue() > 0)
-      .limit(maxTrades)
+      .limit(maximumTrades)
       .map(Map.Entry::getKey)
       .collect(Collectors.toList());
   }
