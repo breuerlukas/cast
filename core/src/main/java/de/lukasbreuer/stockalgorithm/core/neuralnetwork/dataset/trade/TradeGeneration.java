@@ -11,7 +11,6 @@ import lombok.RequiredArgsConstructor;
 import java.util.*;
 import java.util.stream.Collectors;
 
-//TODO: REWRITE CODE TO ACHIEVE GREATER CLARITY
 @RequiredArgsConstructor(staticName = "create")
 public class TradeGeneration {
   private final List<HistoryEntry> data;
