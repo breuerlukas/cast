@@ -1,6 +1,6 @@
 package de.lukasbreuer.stockalgorithm.core.neuralnetwork;
 
-import de.lukasbreuer.stockalgorithm.core.neuralnetwork.dataset.HistoryIterator;
+import de.lukasbreuer.stockalgorithm.core.dataset.HistoryIterator;
 import lombok.RequiredArgsConstructor;
 import org.deeplearning4j.nn.conf.NeuralNetConfiguration;
 import org.deeplearning4j.nn.conf.layers.DenseLayer;

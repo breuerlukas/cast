@@ -1,4 +1,4 @@
-package de.lukasbreuer.stockalgorithm.core.neuralnetwork.dataset;
+package de.lukasbreuer.stockalgorithm.core.dataset;
 
 import lombok.RequiredArgsConstructor;
 import org.nd4j.linalg.api.ndarray.INDArray;

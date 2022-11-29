@@ -1,7 +1,7 @@
-package de.lukasbreuer.stockalgorithm.core.neuralnetwork.dataset;
+package de.lukasbreuer.stockalgorithm.core.dataset;
 
 import com.clearspring.analytics.util.Lists;
-import de.lukasbreuer.stockalgorithm.core.neuralnetwork.dataset.indicator.*;
+import de.lukasbreuer.stockalgorithm.core.dataset.indicator.*;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;

@@ -1,9 +1,8 @@
-package de.lukasbreuer.stockalgorithm.core.neuralnetwork.dataset.indicator;
+package de.lukasbreuer.stockalgorithm.core.dataset.indicator;
 
 import de.lukasbreuer.stockalgorithm.core.symbol.HistoryEntry;
 
 import java.util.List;
-import java.util.stream.DoubleStream;
 
 public final class MovingAverageIndicator extends ReviewIndicator {
   public static MovingAverageIndicator create(List<HistoryEntry> data) {

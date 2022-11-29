@@ -1,4 +1,4 @@
-package de.lukasbreuer.stockalgorithm.core.neuralnetwork.dataset.indicator;
+package de.lukasbreuer.stockalgorithm.core.dataset.indicator;
 
 import com.clearspring.analytics.util.Lists;
 import de.lukasbreuer.stockalgorithm.core.symbol.HistoryEntry;

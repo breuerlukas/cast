@@ -1,4 +1,4 @@
-package de.lukasbreuer.stockalgorithm.core.neuralnetwork.dataset.trade.filter;
+package de.lukasbreuer.stockalgorithm.core.dataset.trade.filter;
 
 import com.clearspring.analytics.util.Lists;
 import de.lukasbreuer.stockalgorithm.core.trade.Trade;

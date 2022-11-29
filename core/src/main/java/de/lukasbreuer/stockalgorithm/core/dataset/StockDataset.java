@@ -1,8 +1,8 @@
-package de.lukasbreuer.stockalgorithm.core.neuralnetwork.dataset;
+package de.lukasbreuer.stockalgorithm.core.dataset;
 
 import com.clearspring.analytics.util.Lists;
 import de.lukasbreuer.stockalgorithm.core.neuralnetwork.ModelState;
-import de.lukasbreuer.stockalgorithm.core.neuralnetwork.dataset.indicator.IndicatorRepository;
+import de.lukasbreuer.stockalgorithm.core.dataset.indicator.IndicatorRepository;
 import de.lukasbreuer.stockalgorithm.core.symbol.HistoryEntry;
 import de.lukasbreuer.stockalgorithm.core.symbol.Symbol;
 import de.lukasbreuer.stockalgorithm.core.trade.TradeType;

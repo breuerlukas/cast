@@ -5,7 +5,7 @@ import com.github.sh0nk.matplotlib4j.Plot;
 import com.google.common.collect.Maps;
 import de.lukasbreuer.stockalgorithm.core.neuralnetwork.ModelState;
 import de.lukasbreuer.stockalgorithm.core.neuralnetwork.NeuralNetwork;
-import de.lukasbreuer.stockalgorithm.core.neuralnetwork.dataset.HistoryIterator;
+import de.lukasbreuer.stockalgorithm.core.dataset.HistoryIterator;
 import de.lukasbreuer.stockalgorithm.core.symbol.HistoryEntry;
 import de.lukasbreuer.stockalgorithm.core.symbol.Symbol;
 import de.lukasbreuer.stockalgorithm.core.trade.Trade;
