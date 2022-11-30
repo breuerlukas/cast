@@ -1,8 +1,6 @@
 package de.lukasbreuer.stockalgorithm.core.dataset;
 
 import com.clearspring.analytics.util.Lists;
-import com.google.auto.factory.AutoFactory;
-import com.google.auto.factory.Provided;
 import de.lukasbreuer.stockalgorithm.core.dataset.indicator.IndicatorRepository;
 import de.lukasbreuer.stockalgorithm.core.dataset.trade.TradeGeneration;
 import de.lukasbreuer.stockalgorithm.core.neuralnetwork.ModelState;
@@ -10,6 +8,7 @@ import de.lukasbreuer.stockalgorithm.core.symbol.HistoryEntry;
 import de.lukasbreuer.stockalgorithm.core.symbol.Symbol;
 import de.lukasbreuer.stockalgorithm.core.trade.Trade;
 import de.lukasbreuer.stockalgorithm.core.trade.TradeType;
+import lombok.RequiredArgsConstructor;
 
 import java.util.AbstractMap;
 import java.util.List;
@@ -17,7 +16,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.stream.Collectors;
 
-@AutoFactory
+@RequiredArgsConstructor(staticName = "create")
 public final class StockDataset {
   private final Symbol symbol;
   private final TradeType tradeType;
@@ -38,7 +37,7 @@ public final class StockDataset {
   private List<Trade> optimalTrades;
   private HistoryIterator historyIterator;
 
-  StockDataset(
+  /*StockDataset(
     Symbol symbol, TradeType tradeType, ModelState modelState,
     @Provided int seed, @Provided int trainPeriod, @Provided int trainMaximumTrades,
     @Provided int evaluationPeriod, @Provided int evaluationMaximumTrades,
@@ -58,7 +57,7 @@ public final class StockDataset {
     this.totalBatches = totalBatches;
     this.tradeGeneralisationStepSize = tradeGeneralisationStepSize;
     this.tradeNoiseRemovalStepSize = tradeNoiseRemovalStepSize;
-  }
+  }*/
 
   public void build() {
     historyData = createHistoryData();

@@ -8,6 +8,11 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor(staticName = "create")
 public final class StockAlgorithmModule extends AbstractModule {
+  @Override
+  protected void configure() {
+    bind(Integer.class).toInstance(-1);
+  }
+
   private static final int MODEL_SEED = 1;
 
   @Provides
