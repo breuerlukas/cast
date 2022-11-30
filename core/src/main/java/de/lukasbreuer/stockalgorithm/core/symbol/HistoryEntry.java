@@ -1,6 +1,5 @@
 package de.lukasbreuer.stockalgorithm.core.symbol;
 
-import de.lukasbreuer.stockalgorithm.core.symbol.Symbol;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.Accessors;

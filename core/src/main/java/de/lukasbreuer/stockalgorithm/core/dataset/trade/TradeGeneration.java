@@ -8,7 +8,7 @@ import de.lukasbreuer.stockalgorithm.core.symbol.HistoryEntry;
 import de.lukasbreuer.stockalgorithm.core.trade.Trade;
 import lombok.RequiredArgsConstructor;
 
-import java.util.*;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor(staticName = "create")
