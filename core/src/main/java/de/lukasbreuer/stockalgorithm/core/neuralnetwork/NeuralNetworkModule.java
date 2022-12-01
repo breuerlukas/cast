@@ -1,0 +1,55 @@
+package de.lukasbreuer.stockalgorithm.core.neuralnetwork;
+
+import com.google.inject.AbstractModule;
+import com.google.inject.Provides;
+import com.google.inject.Singleton;
+import com.google.inject.name.Named;
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor(staticName = "create")
+public final class NeuralNetworkModule extends AbstractModule {
+  private static final int NETWORK_SEED = 1;
+
+  @Provides
+  @Singleton
+  @Named("networkSeed")
+  int provideNetworkSeed() {
+    return NETWORK_SEED;
+  }
+
+  private static final int NETWORK_EPOCHS = 1;
+
+  @Provides
+  @Singleton
+  @Named("networkEpochs")
+  int provideNetworkEpochs() {
+    return NETWORK_EPOCHS;
+  }
+
+  private static final float NETWORK_LEARNING_RATE = 1;
+
+  @Provides
+  @Singleton
+  @Named("networkLearningRate")
+  float provideNetworkLearningRate() {
+    return NETWORK_LEARNING_RATE;
+  }
+
+  private static final float NETWORK_DROPOUT_RATE = 1;
+
+  @Provides
+  @Singleton
+  @Named("networkDropoutRate")
+  float provideNetworkDropoutRate() {
+    return NETWORK_DROPOUT_RATE;
+  }
+
+  private static final int NETWORK_ITERATIONS = 1;
+
+  @Provides
+  @Singleton
+  @Named("networkIterations")
+  int provideNetworkIterations() {
+    return NETWORK_ITERATIONS;
+  }
+}
