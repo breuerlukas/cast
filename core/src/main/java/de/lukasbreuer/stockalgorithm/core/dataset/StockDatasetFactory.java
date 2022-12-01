@@ -33,6 +33,14 @@ public final class StockDatasetFactory {
   @Inject @Named("modelNoiseRemovalStepSize")
   private final int tradeNoiseRemovalStepSize;
 
+  public StockDataset createAndBuild(
+    Symbol symbol, TradeType tradeType, ModelState modelState
+  ) {
+    var dataset = create(symbol, tradeType, modelState);
+    dataset.build();
+    return dataset;
+  }
+
   public StockDataset create(
     Symbol symbol, TradeType tradeType, ModelState modelState
   ) {

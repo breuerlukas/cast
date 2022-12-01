@@ -37,28 +37,6 @@ public final class StockDataset {
   private List<Trade> optimalTrades;
   private HistoryIterator historyIterator;
 
-  /*StockDataset(
-    Symbol symbol, TradeType tradeType, ModelState modelState,
-    @Provided int seed, @Provided int trainPeriod, @Provided int trainMaximumTrades,
-    @Provided int evaluationPeriod, @Provided int evaluationMaximumTrades,
-    @Provided int reviewPeriod, @Provided int batchSize, @Provided int totalBatches,
-    @Provided int tradeGeneralisationStepSize, @Provided int tradeNoiseRemovalStepSize
-  ) {
-    this.symbol = symbol;
-    this.tradeType = tradeType;
-    this.modelState = modelState;
-    this.seed = seed;
-    this.trainPeriod = trainPeriod;
-    this.trainMaximumTrades = trainMaximumTrades;
-    this.evaluationPeriod = evaluationPeriod;
-    this.evaluationMaximumTrades = evaluationMaximumTrades;
-    this.reviewPeriod = reviewPeriod;
-    this.batchSize = batchSize;
-    this.totalBatches = totalBatches;
-    this.tradeGeneralisationStepSize = tradeGeneralisationStepSize;
-    this.tradeNoiseRemovalStepSize = tradeNoiseRemovalStepSize;
-  }*/
-
   public void build() {
     historyData = createHistoryData();
     var indicatorRepository = IndicatorRepository.create(historyData);
