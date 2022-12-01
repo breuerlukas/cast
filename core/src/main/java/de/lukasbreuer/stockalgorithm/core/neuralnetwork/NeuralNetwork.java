@@ -18,10 +18,10 @@ import java.util.Map;
 @RequiredArgsConstructor(staticName = "create")
 public final class NeuralNetwork {
   private final int seed;
+  private final int epochs;
   private final float learningRate;
   private final float dropoutRate;
   private final int iterations;
-  private final int epochs;
   private final int inputSize;
   private final int[] hiddenLayers;
   private final int outputSize;
