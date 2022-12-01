@@ -76,7 +76,6 @@ public final class StockAlgorithmModule extends AbstractModule {
     return MODEL_BATCH_SIZE;
   }
 
-
   private static final int MODEL_TOTAL_BATCHES = 1;
 
   @Provides
@@ -86,4 +85,21 @@ public final class StockAlgorithmModule extends AbstractModule {
     return MODEL_TOTAL_BATCHES;
   }
 
+  private static final int MODEL_TRAIN_GENERALISATION_STEP_SIZE = 1;
+
+  @Provides
+  @Singleton
+  @Named("modelTrainGeneralisationStepSize")
+  int provideModelTrainGeneralisationStepSize() {
+    return MODEL_TRAIN_GENERALISATION_STEP_SIZE;
+  }
+
+  private static final int MODEL_NOISE_REMOVAL_STEP_SIZE = 1;
+
+  @Provides
+  @Singleton
+  @Named("modelNoiseRemovalStepSize")
+  int provideModelNoiseRemovalStepSize() {
+    return MODEL_NOISE_REMOVAL_STEP_SIZE;
+  }
 }
