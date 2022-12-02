@@ -1,5 +1,6 @@
 package de.lukasbreuer.stockalgorithm.core.evaluation;
 
+import com.clearspring.analytics.util.Lists;
 import com.google.common.collect.Maps;
 import de.lukasbreuer.stockalgorithm.core.dataset.StockDataset;
 import de.lukasbreuer.stockalgorithm.core.neuralnetwork.NeuralNetwork;
@@ -21,10 +22,7 @@ public final class Evaluation {
 
   public void analyse() {
     var timePredictionAllocation = timePredictionAllocation();
-    optimalSignals = timePredictionAllocation.entrySet().stream()
-      .filter(entry -> entry.getValue() == 1)
-      .map(Map.Entry::getKey)
-      .collect(Collectors.toList());
+    optimalSignals = findOptimalSignals();
     determinedSignals = selectPromisingSignals(timePredictionAllocation);
   }
 
@@ -36,6 +34,18 @@ public final class Evaluation {
       .map(Map.Entry::getKey)
       .limit(evaluationMaximumTrades)
       .collect(Collectors.toList());
+  }
+
+  private List<Integer> findOptimalSignals() {
+    var result = Lists.<Integer>newArrayList();
+    var rawDataset = evaluationDataset.raw();
+    for (var i = 1; i < evaluationDataset.size() - 1; i++) {
+      var entryTime = i + dayLongestReview + reviewPeriod;
+      if (rawDataset.get(i).getValue() == 1) {
+        result.add(entryTime);
+      }
+    }
+    return result;
   }
 
   private Map<Integer, Float> timePredictionAllocation() {
