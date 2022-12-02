@@ -71,13 +71,13 @@ public final class DatasetModule extends AbstractModule {
     return MODEL_TOTAL_BATCHES;
   }
 
-  private static final int MODEL_TRAIN_GENERALISATION_STEP_SIZE = 15;
+  private static final int MODEL_TRADE_GENERALISATION_STEP_SIZE = 15;
 
   @Provides
   @Singleton
-  @Named("modelTrainGeneralisationStepSize")
-  int provideModelTrainGeneralisationStepSize() {
-    return MODEL_TRAIN_GENERALISATION_STEP_SIZE;
+  @Named("modelTradeGeneralisationStepSize")
+  int provideModelTradeGeneralisationStepSize() {
+    return MODEL_TRADE_GENERALISATION_STEP_SIZE;
   }
 
   private static final int MODEL_NOISE_REMOVAL_STEP_SIZE = 15;

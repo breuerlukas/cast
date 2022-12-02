@@ -26,7 +26,7 @@ public final class StockDatasetFactory {
   private final int batchSize;
   @Inject @Named("modelTotalBatches")
   private final int totalBatches;
-  @Inject @Named("modelTrainGeneralisationStepSize")
+  @Inject @Named("modelTradeGeneralisationStepSize")
   private final int tradeGeneralisationStepSize;
   @Inject @Named("modelNoiseRemovalStepSize")
   private final int tradeNoiseRemovalStepSize;
