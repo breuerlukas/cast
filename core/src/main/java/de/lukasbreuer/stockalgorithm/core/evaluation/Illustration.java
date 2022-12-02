@@ -1,7 +1,93 @@
 package de.lukasbreuer.stockalgorithm.core.evaluation;
 
+import com.clearspring.analytics.util.Lists;
+import com.github.sh0nk.matplotlib4j.Plot;
+import de.lukasbreuer.stockalgorithm.core.dataset.StockDataset;
+import de.lukasbreuer.stockalgorithm.core.symbol.HistoryEntry;
+import de.lukasbreuer.stockalgorithm.core.trade.TradeType;
 import lombok.RequiredArgsConstructor;
+
+import java.util.AbstractMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor(staticName = "create")
 public final class Illustration {
+  private final TradeType tradeType;
+  private final Evaluation evaluation;
+  private final StockDataset dataset;
+  private final int seed;
+  private final int evaluationPeriod;
+  private final int generalisationStepSize;
+
+  public void plot() {
+    Plot plot = Plot.create();
+    addStockEvolution(plot);
+    addTradeSignals(plot);
+    label(plot);
+    new Thread(() -> display(plot)).start();
+  }
+
+  private void addStockEvolution(Plot plot) {
+    var prices = dataset.historyData().stream().map(HistoryEntry::close).collect(Collectors.toList());
+    var averageData = Lists.<Map.Entry<Integer, Double>>newArrayList();
+    for (var i = 1; i < evaluationPeriod / generalisationStepSize; i++) {
+      var entryIndex = i * generalisationStepSize;
+      averageData.add(new AbstractMap.SimpleEntry<>(calculateDayFromStep(i, generalisationStepSize),
+        calculateMovingAverage(prices, entryIndex, generalisationStepSize)));
+    }
+    plot.plot()
+      .add(averageData.stream().map(Map.Entry::getKey).collect(Collectors.toList()), averageData.stream().map(Map.Entry::getValue).collect(Collectors.toList()))
+      .add(prices)
+      .linestyle("-");
+  }
+
+  private static final int ILLUSTRATION_SCALE = 200;
+
+  private void addTradeSignals(Plot plot) {
+    for (var optimalSignal : evaluation.optimalSignals()) {
+      plot.plot().add(List.of(optimalSignal, optimalSignal),
+        List.of(ILLUSTRATION_SCALE / 4, ILLUSTRATION_SCALE + (ILLUSTRATION_SCALE / 4)));
+    }
+    for (var determinedSignal : evaluation.determinedSignals()) {
+      plot.plot().add(List.of(determinedSignal, determinedSignal),
+        List.of(0, ILLUSTRATION_SCALE));
+    }
+  }
+
+  private static final String PLOT_TITLE_FORMAT = "%s (SEED: %s)";
+
+  private void label(Plot plot) {
+    plot.xlabel("Time");
+    plot.ylabel("Value");
+    plot.title(String.format(PLOT_TITLE_FORMAT,
+      tradeType.name().toUpperCase(), seed));
+  }
+
+  private void display(Plot plot) {
+    try {
+      plot.show();
+    } catch (Exception exception) {
+      exception.printStackTrace();
+    }
+  }
+
+  private int calculateDayFromStep(int step, int stepSize) {
+    return step * stepSize - (stepSize > 1 ? ((stepSize - 1) / 2) : 0);
+  }
+
+  private double calculateMovingAverage(
+    List<Double> prices, int skipDays, int period
+  ) {
+    var value = 0.0D;
+    for (var i = skipDays; i < (period + skipDays); i++) {
+      if (i < 0 || i >= prices.size()) {
+        continue;
+      }
+      value += prices.get(i);
+    }
+    value /= period;
+    return value;
+  }
 }
