@@ -11,10 +11,15 @@ public final class MovingAverageIndicator extends ReviewIndicator {
     return indicator;
   }
 
-  private final double priceMaximum;
+  private double priceMaximum;
 
   private MovingAverageIndicator(List<HistoryEntry> data) {
     super(data);
+  }
+
+  @Override
+  public void initialize() {
+    super.initialize();
     priceMaximum = prices().stream().mapToDouble(value -> value).max().getAsDouble();
   }
 
