@@ -31,6 +31,7 @@ public final class StockDataset {
   private final int totalBatches;
   private final int tradeGeneralisationStepSize;
   private final int tradeNoiseRemovalStepSize;
+  private final int dayLongestReview;
   private final List<Map.Entry<List<double[]>, Double>> dataset = Lists.newArrayList();
   private List<HistoryEntry> historyData;
   private List<DatasetDay> dayData;
@@ -69,13 +70,11 @@ public final class StockDataset {
     return data;
   }
 
-  private static final int DATASET_DAY_LONGEST_REVIEW = 21;
-
   private void fillDataset() {
     var bestTradeDates = optimalTrades.stream()
       .map(trade -> tradeType == TradeType.BUY ? trade.buyTime() : trade.sellTime())
       .collect(Collectors.toList());
-    for (var i = DATASET_DAY_LONGEST_REVIEW + reviewPeriod; i < historyData.size(); i++) {
+    for (var i = dayLongestReview + reviewPeriod; i < historyData.size(); i++) {
       var entry = new AbstractMap.SimpleEntry<>(createInputData(i),
         calculateTradeValue(bestTradeDates, i));
       dataset.add(entry);
@@ -148,5 +147,9 @@ public final class StockDataset {
 
   public List<Map.Entry<List<double[]>, Double>> raw() {
     return List.copyOf(dataset);
+  }
+
+  public int size() {
+    return dataset.size();
   }
 }

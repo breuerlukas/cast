@@ -97,4 +97,13 @@ public final class DatasetModule extends AbstractModule {
   int provideInputSizePerDay() {
     return MODEL_INPUT_SIZE_PER_DAY;
   }
+
+  private static final int MODEL_DAY_LONGEST_REVIEW = 21;
+
+  @Provides
+  @Singleton
+  @Named("modelDayLongestReview")
+  int provideDayLongestReview() {
+    return MODEL_DAY_LONGEST_REVIEW;
+  }
 }
