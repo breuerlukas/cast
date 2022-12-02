@@ -41,6 +41,7 @@ public final class StockDataset {
   public void build() {
     historyData = createHistoryData();
     var indicatorRepository = IndicatorRepository.create(historyData);
+    indicatorRepository.fill();
     dayData = createDayData(indicatorRepository);
     optimalTrades = TradeGeneration.create(historyData,
       modelState == ModelState.TRAINING ? trainMaximumTrades : evaluationMaximumTrades,

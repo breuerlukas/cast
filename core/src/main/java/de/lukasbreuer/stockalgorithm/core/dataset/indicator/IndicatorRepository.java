@@ -5,7 +5,6 @@ import de.lukasbreuer.stockalgorithm.core.symbol.HistoryEntry;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor(staticName = "create")
 public final class IndicatorRepository {
@@ -27,6 +26,6 @@ public final class IndicatorRepository {
   public <T extends Indicator> T find(Class<T> type) {
     return (T) indicators.stream()
       .filter(indicator -> indicator.getClass() == type)
-      .collect(Collectors.toList());
+      .findFirst().get();
   }
 }
