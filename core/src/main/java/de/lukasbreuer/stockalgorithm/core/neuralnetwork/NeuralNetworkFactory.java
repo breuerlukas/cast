@@ -18,9 +18,15 @@ public final class NeuralNetworkFactory {
   private final int dropoutRate;
   @Inject @Named("networkIterations")
   private final int iterations;
+  @Inject @Named("networkInputNeurons")
+  private final int inputNeurons;
+  @Inject @Named("networkHiddenNeurons")
+  private final int[] hiddenNeurons;
+  @Inject @Named("networkOutputNeurons")
+  private final int outputNeurons;
 
   public NeuralNetwork create(HistoryIterator historyIterator, int seed) {
     return NeuralNetwork.create(seed, epochs, learningRate, dropoutRate,
-      iterations, -1, new int[0], -1, historyIterator);
+      iterations, inputNeurons, hiddenNeurons, outputNeurons, historyIterator);
   }
 }

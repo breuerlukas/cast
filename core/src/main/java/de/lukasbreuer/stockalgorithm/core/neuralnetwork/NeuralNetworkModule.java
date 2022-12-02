@@ -43,4 +43,31 @@ public final class NeuralNetworkModule extends AbstractModule {
   int provideNetworkIterations() {
     return NETWORK_ITERATIONS;
   }
+
+  @Provides
+  @Singleton
+  @Named("networkInputNeurons")
+  int provideNetworkInputNeurons(
+    @Named("modelReviewPeriod") int reviewPeriod,
+    @Named("modelInputSizePerDay") int inputSizePerDay) {
+    return reviewPeriod * inputSizePerDay;
+  }
+
+  private static final int[] NETWORK_HIDDEN_NEURONS = new int[] {32, 32};
+
+  @Provides
+  @Singleton
+  @Named("networkHiddenNeurons")
+  int[] provideNetworkHiddenNeurons() {
+    return NETWORK_HIDDEN_NEURONS;
+  }
+
+  private static final int NETWORK_OUTPUT_NEURONS = 2;
+
+  @Provides
+  @Singleton
+  @Named("networkOutputNeurons")
+  int provideNetworkOutputNeurons() {
+    return NETWORK_OUTPUT_NEURONS;
+  }
 }

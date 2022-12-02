@@ -88,4 +88,13 @@ public final class DatasetModule extends AbstractModule {
   int provideModelNoiseRemovalStepSize() {
     return MODEL_NOISE_REMOVAL_STEP_SIZE;
   }
+
+  private static final int MODEL_INPUT_SIZE_PER_DAY = 29;
+
+  @Provides
+  @Singleton
+  @Named("modelInputSizePerDay")
+  int provideInputSizePerDay() {
+    return MODEL_INPUT_SIZE_PER_DAY;
+  }
 }

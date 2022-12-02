@@ -9,8 +9,9 @@ import lombok.RequiredArgsConstructor;
 public final class StockAlgorithmModule extends AbstractModule {
   @Override
   protected void configure() {
-    bind(Integer.class).toInstance(-1);
-    bind(Float.class).toInstance(-1F);
+    bind(int.class).toInstance(-1);
+    bind(float.class).toInstance(-1F);
+    bind(int[].class).toInstance(new int[0]);
     install(DatasetModule.create());
     install(NeuralNetworkModule.create());
   }
