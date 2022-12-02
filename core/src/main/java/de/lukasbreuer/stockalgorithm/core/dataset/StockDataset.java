@@ -56,7 +56,7 @@ public final class StockDataset {
       data = data.stream().limit(trainPeriod).collect(Collectors.toList());
     }
     if (modelState == ModelState.EVALUATING) {
-      data = data.stream().skip(evaluationPeriod).collect(Collectors.toList());
+      data = data.stream().skip(trainPeriod).collect(Collectors.toList());
     }
     return data;
   }
