@@ -63,7 +63,7 @@ public final class StockDataset {
 
   private List<DatasetDay> createDayData(IndicatorRepository indicatorRepository) {
     var data = Lists.<DatasetDay>newArrayList();
-    for (var i = dayLongestReview + reviewPeriod; i < historyData.size(); i++) {
+    for (var i = dayLongestReview; i < historyData.size(); i++) {
       var day = DatasetDay.create(i, indicatorRepository);
       day.build();
       data.add(day);
@@ -76,7 +76,7 @@ public final class StockDataset {
       .map(trade -> tradeType == TradeType.BUY ? trade.buyTime() : trade.sellTime())
       .collect(Collectors.toList());
     for (var i = dayLongestReview + reviewPeriod; i < historyData.size(); i++) {
-      var entry = new AbstractMap.SimpleEntry<>(createInputData(i),
+      var entry = new AbstractMap.SimpleEntry<>(createInputData(i - dayLongestReview),
         calculateTradeValue(bestTradeDates, i));
       dataset.add(entry);
     }
