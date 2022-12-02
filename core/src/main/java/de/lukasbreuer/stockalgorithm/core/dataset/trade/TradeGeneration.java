@@ -32,7 +32,7 @@ public class TradeGeneration {
       var entryIndex = i * generalisationStepSize;
       data.add(calculateMovingAverage(prices, entryIndex, generalisationStepSize));
     }
-    return createGeneralizedTrades(prices).stream()
+    return createGeneralizedTrades(data).stream()
       .map(trade -> Trade.create(calculateDayFromStep(trade.buyTime() + 1, generalisationStepSize),
         calculateDayFromStep(trade.sellTime() + 1, generalisationStepSize)))
       .collect(Collectors.toList());
