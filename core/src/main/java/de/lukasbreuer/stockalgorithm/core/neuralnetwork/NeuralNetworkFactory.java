@@ -13,9 +13,9 @@ public final class NeuralNetworkFactory {
   @Inject @Named("networkEpochs")
   private final int epochs;
   @Inject @Named("networkLearningRate")
-  private final int learningRate;
+  private final float learningRate;
   @Inject @Named("networkDropoutRate")
-  private final int dropoutRate;
+  private final float dropoutRate;
   @Inject @Named("networkIterations")
   private final int iterations;
   @Inject @Named("networkInputNeurons")
