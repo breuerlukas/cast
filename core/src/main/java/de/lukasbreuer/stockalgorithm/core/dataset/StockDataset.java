@@ -141,6 +141,10 @@ public final class StockDataset {
     return normalizedData;
   }*/
 
+  public List<HistoryEntry> historyData() {
+    return List.copyOf(historyData);
+  }
+
   public HistoryIterator historyIterator() {
     return historyIterator;
   }
