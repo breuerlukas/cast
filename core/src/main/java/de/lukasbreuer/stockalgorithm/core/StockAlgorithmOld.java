@@ -143,8 +143,8 @@ public final class StockAlgorithmOld {
       dataset.addAll(tradeSignals);
     }
     var iterator = HistoryIterator.create(dataset, new Random(seed), BATCH_SIZE, TOTAL_BATCHES);
-    var network = NeuralNetwork.create(seed, LEARNING_RATE, DROPOUT_RATE,
-      ITERATIONS, EPOCHS, INPUT_SIZE_PER_DAY * DAY_REVIEW, HIDDEN_NEURONS, 2, iterator);
+    var network = NeuralNetwork.create(seed, EPOCHS, LEARNING_RATE, DROPOUT_RATE,
+      ITERATIONS, INPUT_SIZE_PER_DAY * DAY_REVIEW, HIDDEN_NEURONS, 2, iterator);
     network.build();
     return network;
   }
@@ -152,8 +152,8 @@ public final class StockAlgorithmOld {
   private static NeuralNetwork buildSellNetwork(Symbol symbol) throws Exception {
     var dataset = createDataset(symbol, TradeType.SELL, ModelState.TRAINING);
     var iterator = HistoryIterator.create(dataset, new Random(seed), BATCH_SIZE, TOTAL_BATCHES);
-    var network = NeuralNetwork.create(seed, LEARNING_RATE, DROPOUT_RATE,
-      ITERATIONS, EPOCHS, INPUT_SIZE_PER_DAY * DAY_REVIEW, HIDDEN_NEURONS, 2, iterator);
+    var network = NeuralNetwork.create(seed, EPOCHS, LEARNING_RATE, DROPOUT_RATE,
+      ITERATIONS, INPUT_SIZE_PER_DAY * DAY_REVIEW, HIDDEN_NEURONS, 2, iterator);
     network.build();
     return network;
   }
