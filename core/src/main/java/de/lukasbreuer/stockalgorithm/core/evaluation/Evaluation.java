@@ -15,6 +15,7 @@ public final class Evaluation {
   private final StockDataset evaluationDataset;
   private final int reviewPeriod;
   private final int dayLongestReview;
+  private final int evaluationMaximumTrades;
   private List<Integer> optimalSignals;
   private List<Integer> determinedSignals;
 
@@ -33,6 +34,7 @@ public final class Evaluation {
     return timePredictionAllocation.entrySet().stream()
       .sorted(Map.Entry.<Integer, Float>comparingByValue().reversed())
       .map(Map.Entry::getKey)
+      .limit(evaluationMaximumTrades)
       .collect(Collectors.toList());
   }
 
