@@ -10,8 +10,6 @@ import lombok.RequiredArgsConstructor;
 @Singleton
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE, onConstructor = @__({@Inject}))
 public final class NeuralNetworkFactory {
-  @Inject @Named("networkSeed")
-  private final int seed;
   @Inject @Named("networkEpochs")
   private final int epochs;
   @Inject @Named("networkLearningRate")
@@ -21,7 +19,7 @@ public final class NeuralNetworkFactory {
   @Inject @Named("networkIterations")
   private final int iterations;
 
-  public NeuralNetwork create(HistoryIterator historyIterator) {
+  public NeuralNetwork create(HistoryIterator historyIterator, int seed) {
     return NeuralNetwork.create(seed, epochs, learningRate, dropoutRate,
       iterations, -1, new int[0], -1, historyIterator);
   }

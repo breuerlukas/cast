@@ -12,8 +12,6 @@ import lombok.RequiredArgsConstructor;
 @Singleton
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE, onConstructor = @__({@Inject}))
 public final class StockDatasetFactory {
-  @Inject @Named("modelSeed")
-  private final int seed;
   @Inject @Named("modelTrainPeriod")
   private final int trainPeriod;
   @Inject @Named("modelTrainMaximumTrades")
@@ -34,15 +32,15 @@ public final class StockDatasetFactory {
   private final int tradeNoiseRemovalStepSize;
 
   public StockDataset createAndBuild(
-    Symbol symbol, TradeType tradeType, ModelState modelState
+    Symbol symbol, TradeType tradeType, ModelState modelState, int seed
   ) {
-    var dataset = create(symbol, tradeType, modelState);
+    var dataset = create(symbol, tradeType, modelState, seed);
     dataset.build();
     return dataset;
   }
 
   public StockDataset create(
-    Symbol symbol, TradeType tradeType, ModelState modelState
+    Symbol symbol, TradeType tradeType, ModelState modelState, int seed
   ) {
     return StockDataset.create(symbol, tradeType, modelState, seed, trainPeriod,
       trainMaximumTrades, evaluationPeriod, evaluationMaximumTrades, reviewPeriod,

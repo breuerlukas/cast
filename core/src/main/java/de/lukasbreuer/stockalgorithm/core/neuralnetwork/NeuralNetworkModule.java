@@ -8,16 +8,7 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor(staticName = "create")
 public final class NeuralNetworkModule extends AbstractModule {
-  private static final int NETWORK_SEED = 1;
-
-  @Provides
-  @Singleton
-  @Named("networkSeed")
-  int provideNetworkSeed() {
-    return NETWORK_SEED;
-  }
-
-  private static final int NETWORK_EPOCHS = 1;
+  private static final int NETWORK_EPOCHS = 10;
 
   @Provides
   @Singleton
@@ -26,7 +17,7 @@ public final class NeuralNetworkModule extends AbstractModule {
     return NETWORK_EPOCHS;
   }
 
-  private static final float NETWORK_LEARNING_RATE = 1;
+  private static final float NETWORK_LEARNING_RATE = 1e-4f;
 
   @Provides
   @Singleton
@@ -35,7 +26,7 @@ public final class NeuralNetworkModule extends AbstractModule {
     return NETWORK_LEARNING_RATE;
   }
 
-  private static final float NETWORK_DROPOUT_RATE = 1;
+  private static final float NETWORK_DROPOUT_RATE = 1f;
 
   @Provides
   @Singleton
