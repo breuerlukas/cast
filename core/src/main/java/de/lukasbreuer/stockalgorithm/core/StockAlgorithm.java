@@ -30,9 +30,9 @@ public final class StockAlgorithm {
     Nd4j.getRandom().setSeed(seed);
     symbol = Symbol.createAndFetch(symbolName);
     buyNeuralNetwork = buildNeuralNetwork(TradeType.BUY);
-    sellNeuralNetwork = buildNeuralNetwork(TradeType.SELL);
+    //sellNeuralNetwork = buildNeuralNetwork(TradeType.SELL);
     buyEvaluationDataset = datasetFactory.createAndBuild(symbol, TradeType.BUY, ModelState.EVALUATING, seed);
-    sellEvaluationDataset = datasetFactory.createAndBuild(symbol, TradeType.SELL, ModelState.EVALUATING, seed);
+    //sellEvaluationDataset = datasetFactory.createAndBuild(symbol, TradeType.SELL, ModelState.EVALUATING, seed);
   }
 
   private NeuralNetwork buildNeuralNetwork(TradeType tradeType) {
@@ -48,9 +48,9 @@ public final class StockAlgorithm {
     System.out.println("TRAIN BUY NETWORK");
     buyNeuralNetwork.train(buyEvaluationDataset.raw().stream()
       .filter(entry -> entry.getValue() == 1).findFirst().get());
-    System.out.println("TRAIN SELL NETWORK");
+    /*System.out.println("TRAIN SELL NETWORK");
     sellNeuralNetwork.train(sellEvaluationDataset.raw().stream()
-      .filter(entry -> entry.getValue() == 1).findFirst().get());
+      .filter(entry -> entry.getValue() == 1).findFirst().get());*/
   }
 
   public void evaluate() {
@@ -61,10 +61,10 @@ public final class StockAlgorithm {
     buyEvaluation.analyse();
     var buyIllustration = illustrationFactory.create(TradeType.BUY, buyEvaluation, buyEvaluationDataset, seed);
     buyIllustration.plot();
-    System.out.println("EVALUATE SELL NETWORK");
+    /*System.out.println("EVALUATE SELL NETWORK");
     var sellEvaluation = evaluationFactory.create(sellNeuralNetwork, sellEvaluationDataset);
     sellEvaluation.analyse();
     var sellIllustration = illustrationFactory.create(TradeType.SELL, sellEvaluation, sellEvaluationDataset, seed);
-    sellIllustration.plot();
+    sellIllustration.plot();*/
   }
 }
