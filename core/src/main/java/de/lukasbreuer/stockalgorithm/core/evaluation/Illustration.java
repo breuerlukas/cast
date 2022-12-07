@@ -43,7 +43,7 @@ public final class Illustration {
       .linestyle("-");
   }
 
-  private static final int ILLUSTRATION_SCALE = 200;
+  private static final int ILLUSTRATION_SCALE = 100;
 
   private void addTradeSignals(Plot plot) {
     for (var optimalSignal : evaluation.optimalSignals()) {

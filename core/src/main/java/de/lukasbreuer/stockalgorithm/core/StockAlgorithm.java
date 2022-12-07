@@ -30,9 +30,9 @@ public final class StockAlgorithm {
     Nd4j.getRandom().setSeed(seed);
     symbol = Symbol.createAndFetch(symbolName);
     buyNeuralNetwork = buildNeuralNetwork(TradeType.BUY);
-    //sellNeuralNetwork = buildNeuralNetwork(TradeType.SELL);
+    sellNeuralNetwork = buildNeuralNetwork(TradeType.SELL);
     buyEvaluationDataset = datasetFactory.createAndBuild(symbol, TradeType.BUY, ModelState.EVALUATING, seed);
-    //sellEvaluationDataset = datasetFactory.createAndBuild(symbol, TradeType.SELL, ModelState.EVALUATING, seed);
+    sellEvaluationDataset = datasetFactory.createAndBuild(symbol, TradeType.SELL, ModelState.EVALUATING, seed);
   }
 
   private NeuralNetwork buildNeuralNetwork(TradeType tradeType) {

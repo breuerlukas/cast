@@ -26,7 +26,12 @@ public final class DatasetModule extends AbstractModule {
     return MODEL_TRAIN_MAXIMUM_TRADES;
   }
 
-  private static final int MODEL_EVALUATION_PERIOD = 365;
+  //TODO: ES IST MÖGLICH, DASS EIN MODEL, DAS NAH AM OPTIMAL SIGNAL TRAINIERT
+  // WURDE, BESSERE AUSGABEN ERZEUGT (DESTO NEUER DAS MODEL -> DESTO BESSER DAS ERGEBNIS)
+  // ALSO WENN MAN DIESEN WERT (EVALUATION PERIOD) SO WÄHLT,
+  // DASS ER NAHE AM OPTIMAL DRAN IST -> BESTE PREDICTION
+  // LETZTEN BEIDE TESTS (MIT GILD (100) UND ATVI (280)) HABEN DAS BESTÄTIGT
+  private static final int MODEL_EVALUATION_PERIOD = 280;
 
   @Provides
   @Singleton
@@ -35,7 +40,7 @@ public final class DatasetModule extends AbstractModule {
     return MODEL_EVALUATION_PERIOD;
   }
 
-  private static final int MODEL_EVALUATION_MAXIMUM_TRADES = 2;
+  private static final int MODEL_EVALUATION_MAXIMUM_TRADES = 1;
 
   @Provides
   @Singleton
@@ -44,7 +49,7 @@ public final class DatasetModule extends AbstractModule {
     return MODEL_EVALUATION_MAXIMUM_TRADES;
   }
 
-  private static final int MODEL_REVIEW_PERIOD = 7;
+  private static final int MODEL_REVIEW_PERIOD = 1;
 
   @Provides
   @Singleton
@@ -71,7 +76,7 @@ public final class DatasetModule extends AbstractModule {
     return MODEL_TOTAL_BATCHES;
   }
 
-  private static final int MODEL_TRADE_GENERALISATION_STEP_SIZE = 15;
+  private static final int MODEL_TRADE_GENERALISATION_STEP_SIZE = 9;
 
   @Provides
   @Singleton

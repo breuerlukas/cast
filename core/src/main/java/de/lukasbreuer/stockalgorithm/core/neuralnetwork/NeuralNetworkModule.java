@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor(staticName = "create")
 public final class NeuralNetworkModule extends AbstractModule {
-  private static final int NETWORK_EPOCHS = 10;
+  private static final int NETWORK_EPOCHS = 20;
 
   @Provides
   @Singleton
@@ -53,7 +53,7 @@ public final class NeuralNetworkModule extends AbstractModule {
     return reviewPeriod * inputSizePerDay;
   }
 
-  private static final int[] NETWORK_HIDDEN_NEURONS = new int[] {32, 32};
+  private static final int[] NETWORK_HIDDEN_NEURONS = new int[] {64, 64};
 
   @Provides
   @Singleton

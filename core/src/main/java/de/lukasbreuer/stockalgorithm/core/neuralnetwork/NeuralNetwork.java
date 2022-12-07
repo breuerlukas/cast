@@ -78,7 +78,7 @@ public final class NeuralNetwork {
     var input = dataSetIterator.buildInputVector(entry.getKey());
     var prediction = network.output(input, false).getFloat(0);
     var prefix = "";
-    if (prediction > 0.1f) {
+    if (prediction > 0.3f) {
       prefix = "\u001B[31m";
     }
     System.out.println(prefix + index + ": " + entry.getValue() + " <-> " + prediction + "\u001B[0m");
