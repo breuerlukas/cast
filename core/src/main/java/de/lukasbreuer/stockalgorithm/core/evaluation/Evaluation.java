@@ -17,11 +17,12 @@ public final class Evaluation {
   private final int reviewPeriod;
   private final int dayLongestReview;
   private final int evaluationMaximumTrades;
+  private Map<Integer, Float> timePredictionAllocation;
   private List<Integer> optimalSignals;
   private List<Integer> determinedSignals;
 
   public void analyse() {
-    var timePredictionAllocation = timePredictionAllocation();
+    timePredictionAllocation = createTimePredictionAllocation();
     optimalSignals = findOptimalSignals();
     determinedSignals = selectPromisingSignals(timePredictionAllocation);
   }
@@ -48,7 +49,7 @@ public final class Evaluation {
     return result;
   }
 
-  private Map<Integer, Float> timePredictionAllocation() {
+  private Map<Integer, Float> createTimePredictionAllocation() {
     var allocation = Maps.<Integer, Float>newHashMap();
     var rawDataset = evaluationDataset.raw();
     for (var i = 1; i < evaluationDataset.size() - 1; i++) {
@@ -56,6 +57,10 @@ public final class Evaluation {
       allocation.put(entryTime, neuralNetwork.evaluate(entryTime, rawDataset.get(i)));
     }
     return allocation;
+  }
+
+  public Map<Integer, Float> timePredictionAllocation() {
+    return Maps.newHashMap(timePredictionAllocation);
   }
 
   public List<Integer> optimalSignals() {

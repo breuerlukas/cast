@@ -25,6 +25,7 @@ public final class Illustration {
     Plot plot = Plot.create();
     addStockEvolution(plot);
     addTradeSignals(plot);
+    addTimePredictionGraph(plot);
     label(plot);
     new Thread(() -> display(plot)).start();
   }
@@ -38,17 +39,18 @@ public final class Illustration {
         calculateMovingAverage(prices, entryIndex, generalisationStepSize)));
     }
     plot.plot()
-      .add(averageData.stream().map(Map.Entry::getKey).collect(Collectors.toList()), averageData.stream().map(Map.Entry::getValue).collect(Collectors.toList()))
-      .add(prices)
-      .linestyle("-");
+      .add(averageData.stream().map(Map.Entry::getKey).collect(Collectors.toList()),
+        averageData.stream().map(Map.Entry::getValue).collect(Collectors.toList()));
+    plot.plot().add(prices).label("Prices");
   }
 
-  private static final int ILLUSTRATION_SCALE = 100;
+  private static final int ILLUSTRATION_SCALE = 200;
 
   private void addTradeSignals(Plot plot) {
     for (var optimalSignal : evaluation.optimalSignals()) {
       plot.plot().add(List.of(optimalSignal, optimalSignal),
-        List.of(ILLUSTRATION_SCALE / 4, ILLUSTRATION_SCALE + (ILLUSTRATION_SCALE / 4)));
+          List.of(ILLUSTRATION_SCALE / 4, ILLUSTRATION_SCALE + (ILLUSTRATION_SCALE / 4)))
+        .label("Optimal");
     }
     for (var determinedSignal : evaluation.determinedSignals()) {
       plot.plot().add(List.of(determinedSignal, determinedSignal),
@@ -56,11 +58,29 @@ public final class Illustration {
     }
   }
 
+  private void addTimePredictionGraph(Plot plot) {
+    var timePredictionEvaluation = evaluation.timePredictionAllocation();
+    var dates = Lists.<Integer>newArrayList();
+    dates.addAll(timePredictionEvaluation.keySet());
+    var predictions = Lists.<Float>newArrayList();
+    var minimumPrediction = timePredictionEvaluation.entrySet().stream()
+      .min(Map.Entry.comparingByValue()).get().getValue();
+    var maximumPrediction = timePredictionEvaluation.entrySet().stream()
+      .max(Map.Entry.comparingByValue()).get().getValue();
+    for (var prediction : timePredictionEvaluation.values()) {
+      predictions.add(ILLUSTRATION_SCALE / 2 + ((prediction - minimumPrediction) /
+        (maximumPrediction - minimumPrediction)) * ILLUSTRATION_SCALE / 8);
+    }
+    plot.plot().add(dates, predictions).label("Prediction Distribution");
+  }
+
   private static final String PLOT_TITLE_FORMAT = "%s (SEED: %s)";
 
   private void label(Plot plot) {
+    plot.plot().linestyle("-");
     plot.xlabel("Time");
     plot.ylabel("Value");
+    plot.legend().loc(1);
     plot.title(String.format(PLOT_TITLE_FORMAT,
       tradeType.name().toUpperCase(), seed));
   }
