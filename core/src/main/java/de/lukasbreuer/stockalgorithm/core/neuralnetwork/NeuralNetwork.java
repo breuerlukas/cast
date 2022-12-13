@@ -37,7 +37,7 @@ public final class NeuralNetwork {
       //.l2(1e-4)
       .activation(Activation.RELU)
       .updater(new Nesterovs(1e-4, 0.9))
-      //.updater(new Adam(1e-4))
+      //.updater(new Sgd(1e-4))
       .list();
     configurationBuilder.layer(new DenseLayer.Builder()
       .nIn(inputSize)
@@ -76,9 +76,9 @@ public final class NeuralNetwork {
 
   public float evaluate(int index, Map.Entry<List<double[]>, Double> entry) {
     var input = dataSetIterator.buildInputVector(entry.getKey());
-    var prediction = network.output(input, false).getFloat(0);
+    var prediction = network.output(input, false).getFloat(0) * 100;
     var prefix = "";
-    if (prediction > 0.3f) {
+    if (prediction > 30f) {
       prefix = "\u001B[31m";
     }
     System.out.println(prefix + index + ": " + entry.getValue() + " <-> " + prediction + "\u001B[0m");

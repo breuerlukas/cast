@@ -9,7 +9,7 @@ import de.lukasbreuer.stockalgorithm.core.neuralnetwork.NeuralNetworkFactory;
 public final class CoreApplication {
   public static void main(String[] args) throws Exception {
     var injector = Guice.createInjector(StockAlgorithmModule.create());
-    var stockAlgorithm = StockAlgorithm.create("ATVI", 100,
+    var stockAlgorithm = StockAlgorithm.create("NEE", 1,
       injector.getInstance(StockDatasetFactory.class),
       injector.getInstance(NeuralNetworkFactory.class),
       injector.getInstance(EvaluationFactory.class),

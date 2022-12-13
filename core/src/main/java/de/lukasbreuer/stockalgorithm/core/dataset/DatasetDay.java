@@ -14,7 +14,7 @@ public final class DatasetDay {
 
   public void build() {
     var calculations = Lists.<Double>newArrayList();
-    calculations.addAll(createReviewIndicatorBundle(ChangeIndicator.class, new int[] {1, 2, 3}));
+    calculations.addAll(createReviewIndicatorBundle(ChangeIndicator.class, new int[] {1, 2, 3, 4}));
     calculations.addAll(createRegularReviewIndicatorBundle(MovingAverageIndicator.class));
     calculations.addAll(createRegularReviewIndicatorBundle(ChangeRateIndicator.class));
     calculations.addAll(createRegularReviewIndicatorBundle(RelativeStrengthIndicator.class));
