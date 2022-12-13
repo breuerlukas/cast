@@ -10,10 +10,7 @@ import de.lukasbreuer.stockalgorithm.core.trade.Trade;
 import de.lukasbreuer.stockalgorithm.core.trade.TradeType;
 import lombok.RequiredArgsConstructor;
 
-import java.util.AbstractMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor(staticName = "create")
@@ -31,8 +28,9 @@ public final class StockDataset {
   private final int totalBatches;
   private final int tradeGeneralisationStepSize;
   private final int tradeNoiseRemovalStepSize;
+  private final int inputSizePerDay;
   private final int dayLongestReview;
-  private final List<Map.Entry<List<double[]>, Double>> dataset = Lists.newArrayList();
+  private List<Map.Entry<List<double[]>, Double>> dataset = Lists.newArrayList();
   private List<HistoryEntry> historyData;
   private List<DatasetDay> dayData;
   private List<Trade> optimalTrades;
@@ -47,6 +45,8 @@ public final class StockDataset {
       modelState == ModelState.TRAINING ? trainMaximumTrades : evaluationMaximumTrades,
       tradeGeneralisationStepSize, tradeNoiseRemovalStepSize).determineBestTrades();
     fillDataset();
+    dataset = normalizeData(dataset);
+    System.out.println(Arrays.toString(dataset.get(0).getKey().get(0)));
     historyIterator = HistoryIterator.create(dataset, new Random(seed), batchSize, totalBatches);
   }
 
@@ -75,6 +75,7 @@ public final class StockDataset {
     var bestTradeDates = optimalTrades.stream()
       .map(trade -> tradeType == TradeType.BUY ? trade.buyTime() : trade.sellTime())
       .collect(Collectors.toList());
+    System.out.println(dayLongestReview + reviewPeriod + ":" + bestTradeDates);
     for (var i = dayLongestReview + reviewPeriod; i < historyData.size(); i++) {
       var entry = new AbstractMap.SimpleEntry<>(createInputData(i - dayLongestReview),
         calculateTradeValue(bestTradeDates, i));
@@ -107,15 +108,16 @@ public final class StockDataset {
     return 0;
   }
 
-  /*private static List<Map.Entry<List<double[]>, Double>> normalizeData(List<Map.Entry<List<double[]>, Double>> data) {
+  //TODO: REWRITE
+  private List<Map.Entry<List<double[]>, Double>> normalizeData(List<Map.Entry<List<double[]>, Double>> data) {
     var normalizedData = Lists.<Map.Entry<List<double[]>, Double>>newArrayList();
-    double[] maximums = new double[INPUT_SIZE_PER_DAY];
+    double[] maximums = new double[inputSizePerDay];
     Arrays.fill(maximums, -Double.MAX_VALUE);
-    double[] minimums = new double[INPUT_SIZE_PER_DAY];
+    double[] minimums = new double[inputSizePerDay];
     Arrays.fill(minimums, Double.MAX_VALUE);
     for (var entry : data) {
       for (var dayInputData : entry.getKey()) {
-        for (var i = 0; i < INPUT_SIZE_PER_DAY; i++) {
+        for (var i = 0; i < inputSizePerDay; i++) {
           if (dayInputData[i] > maximums[i]) {
             maximums[i] = dayInputData[i];
           }
@@ -128,8 +130,8 @@ public final class StockDataset {
     for (var entry : data) {
       var inputData = Lists.<double[]>newArrayList();
       for (var dayInputData : entry.getKey()) {
-        var dayNormalizedInput = new double[INPUT_SIZE_PER_DAY];
-        for (var i = 0; i < INPUT_SIZE_PER_DAY; i++) {
+        var dayNormalizedInput = new double[inputSizePerDay];
+        for (var i = 0; i < inputSizePerDay; i++) {
           if (maximums[i] == -Double.MAX_VALUE || minimums[i] == Double.MAX_VALUE || (maximums[i] - minimums[i]) == 0) {
             continue;
           }
@@ -140,7 +142,7 @@ public final class StockDataset {
       normalizedData.add(new AbstractMap.SimpleEntry<>(inputData, entry.getValue()));
     }
     return normalizedData;
-  }*/
+  }
 
   public List<HistoryEntry> historyData() {
     return List.copyOf(historyData);
