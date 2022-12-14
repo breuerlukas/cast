@@ -5,7 +5,7 @@ dependencies {
 jar {
   manifest {
     attributes(
-      'Main-Class': 'de.lukasbreuer.stockalgorithm.Application'
+      'Main-Class': 'de.lukasbreuer.stockalgorithm.DeployApplication'
     )
   }
   from {
