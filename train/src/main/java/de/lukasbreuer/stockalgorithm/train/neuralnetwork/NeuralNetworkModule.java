@@ -5,6 +5,10 @@ import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import com.google.inject.name.Named;
 import lombok.RequiredArgsConstructor;
+import org.deeplearning4j.nn.weights.WeightInit;
+import org.nd4j.linalg.activations.Activation;
+import org.nd4j.linalg.learning.config.IUpdater;
+import org.nd4j.linalg.learning.config.Nesterovs;
 
 @RequiredArgsConstructor(staticName = "create")
 public final class NeuralNetworkModule extends AbstractModule {
@@ -17,7 +21,31 @@ public final class NeuralNetworkModule extends AbstractModule {
     return NETWORK_EPOCHS;
   }
 
-  private static final float NETWORK_LEARNING_RATE = 1e-4f;
+  private static final WeightInit NETWORK_WEIGHT_INIT = WeightInit.XAVIER;
+
+  @Provides
+  @Singleton
+  WeightInit provideNetworkWeightInit() {
+    return NETWORK_WEIGHT_INIT;
+  }
+
+  private static final Activation NETWORK_ACTIVATION = Activation.RELU;
+
+  @Provides
+  @Singleton
+  Activation provideNetworkActivation() {
+    return NETWORK_ACTIVATION;
+  }
+
+  private static final IUpdater NETWORK_UPDATER = new Nesterovs(1e-4, 0.9);
+
+  @Provides
+  @Singleton
+  IUpdater provideNetworkUpdater() {
+    return NETWORK_UPDATER;
+  }
+
+  private static final float NETWORK_LEARNING_RATE = -1;
 
   @Provides
   @Singleton
@@ -26,22 +54,13 @@ public final class NeuralNetworkModule extends AbstractModule {
     return NETWORK_LEARNING_RATE;
   }
 
-  private static final float NETWORK_DROPOUT_RATE = 1f;
+  private static final float NETWORK_DROPOUT_RATE = -1;
 
   @Provides
   @Singleton
   @Named("networkDropoutRate")
   float provideNetworkDropoutRate() {
     return NETWORK_DROPOUT_RATE;
-  }
-
-  private static final int NETWORK_ITERATIONS = 1;
-
-  @Provides
-  @Singleton
-  @Named("networkIterations")
-  int provideNetworkIterations() {
-    return NETWORK_ITERATIONS;
   }
 
   @Provides

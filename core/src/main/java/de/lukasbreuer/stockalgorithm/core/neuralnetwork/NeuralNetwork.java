@@ -7,6 +7,7 @@ import org.deeplearning4j.nn.conf.layers.OutputLayer;
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
 import org.deeplearning4j.nn.weights.WeightInit;
 import org.nd4j.linalg.activations.Activation;
+import org.nd4j.linalg.learning.config.IUpdater;
 import org.nd4j.linalg.learning.config.Nesterovs;
 import org.nd4j.linalg.lossfunctions.LossFunctions;
 
@@ -18,9 +19,11 @@ import java.util.Map;
 public final class NeuralNetwork {
   private final int seed;
   private final int epochs;
+  private final WeightInit weightInit;
+  private final Activation activation;
+  private final IUpdater updater;
   private final float learningRate;
   private final float dropoutRate;
-  private final int iterations;
   private final int inputSize;
   private final int[] hiddenLayers;
   private final int outputSize;
@@ -28,32 +31,34 @@ public final class NeuralNetwork {
   private MultiLayerNetwork network;
 
   public void build() {
-    NeuralNetConfiguration.ListBuilder configurationBuilder = new NeuralNetConfiguration.Builder()
-      .weightInit(WeightInit.XAVIER)
-      .seed(seed)
-      //.activation(Activation.TANH)
-      //.updater(new Sgd(0.1))
-      //.l2(1e-4)
-      .activation(Activation.RELU)
-      .updater(new Nesterovs(1e-4, 0.9))
-      //.updater(new Sgd(1e-4))
-      .list();
-    configurationBuilder.layer(new DenseLayer.Builder()
+    NeuralNetConfiguration.Builder configurationBuilder = new NeuralNetConfiguration.Builder();
+    configurationBuilder.seed(seed);
+    configurationBuilder.weightInit(weightInit);
+    configurationBuilder.activation(activation);
+    configurationBuilder.updater(updater);
+    if (learningRate > 0) {
+      configurationBuilder.l2(learningRate);
+    }
+    if (dropoutRate > 0) {
+      configurationBuilder.dropOut(dropoutRate);
+    }
+    NeuralNetConfiguration.ListBuilder listConfigurationBuilder = configurationBuilder.list();
+    listConfigurationBuilder.layer(new DenseLayer.Builder()
       .nIn(inputSize)
       .nOut(hiddenLayers[0])
       .build());
     for (var i = 0; i < hiddenLayers.length - 1; i++) {
-      configurationBuilder.layer(new DenseLayer.Builder()
+      listConfigurationBuilder.layer(new DenseLayer.Builder()
         .nIn(hiddenLayers[i])
         .nOut(hiddenLayers[i + 1])
         .build());
     }
-    configurationBuilder.layer(new OutputLayer.Builder(LossFunctions.LossFunction.NEGATIVELOGLIKELIHOOD)
+    listConfigurationBuilder.layer(new OutputLayer.Builder(LossFunctions.LossFunction.NEGATIVELOGLIKELIHOOD)
       .nIn(hiddenLayers[hiddenLayers.length - 1])
       .nOut(outputSize)
       .activation(Activation.SOFTMAX)
       .build());
-    var configuration = configurationBuilder.build();
+    var configuration = listConfigurationBuilder.build();
     network = new MultiLayerNetwork(configuration);
     network.init();
   }
