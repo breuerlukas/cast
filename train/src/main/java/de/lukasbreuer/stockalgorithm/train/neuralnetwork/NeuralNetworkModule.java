@@ -7,8 +7,7 @@ import com.google.inject.name.Named;
 import lombok.RequiredArgsConstructor;
 import org.deeplearning4j.nn.weights.WeightInit;
 import org.nd4j.linalg.activations.Activation;
-import org.nd4j.linalg.learning.config.IUpdater;
-import org.nd4j.linalg.learning.config.Nesterovs;
+import org.nd4j.linalg.learning.config.*;
 
 @RequiredArgsConstructor(staticName = "create")
 public final class NeuralNetworkModule extends AbstractModule {

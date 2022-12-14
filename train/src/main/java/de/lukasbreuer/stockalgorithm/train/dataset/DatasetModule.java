@@ -80,7 +80,7 @@ public final class DatasetModule extends AbstractModule {
     return MODEL_TRADE_GENERALISATION_STEP_SIZE;
   }
 
-  private static final int MODEL_NOISE_REMOVAL_STEP_SIZE = 15;
+  private static final int MODEL_NOISE_REMOVAL_STEP_SIZE = 9;
 
   @Provides
   @Singleton
