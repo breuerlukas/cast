@@ -6,7 +6,7 @@ import de.lukasbreuer.stockalgorithm.train.evaluation.EvaluationFactory;
 import de.lukasbreuer.stockalgorithm.train.evaluation.IllustrationFactory;
 import de.lukasbreuer.stockalgorithm.core.neuralnetwork.ModelState;
 import de.lukasbreuer.stockalgorithm.core.neuralnetwork.NeuralNetwork;
-import de.lukasbreuer.stockalgorithm.core.neuralnetwork.NeuralNetworkFactory;
+import de.lukasbreuer.stockalgorithm.train.neuralnetwork.NeuralNetworkFactory;
 import de.lukasbreuer.stockalgorithm.core.symbol.Symbol;
 import de.lukasbreuer.stockalgorithm.core.trade.TradeType;
 import lombok.RequiredArgsConstructor;

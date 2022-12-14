@@ -1,8 +1,10 @@
-package de.lukasbreuer.stockalgorithm.core.neuralnetwork;
+package de.lukasbreuer.stockalgorithm.train.neuralnetwork;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.google.inject.name.Named;
+import de.lukasbreuer.stockalgorithm.core.neuralnetwork.HistoryIterator;
+import de.lukasbreuer.stockalgorithm.core.neuralnetwork.NeuralNetwork;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 

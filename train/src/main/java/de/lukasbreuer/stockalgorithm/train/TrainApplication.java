@@ -4,7 +4,7 @@ import com.google.inject.Guice;
 import de.lukasbreuer.stockalgorithm.train.dataset.StockDatasetFactory;
 import de.lukasbreuer.stockalgorithm.train.evaluation.EvaluationFactory;
 import de.lukasbreuer.stockalgorithm.train.evaluation.IllustrationFactory;
-import de.lukasbreuer.stockalgorithm.core.neuralnetwork.NeuralNetworkFactory;
+import de.lukasbreuer.stockalgorithm.train.neuralnetwork.NeuralNetworkFactory;
 
 public final class TrainApplication {
   public static void main(String[] args) throws Exception {

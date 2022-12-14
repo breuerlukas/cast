@@ -1,4 +1,4 @@
-package de.lukasbreuer.stockalgorithm.core.neuralnetwork;
+package de.lukasbreuer.stockalgorithm.train.neuralnetwork;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
