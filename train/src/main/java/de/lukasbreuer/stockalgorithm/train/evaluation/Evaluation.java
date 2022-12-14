@@ -2,8 +2,8 @@ package de.lukasbreuer.stockalgorithm.train.evaluation;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import de.lukasbreuer.stockalgorithm.train.dataset.StockDataset;
 import de.lukasbreuer.stockalgorithm.core.neuralnetwork.NeuralNetwork;
+import de.lukasbreuer.stockalgorithm.train.dataset.StockDataset;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;

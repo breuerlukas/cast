@@ -6,7 +6,7 @@ import de.lukasbreuer.stockalgorithm.train.neuralnetwork.NeuralNetworkModule;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor(staticName = "create")
-public final class StockAlgorithmModule extends AbstractModule {
+public final class TrainModule extends AbstractModule {
   @Override
   protected void configure() {
     bind(int.class).toInstance(-1);

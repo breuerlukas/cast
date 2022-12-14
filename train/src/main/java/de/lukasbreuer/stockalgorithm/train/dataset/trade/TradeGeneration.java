@@ -1,11 +1,11 @@
 package de.lukasbreuer.stockalgorithm.train.dataset.trade;
 
 import com.clearspring.analytics.util.Lists;
+import de.lukasbreuer.stockalgorithm.core.symbol.HistoryEntry;
+import de.lukasbreuer.stockalgorithm.core.trade.Trade;
 import de.lukasbreuer.stockalgorithm.train.dataset.trade.filter.TradeIntersectionFilter;
 import de.lukasbreuer.stockalgorithm.train.dataset.trade.filter.TradeNoiseFilter;
 import de.lukasbreuer.stockalgorithm.train.dataset.trade.filter.TradeProfitFilter;
-import de.lukasbreuer.stockalgorithm.core.symbol.HistoryEntry;
-import de.lukasbreuer.stockalgorithm.core.trade.Trade;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
