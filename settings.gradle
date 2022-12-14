@@ -1,4 +1,5 @@
 rootProject.name = 'stockalgorithm'
 include 'core'
+include 'train'
 include 'deploy'
 

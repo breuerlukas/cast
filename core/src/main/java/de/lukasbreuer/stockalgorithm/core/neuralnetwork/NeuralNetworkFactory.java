@@ -3,7 +3,6 @@ package de.lukasbreuer.stockalgorithm.core.neuralnetwork;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.google.inject.name.Named;
-import de.lukasbreuer.stockalgorithm.core.dataset.HistoryIterator;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 
