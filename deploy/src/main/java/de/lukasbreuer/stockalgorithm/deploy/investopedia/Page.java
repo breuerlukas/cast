@@ -9,7 +9,12 @@ public abstract class Page {
   private final WebDriver browser;
   private final String url;
 
-  public void open() {
+  public void open() throws Exception {
     browser.get(url);
+    Thread.sleep(1000);
+  }
+
+  protected WebDriver browser() {
+    return browser;
   }
 }

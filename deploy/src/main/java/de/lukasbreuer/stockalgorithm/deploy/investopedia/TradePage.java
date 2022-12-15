@@ -1,6 +1,69 @@
 package de.lukasbreuer.stockalgorithm.deploy.investopedia;
 
-public class TradePage {
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+
+public final class TradePage extends Page {
+  private static final String PAGE_URL = "https://www.investopedia.com/simulator/trade/stocks";
+
+  public static TradePage create(WebDriver browser, String game, String stock) {
+    return new TradePage(browser, PAGE_URL, game, stock);
+  }
+
+  private final String game;
+  private final String stock;
+
+  private TradePage(WebDriver browser, String url, String game, String stock) {
+    super(browser, url);
+    this.game = game;
+    this.stock = stock;
+  }
+
+  @Override
+  public void open() throws Exception {
+    super.open();
+    acceptRightsInformation();
+    selectGame();
+    selectStock();
+    selectAction();
+    selectQuantity();
+    confirmTrade();
+  }
+
+  private void acceptRightsInformation() {
+    browser().findElement(By.id("onetrust-accept-btn-handler")).click();
+  }
+
+  private void selectGame() {
+    browser().findElement(By.className("portfolio-select")).click();
+    browser().findElements(By.xpath("//*[text()[contains(., '" + game + "')]]")).stream()
+      .filter(element -> element.getDomProperty("className").contains("v-list-item__title"))
+      .findFirst().get().click();
+  }
+
+  private void selectStock() throws Exception {
+    browser().findElement(By.id("input-75")).sendKeys(stock);
+    Thread.sleep(2000);
+    browser().findElements(By.xpath("//*[text()[contains(., '" + stock + "')]]")).stream()
+      .filter(element -> element.getDomProperty("className").contains("symbol-name"))
+      .findFirst().get().click();
+  }
+
+  private void selectAction() throws Exception {
+    Thread.sleep(10000);
+    browser().findElement(By.id("v-select__selections")).click();
+    browser().findElements(By.xpath("//*[text()[contains(., '" + "BUY" + "')]]")).stream()
+      .filter(element -> element.getDomProperty("className").contains("v-list-item__title"))
+      .findFirst().get().click();
+  }
+
+  private void selectQuantity() {
+
+  }
+
+  private void confirmTrade() {
+
+  }
 }
 
 /*
