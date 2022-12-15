@@ -9,7 +9,7 @@ import de.lukasbreuer.stockalgorithm.train.neuralnetwork.NeuralNetworkFactory;
 public final class TrainApplication {
   public static void main(String[] args) throws Exception {
     var injector = Guice.createInjector(TrainModule.create());
-    var stockAlgorithm = TrainAlgorithm.create("NVDA", 1,
+    var stockAlgorithm = TrainAlgorithm.create("PFE", 1,
       injector.getInstance(StockDatasetFactory.class),
       injector.getInstance(NeuralNetworkFactory.class),
       injector.getInstance(EvaluationFactory.class),

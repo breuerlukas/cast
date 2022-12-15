@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor(staticName = "create")
 public final class DatasetModule extends AbstractModule {
-  private static final int MODEL_TRAIN_PERIOD = 365 * 4;
+  private static final int MODEL_TRAIN_PERIOD = 365 * 6;
 
   @Provides
   @Singleton
@@ -17,7 +17,7 @@ public final class DatasetModule extends AbstractModule {
     return MODEL_TRAIN_PERIOD;
   }
 
-  private static final int MODEL_TRAIN_MAXIMUM_TRADES = 4;
+  private static final int MODEL_TRAIN_MAXIMUM_TRADES = 6;
 
   @Provides
   @Singleton
@@ -26,7 +26,7 @@ public final class DatasetModule extends AbstractModule {
     return MODEL_TRAIN_MAXIMUM_TRADES;
   }
 
-  private static final int MODEL_EVALUATION_PERIOD = 365 * 2;
+  private static final int MODEL_EVALUATION_PERIOD = 365;
 
   @Provides
   @Singleton

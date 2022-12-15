@@ -44,7 +44,7 @@ public final class Illustration {
     plot.plot().add(prices).label("Prices");
   }
 
-  private static final int ILLUSTRATION_SCALE = 100;
+  private static final int ILLUSTRATION_SCALE = 50;
 
   private void addTradeSignals(Plot plot) {
     for (var optimalSignal : evaluation.optimalSignals()) {

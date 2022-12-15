@@ -46,7 +46,7 @@ public final class StockDataset {
       modelState == ModelState.TRAINING ? trainMaximumTrades : evaluationMaximumTrades,
       tradeGeneralisationStepSize, tradeNoiseRemovalStepSize).determineBestTrades();
     fillDataset();
-    dataset = normalizeData(dataset);
+    //dataset = normalizeData(dataset);
     System.out.println(Arrays.toString(dataset.get(0).getKey().get(0)));
     historyIterator = HistoryIterator.create(dataset, new Random(seed), batchSize, totalBatches);
   }
