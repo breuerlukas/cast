@@ -3,7 +3,7 @@ package de.lukasbreuer.stockalgorithm.core.database;
 import de.lukasbreuer.stockalgorithm.core.configuration.Configuration;
 import lombok.Getter;
 import lombok.experimental.Accessors;
-import org.json.simple.JSONObject;
+import org.json.JSONObject;
 
 @Accessors(fluent = true)
 public final class DatabaseConfiguration extends Configuration {
@@ -22,6 +22,6 @@ public final class DatabaseConfiguration extends Configuration {
 
   @Override
   protected void deserialize(JSONObject json) {
-    databaseName = (String) json.get("databaseName");
+    databaseName = json.getString("databaseName");
   }
 }
