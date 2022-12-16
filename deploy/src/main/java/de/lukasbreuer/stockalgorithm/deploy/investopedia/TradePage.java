@@ -49,7 +49,7 @@ public final class TradePage extends Page {
 
   private void selectGame() throws Exception {
     browser().findElement(By.cssSelector("button[data-cy='portfolio-select']")).click();
-    Thread.sleep(100);
+    Thread.sleep(200);
     browser().findElements(By.xpath("//*[text()[contains(., '" + game + "')]]")).stream()
       .filter(element -> element.getDomProperty("className").contains("v-list-item__title"))
       .findFirst().get().click();
@@ -66,7 +66,7 @@ public final class TradePage extends Page {
   private void selectAction() throws Exception {
     browser().findElement(By.cssSelector("input[data-cy='action-select']"))
       .findElement(By.xpath("./..")).click();
-    Thread.sleep(100);
+    Thread.sleep(200);
     browser().findElement(By.id("list-item-173-" +
       calculateActionIndex(tradeType))).click();
   }
@@ -89,7 +89,7 @@ public final class TradePage extends Page {
   private void selectDuration() throws Exception {
     browser().findElement(By.cssSelector("input[data-cy='duration-select']"))
       .findElement(By.xpath("./..")).click();
-    Thread.sleep(100);
+    Thread.sleep(200);
     browser().findElement(By.id("list-item-181-1")).click();
   }
 
