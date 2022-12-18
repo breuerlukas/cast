@@ -17,7 +17,7 @@ public final class ChangeRateIndicator extends ReviewIndicator {
 
   @Override
   public double calculate(int index, int review) {
-    return 100 * ((prices().get(index) - prices().get(index - review)) /
-      prices().get(index - review));
+    return (prices().get(index) - prices().get(index - review)) /
+      prices().get(index - review);
   }
 }

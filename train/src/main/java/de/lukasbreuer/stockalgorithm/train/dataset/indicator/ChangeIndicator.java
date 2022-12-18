@@ -17,7 +17,7 @@ public final class ChangeIndicator extends ReviewIndicator {
 
   @Override
   public double calculate(int index, int review) {
-    return ((prices().get(index) - prices().get(index - review)) /
-      prices().get(index - 1)) * 100;
+    return (prices().get(index - review) - prices().get(index - review - 1)) /
+      prices().get(index - review - 1);
   }
 }

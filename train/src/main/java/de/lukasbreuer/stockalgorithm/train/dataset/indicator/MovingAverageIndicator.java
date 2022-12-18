@@ -25,6 +25,6 @@ public final class MovingAverageIndicator extends ReviewIndicator {
 
   @Override
   public double calculate(int index, int review) {
-    return (calculateMovingAverage(prices(), index - review, review) / priceMaximum) * 100;
+    return calculateMovingAverage(prices(), index - review, review) / priceMaximum;
   }
 }

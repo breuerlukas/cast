@@ -22,6 +22,6 @@ public final class BullishPatternIndicator extends Indicator {
     var bodyLength = Math.abs(entry.open() - entry.close());
     var bodyCandleRelation = bodyLength / candleLength;
     var bodyUpperDistance = (entry.high() - entry.open()) / candleLength;
-    return ((bodyCandleRelation + bodyUpperDistance) / 2) * 100;
+    return (bodyCandleRelation + bodyUpperDistance) / 2;
   }
 }

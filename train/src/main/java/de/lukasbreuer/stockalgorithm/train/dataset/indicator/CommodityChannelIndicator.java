@@ -26,8 +26,8 @@ public final class CommodityChannelIndicator extends ReviewIndicator {
     }
     var typicalPriceAverage = calculateMovingAverage(typicalPrices, 0, typicalPrices.size());
     var meanDeviation = calculateMeanDeviation(typicalPrices, typicalPriceAverage);
-    return (calculateTypicalPrice(data().get(index)) - typicalPriceAverage) /
-      (CCI_CONSTANT * meanDeviation);
+    return ((calculateTypicalPrice(data().get(index)) - typicalPriceAverage) /
+      (CCI_CONSTANT * meanDeviation)) / 100;
   }
 
   private double calculateMeanDeviation(List<Double> typicalPrices, double typicalPriceAverage) {

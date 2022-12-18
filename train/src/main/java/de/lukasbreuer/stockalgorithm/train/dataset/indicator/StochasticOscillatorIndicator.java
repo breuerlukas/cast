@@ -32,7 +32,7 @@ public final class StochasticOscillatorIndicator extends ReviewIndicator {
   public double calculate(int index, int review) {
     var lowestLow = findExtreme(index, review, ExtremeType.LOW);
     var highestHigh = findExtreme(index, review, ExtremeType.HIGH);
-    return ((data().get(index).close() - lowestLow) / (highestHigh - lowestLow)) * 100;
+    return (data().get(index).close() - lowestLow) / (highestHigh - lowestLow);
   }
 
   private double findExtreme(int index, int review, ExtremeType type) {

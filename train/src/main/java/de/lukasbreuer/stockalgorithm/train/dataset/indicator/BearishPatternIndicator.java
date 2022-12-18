@@ -22,6 +22,6 @@ public final class BearishPatternIndicator extends Indicator {
     var bodyLength = Math.abs(entry.open() - entry.close());
     var bodyCandleRelation = bodyLength / candleLength;
     var bodyLowerDistance = (entry.close() - entry.low()) / candleLength;
-    return ((bodyCandleRelation + bodyLowerDistance) / 2) * 100;
+    return (bodyCandleRelation + bodyLowerDistance) / 2;
   }
 }

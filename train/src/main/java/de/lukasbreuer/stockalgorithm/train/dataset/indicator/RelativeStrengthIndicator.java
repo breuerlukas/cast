@@ -30,7 +30,7 @@ public final class RelativeStrengthIndicator extends ReviewIndicator {
 
   @Override
   public double calculate(int index, int review) {
-    return 100 - (100 / (1 + (calculateAverageChange(prices(), index, review, ChangeType.GAIN) /
+    return 1 - (1 / (1 + (calculateAverageChange(prices(), index, review, ChangeType.GAIN) /
       calculateAverageChange(prices(), index, review, ChangeType.LOSS))));
   }
 
