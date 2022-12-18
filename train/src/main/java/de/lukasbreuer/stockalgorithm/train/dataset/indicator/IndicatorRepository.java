@@ -19,6 +19,8 @@ public final class IndicatorRepository {
     indicators.add(CommodityChannelIndicator.create(data));
     indicators.add(StochasticOscillatorIndicator.create(data));
     indicators.add(AverageRangeIndicator.create(data));
+    indicators.add(BalanceVolumeIndicator.create(data));
+    indicators.add(DirectionalMovementIndicator.create(data));
     indicators.add(BullishPatternIndicator.create(data));
     indicators.add(BearishPatternIndicator.create(data));
   }
