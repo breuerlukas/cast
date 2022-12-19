@@ -58,15 +58,14 @@ public class TradeGeneration {
     return step * stepSize - (stepSize > 1 ? ((stepSize - 1) / 2) : 0);
   }
 
-  private double calculateMovingAverage(List<Double> prices, int skipDays, int period) {
-    var value = 0.0;
-    for (var i = skipDays; i < (period + skipDays); i++) {
-      if (i < 0 || i >= prices.size()) {
-        continue;
-      }
-      value += prices.get(i);
+  private double calculateMovingAverage(
+    List<Double> prices, int index, int review
+  ) {
+    var value = 0.0D;
+    for (var i = 0; i < review; i++) {
+      value += prices.get(index - i);
     }
-    value /= period;
+    value /= review;
     return value;
   }
 }

@@ -98,16 +98,13 @@ public final class Illustration {
   }
 
   private double calculateMovingAverage(
-    List<Double> prices, int skipDays, int period
+    List<Double> prices, int index, int review
   ) {
     var value = 0.0D;
-    for (var i = skipDays; i < (period + skipDays); i++) {
-      if (i < 0 || i >= prices.size()) {
-        continue;
-      }
-      value += prices.get(i);
+    for (var i = 0; i < review; i++) {
+      value += prices.get(index - i);
     }
-    value /= period;
+    value /= review;
     return value;
   }
 }
