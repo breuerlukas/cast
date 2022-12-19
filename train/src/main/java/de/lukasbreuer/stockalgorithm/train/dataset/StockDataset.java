@@ -46,7 +46,7 @@ public final class StockDataset {
       modelState == ModelState.TRAINING ? trainMaximumTrades : evaluationMaximumTrades,
       tradeGeneralisationStepSize, tradeNoiseRemovalStepSize).determineBestTrades();
     fillDataset();
-    //dataset = normalizeData(dataset);
+    dataset = normalizeData(dataset);
     System.out.println(Arrays.toString(dataset.get(0).getKey().get(0)));
     historyIterator = HistoryIterator.create(dataset, new Random(seed), batchSize, totalBatches);
   }
@@ -109,40 +109,24 @@ public final class StockDataset {
     return 0;
   }
 
-  //TODO: REWRITE
   private List<Map.Entry<List<double[]>, Double>> normalizeData(List<Map.Entry<List<double[]>, Double>> data) {
     var normalizedData = Lists.<Map.Entry<List<double[]>, Double>>newArrayList();
-    double[] maximums = new double[inputSizePerDay];
-    Arrays.fill(maximums, -Double.MAX_VALUE);
-    double[] minimums = new double[inputSizePerDay];
-    Arrays.fill(minimums, Double.MAX_VALUE);
-    for (var entry : data) {
-      for (var dayInputData : entry.getKey()) {
-        for (var i = 0; i < inputSizePerDay; i++) {
-          if (dayInputData[i] > maximums[i]) {
-            maximums[i] = dayInputData[i];
-          }
-          if (dayInputData[i] < minimums[i]) {
-            minimums[i] = dayInputData[i];
-          }
-        }
-      }
-    }
     for (var entry : data) {
       var inputData = Lists.<double[]>newArrayList();
       for (var dayInputData : entry.getKey()) {
-        var dayNormalizedInput = new double[inputSizePerDay];
-        for (var i = 0; i < inputSizePerDay; i++) {
-          if (maximums[i] == -Double.MAX_VALUE || minimums[i] == Double.MAX_VALUE || (maximums[i] - minimums[i]) == 0) {
-            continue;
-          }
-          dayNormalizedInput[i] = (dayInputData[i] - minimums[i]) / (maximums[i] - minimums[i]);
-        }
-        inputData.add(dayNormalizedInput);
+        inputData.add(normalizeDayInputData(dayInputData));
       }
       normalizedData.add(new AbstractMap.SimpleEntry<>(inputData, entry.getValue()));
     }
     return normalizedData;
+  }
+
+  private double[] normalizeDayInputData(double[] dayInputData) {
+    var dayNormalizedInput = new double[inputSizePerDay];
+    for (var i = 0; i < inputSizePerDay; i++) {
+      dayNormalizedInput[i] = Math.tanh(dayInputData[i]);
+    }
+    return dayNormalizedInput;
   }
 
   public List<HistoryEntry> historyData() {
