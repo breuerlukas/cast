@@ -71,7 +71,7 @@ public final class NeuralNetworkModule extends AbstractModule {
     return reviewPeriod * inputSizePerDay;
   }
 
-  private static final int[] NETWORK_HIDDEN_NEURONS = new int[] {512, 512};
+  private static final int[] NETWORK_HIDDEN_NEURONS = new int[] {256, 512, 256};
 
   @Provides
   @Singleton
