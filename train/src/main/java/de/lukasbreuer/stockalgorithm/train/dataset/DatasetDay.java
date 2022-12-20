@@ -16,6 +16,7 @@ public final class DatasetDay {
     var calculations = Lists.<Double>newArrayList();
     calculations.addAll(createReviewIndicatorBundle(ChangeIndicator.class, new int[] {0, 1, 2, 3}));
     calculations.addAll(createRegularReviewIndicatorBundle(MovingAverageIndicator.class));
+    calculations.addAll(createRegularReviewIndicatorBundle(ExponentialMovingAverageIndicator.class));
     calculations.addAll(createRegularReviewIndicatorBundle(ChangeRateIndicator.class));
     calculations.addAll(createRegularReviewIndicatorBundle(RelativeStrengthIndicator.class));
     calculations.addAll(createRegularReviewIndicatorBundle(CommodityChannelIndicator.class));

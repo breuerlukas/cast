@@ -14,6 +14,7 @@ public final class IndicatorRepository {
   public void fill() {
     indicators.add(ChangeIndicator.create(data));
     indicators.add(MovingAverageIndicator.create(data));
+    indicators.add(ExponentialMovingAverageIndicator.create(data));
     indicators.add(ChangeRateIndicator.create(data));
     indicators.add(RelativeStrengthIndicator.create(data));
     indicators.add(CommodityChannelIndicator.create(data));
