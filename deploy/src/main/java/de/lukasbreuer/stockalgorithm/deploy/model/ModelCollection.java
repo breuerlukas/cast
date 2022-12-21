@@ -24,19 +24,19 @@ public final class ModelCollection extends DatabaseCollection {
     super(collection);
   }
 
-  public void addModule(Model model, Consumer<InsertOneResult> response) {
+  public void addModel(Model model, Consumer<InsertOneResult> response) {
     add(model.buildDocument(), response);
   }
 
-  public void updateModule(Model model, Consumer<UpdateResult> response) {
+  public void updateModel(Model model, Consumer<UpdateResult> response) {
     update(model.id(), model.buildDocument(), response);
   }
 
-  public void removeModule(Model model, Consumer<DeleteResult> response) {
-    removeModule(model.id(), response);
+  public void removeModel(Model model, Consumer<DeleteResult> response) {
+    removeModel(model.id(), response);
   }
 
-  public void removeModule(UUID modelID, Consumer<DeleteResult> response) {
+  public void removeModel(UUID modelID, Consumer<DeleteResult> response) {
     remove(modelID, response);
   }
 
