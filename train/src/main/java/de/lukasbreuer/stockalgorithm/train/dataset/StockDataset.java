@@ -9,11 +9,14 @@ import de.lukasbreuer.stockalgorithm.core.trade.Trade;
 import de.lukasbreuer.stockalgorithm.core.trade.TradeType;
 import de.lukasbreuer.stockalgorithm.train.dataset.indicator.IndicatorRepository;
 import de.lukasbreuer.stockalgorithm.train.dataset.trade.TradeGeneration;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.Accessors;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Accessors(fluent = true)
 @RequiredArgsConstructor(staticName = "create")
 public final class StockDataset {
   private final Symbol symbol;
@@ -35,6 +38,7 @@ public final class StockDataset {
   private List<HistoryEntry> historyData;
   private List<DatasetDay> dayData;
   private List<Trade> optimalTrades;
+  @Getter
   private HistoryIterator historyIterator;
 
   public void build() {
@@ -131,10 +135,6 @@ public final class StockDataset {
 
   public List<HistoryEntry> historyData() {
     return List.copyOf(historyData);
-  }
-
-  public HistoryIterator historyIterator() {
-    return historyIterator;
   }
 
   public List<Map.Entry<List<double[]>, Double>> raw() {
