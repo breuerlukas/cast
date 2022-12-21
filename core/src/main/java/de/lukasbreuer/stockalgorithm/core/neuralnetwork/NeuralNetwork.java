@@ -14,20 +14,57 @@ import java.io.File;
 import java.util.List;
 import java.util.Map;
 
-@RequiredArgsConstructor(staticName = "create")
 public final class NeuralNetwork {
-  private final int seed;
-  private final int epochs;
-  private final WeightInit weightInit;
-  private final Activation activation;
-  private final IUpdater updater;
-  private final float learningRate;
-  private final float dropoutRate;
-  private final int inputSize;
-  private final int[] hiddenLayers;
-  private final int outputSize;
-  private final HistoryIterator dataSetIterator;
+  public static NeuralNetwork createAndLoad(String path) throws Exception {
+    var neuralNetwork = new NeuralNetwork();
+    neuralNetwork.load(path);
+    return neuralNetwork;
+  }
+
+  public static NeuralNetwork create(
+    int seed, int epochs, WeightInit weightInit, Activation activation,
+    IUpdater updater, float learningRate, float dropoutRate, int inputSize,
+    int[] hiddenLayers, int outputSize, HistoryIterator dataSetIterator
+  ) {
+    return new NeuralNetwork(seed, epochs, weightInit, activation, updater,
+      learningRate, dropoutRate, inputSize, hiddenLayers, outputSize,
+      dataSetIterator);
+  }
+
+  private int seed;
+  private int epochs;
+  private WeightInit weightInit;
+  private Activation activation;
+  private IUpdater updater;
+  private float learningRate;
+  private float dropoutRate;
+  private int inputSize;
+  private int[] hiddenLayers;
+  private int outputSize;
+  private HistoryIterator dataSetIterator;
   private MultiLayerNetwork network;
+
+  private NeuralNetwork(
+    int seed, int epochs, WeightInit weightInit, Activation activation,
+    IUpdater updater, float learningRate, float dropoutRate, int inputSize,
+    int[] hiddenLayers, int outputSize, HistoryIterator dataSetIterator
+  ) {
+    this.seed = seed;
+    this.epochs = epochs;
+    this.weightInit = weightInit;
+    this.activation = activation;
+    this.updater = updater;
+    this.learningRate = learningRate;
+    this.dropoutRate = dropoutRate;
+    this.inputSize = inputSize;
+    this.hiddenLayers = hiddenLayers;
+    this.outputSize = outputSize;
+    this.dataSetIterator = dataSetIterator;
+  }
+
+  private NeuralNetwork() {
+
+  }
 
   public void build() {
     var configurationBuilder = new NeuralNetConfiguration.Builder();
