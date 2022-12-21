@@ -4,7 +4,7 @@ import com.github.sh0nk.matplotlib4j.Plot;
 import com.google.common.collect.Lists;
 import de.lukasbreuer.stockalgorithm.core.symbol.HistoryEntry;
 import de.lukasbreuer.stockalgorithm.core.trade.TradeType;
-import de.lukasbreuer.stockalgorithm.train.dataset.StockDataset;
+import de.lukasbreuer.stockalgorithm.core.dataset.StockDataset;
 import lombok.RequiredArgsConstructor;
 
 import java.util.AbstractMap;

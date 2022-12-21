@@ -1,4 +1,4 @@
-package de.lukasbreuer.stockalgorithm.train.dataset.trade.filter;
+package de.lukasbreuer.stockalgorithm.core.dataset.trade.filter;
 
 import de.lukasbreuer.stockalgorithm.core.trade.Trade;
 import lombok.AccessLevel;

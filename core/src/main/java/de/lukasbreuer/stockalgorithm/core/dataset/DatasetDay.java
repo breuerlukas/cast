@@ -1,6 +1,7 @@
-package de.lukasbreuer.stockalgorithm.train.dataset;
+package de.lukasbreuer.stockalgorithm.core.dataset;
 
 import com.clearspring.analytics.util.Lists;
+import de.lukasbreuer.stockalgorithm.core.dataset.indicator.*;
 import de.lukasbreuer.stockalgorithm.train.dataset.indicator.*;
 import lombok.RequiredArgsConstructor;
 

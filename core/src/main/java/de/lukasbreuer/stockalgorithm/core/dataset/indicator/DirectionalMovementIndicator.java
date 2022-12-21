@@ -1,4 +1,4 @@
- package de.lukasbreuer.stockalgorithm.train.dataset.indicator;
+ package de.lukasbreuer.stockalgorithm.core.dataset.indicator;
 
 import de.lukasbreuer.stockalgorithm.core.symbol.HistoryEntry;
 

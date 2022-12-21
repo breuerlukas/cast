@@ -3,6 +3,7 @@ package de.lukasbreuer.stockalgorithm.train.dataset;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.google.inject.name.Named;
+import de.lukasbreuer.stockalgorithm.core.dataset.StockDataset;
 import de.lukasbreuer.stockalgorithm.core.neuralnetwork.ModelState;
 import de.lukasbreuer.stockalgorithm.core.symbol.Symbol;
 import de.lukasbreuer.stockalgorithm.core.trade.TradeType;
