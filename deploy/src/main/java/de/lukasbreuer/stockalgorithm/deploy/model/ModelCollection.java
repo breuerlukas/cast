@@ -40,7 +40,7 @@ public final class ModelCollection extends DatabaseCollection {
     remove(modelID, response);
   }
 
-  public CompletableFuture<Model> findTradeById(UUID modelId) {
+  public CompletableFuture<Model> findModelById(UUID modelId) {
     return findById(modelId).thenApply(Model::of);
   }
 }
