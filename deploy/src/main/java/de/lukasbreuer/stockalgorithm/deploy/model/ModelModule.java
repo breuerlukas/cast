@@ -1,0 +1,16 @@
+package de.lukasbreuer.stockalgorithm.deploy.model;
+
+import com.google.inject.AbstractModule;
+import com.google.inject.Provides;
+import com.google.inject.Singleton;
+import de.lukasbreuer.stockalgorithm.core.database.DatabaseConnection;
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor(staticName = "create")
+public class ModelModule extends AbstractModule {
+  @Provides
+  @Singleton
+  ModelCollection provideModelCollection(DatabaseConnection databaseConnection) {
+    return ModelCollection.create(databaseConnection);
+  }
+}
