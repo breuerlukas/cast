@@ -17,21 +17,24 @@ import java.util.UUID;
 public final class Model {
   public static Model of(Document document) {
     return create(UUID.fromString(document.getString("id")),
-      document.getString("stock"), document.getString("modelPath"),
-      document.getInteger("reviewPeriod"));
+      document.getString("stock"), document.getString("buyModelPath"),
+      document.getString("sellModelPath"), document.getInteger("reviewPeriod"));
   }
 
   @Getter
   private final UUID id;
   private final String stock;
-  private final String modelPath;
+  private final String buyModelPath;
+  private final String sellModelPath;
   private final int reviewPeriod;
   private Symbol symbol;
-  private NeuralNetwork neuralNetwork;
+  private NeuralNetwork buyNeuralNetwork;
+  private NeuralNetwork sellNeuralNetwork;
 
   public void initialize() throws Exception {
     symbol = Symbol.createAndFetch(stock);
-    neuralNetwork = NeuralNetwork.createAndLoad(modelPath);
+    buyNeuralNetwork = NeuralNetwork.createAndLoad(buyModelPath);
+    sellNeuralNetwork = NeuralNetwork.createAndLoad(sellModelPath);
   }
 
   private static final int INPUT_SIZE_PER_DAY = 42;
@@ -44,7 +47,8 @@ public final class Model {
     dataset.build();
     var predictions = new float[timeSpan];
     for (var i = 0; i < timeSpan; i++) {
-      predictions[i] = neuralNetwork.evaluate(0, dataset.raw().get(i));
+      predictions[i] = tradeType.isBuy() ? buyNeuralNetwork.evaluate(0, dataset.raw().get(i)) :
+        sellNeuralNetwork.evaluate(0, dataset.raw().get(i));
     }
     return predictions;
   }
@@ -52,7 +56,8 @@ public final class Model {
   public Document buildDocument() {
     var document = new Document("id", id.toString());
     document.append("stock", stock);
-    document.append("modelPath", modelPath);
+    document.append("buyModelPath", buyModelPath);
+    document.append("sellModelPath", sellModelPath);
     document.append("reviewPeriod", reviewPeriod);
     return document;
   }
