@@ -18,7 +18,7 @@ public final class TradeSchedule {
   public void start() {
     var initialDelay = calculateInitialDelay();
     schedule = executorService.scheduleAtFixedRate(this::execute,
-      initialDelay, 1000, TimeUnit.MILLISECONDS);
+      initialDelay, 1000 * 60 * 60 * 24, TimeUnit.MILLISECONDS);
     log.info("Initialized trade schedule");
     log.info("First schedule execution in " +
       ((int) ((initialDelay / (1000 * 60 * 60)) % 24)) + " hour(s), " +
