@@ -10,7 +10,9 @@ import lombok.RequiredArgsConstructor;
 public class ModelModule extends AbstractModule {
   @Provides
   @Singleton
-  ModelCollection provideModelCollection(DatabaseConnection databaseConnection) {
-    return ModelCollection.create(databaseConnection);
+  ModelCollection provideModelCollection(
+    DatabaseConnection databaseConnection, ModelFactory modelFactory
+  ) {
+    return ModelCollection.create(databaseConnection,  modelFactory);
   }
 }

@@ -15,13 +15,20 @@ import java.util.function.Consumer;
 public final class ModelCollection extends DatabaseCollection {
   private static final String COLLECTION_NAME = "models";
 
-  public static ModelCollection create(DatabaseConnection databaseConnection) {
+  public static ModelCollection create(
+    DatabaseConnection databaseConnection, ModelFactory modelFactory
+  ) {
     return new ModelCollection(
-      databaseConnection.database().getCollection(COLLECTION_NAME));
+      databaseConnection.database().getCollection(COLLECTION_NAME), modelFactory);
   }
 
-  private ModelCollection(MongoCollection<Document> collection) {
+  private final ModelFactory modelFactory;
+
+  private ModelCollection(
+    MongoCollection<Document> collection, ModelFactory modelFactory
+    ) {
     super(collection);
+    this.modelFactory = modelFactory;
   }
 
   public void addModel(Model model, Consumer<InsertOneResult> response) {
@@ -41,6 +48,6 @@ public final class ModelCollection extends DatabaseCollection {
   }
 
   public CompletableFuture<Model> findModelById(UUID modelId) {
-    return findById(modelId).thenApply(Model::of);
+    return findById(modelId).thenApply(modelFactory::of);
   }
 }

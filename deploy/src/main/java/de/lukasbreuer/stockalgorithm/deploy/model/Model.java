@@ -1,6 +1,7 @@
 package de.lukasbreuer.stockalgorithm.deploy.model;
 
 import de.lukasbreuer.stockalgorithm.core.dataset.StockDataset;
+import de.lukasbreuer.stockalgorithm.core.log.Log;
 import de.lukasbreuer.stockalgorithm.core.neuralnetwork.ModelState;
 import de.lukasbreuer.stockalgorithm.core.neuralnetwork.NeuralNetwork;
 import de.lukasbreuer.stockalgorithm.core.symbol.Symbol;
@@ -15,12 +16,13 @@ import java.util.UUID;
 @Accessors(fluent = true)
 @RequiredArgsConstructor(staticName = "create")
 public final class Model {
-  public static Model of(Document document) {
-    return create(UUID.fromString(document.getString("id")),
+  public static Model of(Log log, Document document) {
+    return create(log, UUID.fromString(document.getString("id")),
       document.getString("stock"), document.getString("buyModelPath"),
       document.getString("sellModelPath"), document.getInteger("reviewPeriod"));
   }
 
+  private final Log log;
   @Getter
   private final UUID id;
   private final String stock;
@@ -35,6 +37,8 @@ public final class Model {
     symbol = Symbol.createAndFetch(stock);
     buyNeuralNetwork = NeuralNetwork.createAndLoad(buyModelPath);
     sellNeuralNetwork = NeuralNetwork.createAndLoad(sellModelPath);
+    log.info("The " + stock.toUpperCase() + " model has been successfully " +
+      "loaded and initialized");
   }
 
   private static final int INPUT_SIZE_PER_DAY = 42;

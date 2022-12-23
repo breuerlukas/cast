@@ -1,5 +1,6 @@
 package de.lukasbreuer.stockalgorithm.deploy.trade;
 
+import de.lukasbreuer.stockalgorithm.core.log.Log;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Calendar;
@@ -10,12 +11,19 @@ import java.util.concurrent.TimeUnit;
 
 @RequiredArgsConstructor(staticName = "create")
 public final class TradeSchedule {
+  private final Log log;
   private final ScheduledExecutorService executorService = Executors.newScheduledThreadPool(1);
   private ScheduledFuture<?> schedule;
 
   public void start() {
+    var initialDelay = calculateInitialDelay();
     schedule = executorService.scheduleAtFixedRate(this::execute,
-      calculateInitialDelay(), 1000 * 60 * 60 * 24, TimeUnit.MILLISECONDS);
+      initialDelay, 1000, TimeUnit.MILLISECONDS);
+    log.info("Initialized trade schedule");
+    log.info("First schedule execution in " +
+      ((int) ((initialDelay / (1000 * 60 * 60)) % 24)) + " hour(s), " +
+      ((int) ((initialDelay / (1000 * 60)) % 60)) + " minute(s), " +
+      ((int) (initialDelay / 1000) % 60) + " second(s)");
   }
 
   private static final int MARKET_CLOSE_TIME = 22;
@@ -36,12 +44,14 @@ public final class TradeSchedule {
     return calendar.getTimeInMillis() - System.currentTimeMillis();
   }
 
-  //TODO: IMPLEMENT
   private void execute() {
-
+    log.info("Start trade execution");
+    //TODO: IMPLEMENT
+    log.info("Finished trade execution");
   }
 
   public void stop() {
     schedule.cancel(true);
+    log.info("Stopped trade schedule");
   }
 }
