@@ -50,4 +50,8 @@ public final class ModelCollection extends DatabaseCollection {
   public CompletableFuture<Model> findModelById(UUID modelId) {
     return findById(modelId).thenApply(modelFactory::of);
   }
+
+  public CompletableFuture<Model> findByStock(String stock) {
+    return findByAttribute("stock", stock).thenApply(modelFactory::of);
+  }
 }

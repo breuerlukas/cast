@@ -34,8 +34,12 @@ public class DatabaseCollection {
   }
 
   protected CompletableFuture<Document> findById(UUID id) {
+    return findByAttribute("id", id.toString());
+  }
+
+  protected CompletableFuture<Document> findByAttribute(String key, String value) {
     var completableFuture = new CompletableFuture<Document>();
-    collection.find(Filters.eq("id", id.toString()))
+    collection.find(Filters.eq(key, value))
       .subscribe(SingleSubscriber.of(completableFuture::complete));
     return completableFuture;
   }
