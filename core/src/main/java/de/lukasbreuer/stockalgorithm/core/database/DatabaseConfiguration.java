@@ -7,8 +7,10 @@ import org.json.JSONObject;
 
 @Accessors(fluent = true)
 public final class DatabaseConfiguration extends Configuration {
+  private static final String CONFIGURATION_PATH = "/database/database.json";
+
   public static DatabaseConfiguration createAndLoad() throws Exception {
-    var configuration = new DatabaseConfiguration("/database/database.json");
+    var configuration = new DatabaseConfiguration(CONFIGURATION_PATH);
     configuration.load();
     return configuration;
   }
