@@ -3,6 +3,7 @@ package de.lukasbreuer.stockalgorithm.train;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
+import com.google.inject.name.Named;
 import de.lukasbreuer.stockalgorithm.core.CoreModule;
 import de.lukasbreuer.stockalgorithm.core.log.Log;
 import de.lukasbreuer.stockalgorithm.train.dataset.DatasetModule;
@@ -20,6 +21,7 @@ public final class TrainModule extends AbstractModule {
 
   @Provides
   @Singleton
+  @Named("trainLog")
   Log provideTrainLog() {
     return Log.create("Train");
   }
