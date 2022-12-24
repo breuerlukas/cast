@@ -52,6 +52,6 @@ public final class ModelCollection extends DatabaseCollection {
   }
 
   public CompletableFuture<Model> findByStock(String stock) {
-    return findByAttribute("stock", stock).thenApply(modelFactory::of);
+    return findSingleByAttribute("stock", stock).thenApply(modelFactory::of);
   }
 }

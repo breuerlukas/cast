@@ -33,12 +33,17 @@ public final class Model {
   private NeuralNetwork buyNeuralNetwork;
   private NeuralNetwork sellNeuralNetwork;
 
-  public void initialize() throws Exception {
-    symbol = Symbol.createAndFetch(stock);
-    buyNeuralNetwork = NeuralNetwork.createAndLoad(buyModelPath);
-    sellNeuralNetwork = NeuralNetwork.createAndLoad(sellModelPath);
-    log.info("The " + stock.toUpperCase() + " model has been successfully " +
-      "loaded and initialized");
+  public void initialize() {
+    try {
+      symbol = Symbol.createAndFetch(stock);
+      buyNeuralNetwork = NeuralNetwork.createAndLoad(buyModelPath);
+      sellNeuralNetwork = NeuralNetwork.createAndLoad(sellModelPath);
+      log.info("The " + stock.toUpperCase() + " model has been successfully " +
+        "loaded and initialized");
+    } catch (Exception exception) {
+      log.severe("Initialization of the " + stock.toUpperCase() + " model failed");
+      exception.printStackTrace();
+    }
   }
 
   private static final int INPUT_SIZE_PER_DAY = 42;
@@ -55,6 +60,10 @@ public final class Model {
         sellNeuralNetwork.evaluate(0, dataset.raw().get(i));
     }
     return predictions;
+  }
+
+  public double currentStockPrice() {
+    return symbol.findPartOfHistory(1).get(0).close();
   }
 
   public Document buildDocument() {
