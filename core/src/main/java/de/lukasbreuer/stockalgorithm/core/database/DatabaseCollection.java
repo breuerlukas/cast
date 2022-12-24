@@ -34,13 +34,22 @@ public class DatabaseCollection {
   }
 
   protected CompletableFuture<Document> findById(UUID id) {
-    return findByAttribute("id", id.toString());
+    return findSingleByAttribute("id", id.toString());
   }
 
-  protected CompletableFuture<Document> findByAttribute(String key, String value) {
+  protected CompletableFuture<Document> findSingleByAttribute(String key, String value) {
     var completableFuture = new CompletableFuture<Document>();
     collection.find(Filters.eq(key, value))
       .subscribe(SingleSubscriber.of(completableFuture::complete));
+    return completableFuture;
+  }
+
+  protected CompletableFuture<List<Document>> findMultipleByAttribute(
+    String key, String value
+  ) {
+    var completableFuture = new CompletableFuture<List<Document>>();
+    collection.find(Filters.eq(key, value))
+      .subscribe(FullSubscriber.of(completableFuture::complete));
     return completableFuture;
   }
 
