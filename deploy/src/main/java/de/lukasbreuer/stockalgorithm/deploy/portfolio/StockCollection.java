@@ -8,9 +8,11 @@ import de.lukasbreuer.stockalgorithm.core.database.DatabaseCollection;
 import de.lukasbreuer.stockalgorithm.core.database.DatabaseConnection;
 import org.bson.Document;
 
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 public final class StockCollection extends DatabaseCollection {
   private static final String COLLECTION_NAME = "portfolio";
@@ -42,5 +44,10 @@ public final class StockCollection extends DatabaseCollection {
 
   public CompletableFuture<Stock> findStockById(UUID stockId) {
     return findById(stockId).thenApply(Stock::of);
+  }
+
+  public CompletableFuture<List<Stock>> totalPortfolio() {
+    return findAll().thenApply(documents ->
+      documents.stream().map(Stock::of).collect(Collectors.toList()));
   }
 }
