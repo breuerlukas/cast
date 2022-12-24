@@ -11,7 +11,7 @@ import org.nd4j.linalg.learning.config.*;
 
 @RequiredArgsConstructor(staticName = "create")
 public final class NeuralNetworkModule extends AbstractModule {
-  private static final int NETWORK_EPOCHS = 20;
+  private static final int NETWORK_EPOCHS = 50;
 
   @Provides
   @Singleton
