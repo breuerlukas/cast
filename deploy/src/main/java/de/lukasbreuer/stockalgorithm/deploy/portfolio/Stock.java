@@ -19,6 +19,10 @@ public final class Stock {
   private final UUID id;
   private final String stockName;
 
+  public String formattedStockName() {
+    return stockName.toUpperCase();
+  }
+
   public Document buildDocument() {
     var document = new Document("id", id.toString());
     document.append("stockName", stockName);
