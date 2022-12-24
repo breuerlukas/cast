@@ -6,11 +6,16 @@ import com.mongodb.client.result.UpdateResult;
 import com.mongodb.reactivestreams.client.MongoCollection;
 import de.lukasbreuer.stockalgorithm.core.database.DatabaseCollection;
 import de.lukasbreuer.stockalgorithm.core.database.DatabaseConnection;
+import de.lukasbreuer.stockalgorithm.core.trade.TradeType;
 import org.bson.Document;
 
+import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 public final class TradeCollection extends DatabaseCollection {
   private static final String COLLECTION_NAME = "trades";
@@ -42,5 +47,18 @@ public final class TradeCollection extends DatabaseCollection {
 
   public CompletableFuture<Trade> findTradeById(UUID tradeID) {
     return findById(tradeID).thenApply(Trade::of);
+  }
+
+  public CompletableFuture<Optional<Trade>> findLatestByStock(
+    String stock, TradeType tradeType
+  ) {
+    return findByStock(stock).thenApply(trades -> trades.stream()
+      .filter(trade -> trade.tradeType().equals(tradeType))
+      .min(Comparator.comparing(Trade::tradeTime)));
+  }
+
+  public CompletableFuture<List<Trade>> findByStock(String stock) {
+    return findMultipleByAttribute("stock", stock).thenApply(documents ->
+      documents.stream().map(Trade::of).collect(Collectors.toList()));
   }
 }
