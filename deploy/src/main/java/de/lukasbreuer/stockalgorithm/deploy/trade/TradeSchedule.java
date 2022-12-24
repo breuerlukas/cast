@@ -1,6 +1,10 @@
 package de.lukasbreuer.stockalgorithm.deploy.trade;
 
 import de.lukasbreuer.stockalgorithm.core.log.Log;
+import de.lukasbreuer.stockalgorithm.core.trade.TradeType;
+import de.lukasbreuer.stockalgorithm.deploy.portfolio.Stock;
+import de.lukasbreuer.stockalgorithm.deploy.portfolio.StockCollection;
+import de.lukasbreuer.stockalgorithm.deploy.trade.execution.TradeExecutionFactory;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Calendar;
@@ -12,6 +16,8 @@ import java.util.concurrent.TimeUnit;
 @RequiredArgsConstructor(staticName = "create")
 public final class TradeSchedule {
   private final Log log;
+  private final StockCollection stockCollection;
+  private final TradeExecutionFactory tradeExecutionFactory;
   private final ScheduledExecutorService executorService = Executors.newScheduledThreadPool(1);
   private ScheduledFuture<?> schedule;
 
@@ -45,9 +51,17 @@ public final class TradeSchedule {
   }
 
   private void execute() {
-    log.info("Start trade execution");
-    //TODO: IMPLEMENT
-    log.info("Finished trade execution");
+    log.info("Start schedule execution");
+    stockCollection.totalPortfolio().thenAccept(portfolio ->
+      portfolio.forEach(this::execute));
+    log.info("Finished schedule execution");
+  }
+
+  private void execute(Stock stock) {
+    var execution = tradeExecutionFactory.create(stock);
+    execution.verify(TradeType.BUY);
+    execution.verify(TradeType.SELL);
+    log.info("Finished " + stock.formattedStockName() + " execution");
   }
 
   public void stop() {
