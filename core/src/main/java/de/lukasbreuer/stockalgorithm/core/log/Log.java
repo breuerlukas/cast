@@ -15,7 +15,7 @@ public final class Log extends Logger {
     var fileHandler = new FileHandler(System.getProperty("user.dir") + LOG_PATH +
       new SimpleDateFormat("yyyy-MM-dd-HHmmss").format(new Date()) + ".log");
     fileHandler.setFormatter(LogFormat.create(LogFormat.FormatType.FILE));
-    var log = new Log(name);
+    var log = new Log(name, consoleHandler, fileHandler);
     log.setLevel(Level.ALL);
     log.addHandler(consoleHandler);
     log.addHandler(fileHandler);
@@ -23,14 +23,35 @@ public final class Log extends Logger {
     return log;
   }
 
-  private Log(String name) {
+  private final ConsoleHandler consoleHandler;
+  private final FileHandler fileHandler;
+
+  private Log(String name, ConsoleHandler consoleHandler, FileHandler fileHandler) {
     super(name, null);
+    this.consoleHandler = consoleHandler;
+    this.fileHandler = fileHandler;
   }
 
   @Override
   public void log(LogRecord record) {
+    super.log(formatRecord(record));
+  }
+
+  public void consoleLog(Level level, String message) {
+    restrictedLog(consoleHandler, new LogRecord(level, message));
+  }
+
+  public void fileLog(Level level, String message) {
+    restrictedLog(fileHandler, new LogRecord(level, message));
+  }
+
+  private void restrictedLog(Handler handler, LogRecord record) {
+    handler.publish(formatRecord(record));
+  }
+
+  private LogRecord formatRecord(LogRecord record) {
     record.setMessage("[" + getName().toUpperCase() + "] " + record.getMessage());
-    super.log(record);
+    return record;
   }
 
   public void close() {
