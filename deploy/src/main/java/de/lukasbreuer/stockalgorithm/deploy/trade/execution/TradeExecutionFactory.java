@@ -13,7 +13,7 @@ import lombok.RequiredArgsConstructor;
 @Singleton
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE, onConstructor = @__({@Inject}))
 public final class TradeExecutionFactory {
-  @Inject @Named("deployLog")
+  @Inject
   private final Log log;
   @Inject
   private final ModelCollection modelCollection;

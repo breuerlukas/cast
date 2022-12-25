@@ -2,7 +2,6 @@ package de.lukasbreuer.stockalgorithm.deploy.model;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import com.google.inject.name.Named;
 import de.lukasbreuer.stockalgorithm.core.log.Log;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +12,7 @@ import java.util.UUID;
 @Singleton
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE, onConstructor = @__({@Inject}))
 public final class ModelFactory {
-  @Inject @Named("deployLog")
+  @Inject
   private final Log log;
 
   public Model of(Document document) {

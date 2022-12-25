@@ -2,7 +2,6 @@ package de.lukasbreuer.stockalgorithm.core;
 
 import com.google.inject.AbstractModule;
 import de.lukasbreuer.stockalgorithm.core.database.DatabaseModule;
-import de.lukasbreuer.stockalgorithm.core.log.Log;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor(staticName = "create")
@@ -12,7 +11,6 @@ public final class CoreModule extends AbstractModule {
     bind(int.class).toInstance(-1);
     bind(float.class).toInstance(-1F);
     bind(int[].class).toInstance(new int[0]);
-    bind(Log.class).toInstance(Log.create("Core"));
     install(DatabaseModule.create());
   }
 }
