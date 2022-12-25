@@ -27,3 +27,6 @@ build
 
 #IntelliJ IDEA
 .idea
+
+# Configuration
+configuration

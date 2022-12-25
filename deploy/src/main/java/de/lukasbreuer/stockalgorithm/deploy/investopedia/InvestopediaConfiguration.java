@@ -8,7 +8,7 @@ import org.json.JSONObject;
 
 @Accessors(fluent = true)
 public final class InvestopediaConfiguration extends Configuration {
-  private static final String CONFIGURATION_PATH = "/investopedia/investopedia.json";
+  private static final String CONFIGURATION_PATH = "/configuration/investopedia/investopedia.json";
 
   public static InvestopediaConfiguration createAndLoad() throws Exception {
     var configuration = new InvestopediaConfiguration(CONFIGURATION_PATH);
