@@ -23,7 +23,6 @@ public final class TradeExecution {
   private final String investopediaUsername;
   private final String investopediaPassword;
   private final String investopediaGame;
-
   private final Stock stock;
 
   public void verify(TradeType tradeType) {
@@ -40,9 +39,14 @@ public final class TradeExecution {
     var shouldExecute = TradeExecutionDecision.create(stock, tradeType,
       latestTrade, prediction).decide();
     if (shouldExecute) {
+      log.fine("It has been decided that the trading of stock " +
+        stock.formattedStockName() + " will be executed.");
       new Thread(() -> perform(tradeType, 1, () ->
         storeTrade(model, tradeType))).start();
+      return;
     }
+    log.info("It has been decided that the trading of stock " +
+      stock.formattedStockName() + " will not be executed.");
   }
 
   private void perform(TradeType tradeType, int amount, Runnable success) {
@@ -53,7 +57,7 @@ public final class TradeExecution {
       LoginPage.create(browser, investopediaUsername, investopediaPassword).open();
       TradePage.create(browser, investopediaGame, stock.formattedStockName(),
         tradeType, amount).open();
-      log.info("Successfully performed " + stock.formattedStockName() + " trade");
+      log.fine("Successfully performed " + stock.formattedStockName() + " trade");
       success.run();
     } catch (Exception exception) {
       log.severe("Performance of " + stock.formattedStockName() + " trade failed");
@@ -64,7 +68,7 @@ public final class TradeExecution {
   private void storeTrade(Model model, TradeType tradeType) {
     tradeCollection.addTrade(Trade.create(UUID.randomUUID(), stock.stockName(),
         tradeType, System.currentTimeMillis(), model.currentStockPrice()),
-      result -> log.info("Successfully stored " +
+      result -> log.fine("Successfully stored " +
         stock.formattedStockName() + " trade"));
   }
 }
