@@ -7,7 +7,9 @@ import de.lukasbreuer.stockalgorithm.core.command.CommandTask;
 import de.lukasbreuer.stockalgorithm.core.log.Log;
 import de.lukasbreuer.stockalgorithm.deploy.command.PortfolioCommand;
 import de.lukasbreuer.stockalgorithm.deploy.command.ShutdownCommand;
+import de.lukasbreuer.stockalgorithm.deploy.command.TradeCommand;
 import de.lukasbreuer.stockalgorithm.deploy.portfolio.StockCollection;
+import de.lukasbreuer.stockalgorithm.deploy.trade.TradeCollection;
 import de.lukasbreuer.stockalgorithm.deploy.trade.TradeSchedule;
 import de.lukasbreuer.stockalgorithm.deploy.trade.execution.TradeExecutionFactory;
 
@@ -28,6 +30,8 @@ public final class DeployApplication {
   ) {
     commandRegistry.register(PortfolioCommand.create(log,
       injector.getInstance(StockCollection.class)));
+    commandRegistry.register(TradeCommand.create(log,
+      injector.getInstance(TradeCollection.class)));
     commandRegistry.register(ShutdownCommand.create(log));
   }
 }
