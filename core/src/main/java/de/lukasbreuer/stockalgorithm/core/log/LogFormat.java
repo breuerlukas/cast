@@ -10,12 +10,28 @@ import java.util.logging.LogRecord;
 
 @RequiredArgsConstructor(staticName = "create")
 public final class LogFormat extends Formatter {
+  public enum FormatType {
+    CONSOLE,
+    FILE;
+
+    public boolean isConsole() {
+      return this == CONSOLE;
+    }
+
+    public boolean isFile() {
+      return this == FILE;
+    }
+  }
+
+  private final FormatType formatType;
   private final DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
 
   @Override
   public String format(LogRecord record) {
     var result = new StringBuilder();
-    result.append(determineColor(record));
+    if (formatType.isConsole()) {
+      result.append(determineColor(record));
+    }
     result.append(buildPrefix(record));
     result.append(formatMessage(record));
     result.append("\n");
