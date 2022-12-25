@@ -28,5 +28,11 @@ build
 #IntelliJ IDEA
 .idea
 
-# Configuration
-configuration
+# Configurations
+configurations
+
+# Models
+models
+
+# Logs
+logs
