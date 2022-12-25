@@ -15,7 +15,7 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public final class StockCollection extends DatabaseCollection {
-  private static final String COLLECTION_NAME = "portfolio";
+  private static final String COLLECTION_NAME = "stocks";
 
   public static StockCollection create(DatabaseConnection databaseConnection) {
     return new StockCollection(
