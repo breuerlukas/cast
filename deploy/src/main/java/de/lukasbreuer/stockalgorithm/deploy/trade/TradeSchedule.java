@@ -8,6 +8,7 @@ import de.lukasbreuer.stockalgorithm.deploy.trade.execution.TradeExecutionFactor
 import lombok.RequiredArgsConstructor;
 
 import java.util.Calendar;
+import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -51,13 +52,18 @@ public final class TradeSchedule {
   }
 
   private void execute() {
+    stockCollection.totalPortfolio().thenAccept(this::execute);
+  }
+
+  private void execute(List<Stock> portfolio) {
     log.info("Start schedule execution");
-    stockCollection.totalPortfolio().thenAccept(portfolio ->
-      portfolio.forEach(this::execute));
+    for (var stock : portfolio) {
+      executeIndividual(stock);
+    }
     log.info("Finished schedule execution");
   }
 
-  private void execute(Stock stock) {
+  private void executeIndividual(Stock stock) {
     var execution = tradeExecutionFactory.create(stock);
     execution.verify(TradeType.BUY);
     execution.verify(TradeType.SELL);
