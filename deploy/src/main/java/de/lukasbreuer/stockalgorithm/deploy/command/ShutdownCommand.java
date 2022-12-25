@@ -1,14 +1,15 @@
 package de.lukasbreuer.stockalgorithm.deploy.command;
 
 import de.lukasbreuer.stockalgorithm.core.command.Command;
+import de.lukasbreuer.stockalgorithm.core.log.Log;
 
 public final class ShutdownCommand extends Command {
-  public static ShutdownCommand create() {
-    return new ShutdownCommand();
+  public static ShutdownCommand create(Log log) {
+    return new ShutdownCommand(log);
   }
 
-  private ShutdownCommand() {
-    super("shutdown", new String[0]);
+  private ShutdownCommand(Log log) {
+    super(log, "shutdown", new String[0]);
   }
 
   @Override

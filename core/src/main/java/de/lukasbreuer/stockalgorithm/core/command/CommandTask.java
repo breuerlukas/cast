@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.util.logging.Level;
 
 @RequiredArgsConstructor(staticName = "create")
 public final class CommandTask {
@@ -42,7 +43,7 @@ public final class CommandTask {
     var arguments = new String[length];
     System.arraycopy(input,1, arguments,0, length);
     try {
-      log.info("Executed command '" + line + "'");
+      log.fileLog(Level.INFO, "Entered command '" + line + "'");
       if (!command.execute(arguments)) {
         printOutSyntax(command);
       }
