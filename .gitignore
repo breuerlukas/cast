@@ -28,6 +28,9 @@ build
 #IntelliJ IDEA
 .idea
 
+# Libraries
+libraries
+
 # Configurations
 configurations
 
