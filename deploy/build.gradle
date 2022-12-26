@@ -4,29 +4,30 @@ plugins {
   id 'org.bytedeco.gradle-javacpp-platform' version "1.5.8"
 }
 
+group 'de.lukasbreuer.stockalgorithm'
+version '1.0.0-SNAPSHOT'
+
 ext {
   javacppPlatform = 'windows-x86_64'
 }
-
-group 'de.lukasbreuer.stockalgorithm'
-version '1.0.0-SNAPSHOT'
 
 repositories {
   mavenCentral()
 }
 
 configurations {
-  projectImplementation
+  runtimeProject
 }
 
 sourceSets {
   main {
-    compileClasspath += configurations.projectImplementation
+    compileClasspath += configurations.runtimeProject
   }
 }
 
 dependencies {
-  projectImplementation("de.lukasbreuer.stockalgorithm:core:1.0.0-SNAPSHOT")
+  runtimeProject("de.lukasbreuer.stockalgorithm:core:1.0.0-SNAPSHOT")
+  implementation("de.lukasbreuer.stockalgorithm:core:1.0.0-SNAPSHOT")
 
   annotationProcessor 'org.projectlombok:lombok:1.18.24'
   testAnnotationProcessor 'org.projectlombok:lombok:1.18.24'
@@ -49,7 +50,7 @@ jar {
   }
 
   from {
-    (configurations.runtimeClasspath + configurations.projectImplementation).collect {
+    configurations.runtimeClasspath.collect {
       it.isDirectory() ? it : zipTree(it)
     }
   }

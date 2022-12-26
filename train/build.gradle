@@ -1,26 +1,33 @@
 plugins {
   id 'java'
+  id 'java-library'
+  id 'org.bytedeco.gradle-javacpp-platform' version "1.5.8"
 }
 
 group 'de.lukasbreuer.stockalgorithm'
 version '1.0.0-SNAPSHOT'
+
+ext {
+  javacppPlatform = 'windows-x86_64'
+}
 
 repositories {
   mavenCentral()
 }
 
 configurations {
-  projectImplementation
+  runtimeProject
 }
 
 sourceSets {
   main {
-    compileClasspath += configurations.projectImplementation
+    compileClasspath += configurations.runtimeProject
   }
 }
 
 dependencies {
-  projectImplementation("de.lukasbreuer.stockalgorithm:core:1.0.0-SNAPSHOT")
+  runtimeProject("de.lukasbreuer.stockalgorithm:core:1.0.0-SNAPSHOT")
+  implementation("de.lukasbreuer.stockalgorithm:core:1.0.0-SNAPSHOT")
 
   annotationProcessor 'org.projectlombok:lombok:1.18.24'
   testAnnotationProcessor 'org.projectlombok:lombok:1.18.24'
@@ -30,4 +37,25 @@ dependencies {
 
 test {
   useJUnitPlatform()
+}
+
+jar {
+  duplicatesStrategy(DuplicatesStrategy.EXCLUDE)
+
+  manifest {
+    attributes(
+      'Main-Class': 'de.lukasbreuer.stockalgorithm.train.TrainApplication'
+    )
+  }
+
+  from {
+    configurations.runtimeClasspath.collect {
+      it.isDirectory() ? it : zipTree(it)
+    }
+  }
+
+  exclude 'META-INF/MANIFEST.MF'
+  exclude 'META-INF/*.SF'
+  exclude 'META-INF/*.DSA'
+  exclude 'META-INF/*.RSA'
 }
