@@ -67,4 +67,13 @@ public final class TrainAlgorithm {
     var sellIllustration = illustrationFactory.create(TradeType.SELL, sellEvaluation, sellEvaluationDataset, seed);
     sellIllustration.plot();*/
   }
+
+  private final String MODEL_PATH = "/models/";
+
+  public void save() throws Exception {
+    buyNeuralNetwork.save(System.getProperty("user.dir") + MODEL_PATH +
+      symbolName.toUpperCase() + "/buyModel.zip");
+    sellNeuralNetwork.save(System.getProperty("user.dir") + MODEL_PATH +
+      symbolName.toUpperCase() + "/sellModel.zip");
+  }
 }

@@ -17,5 +17,6 @@ public final class TrainApplication {
     stockAlgorithm.initialize();
     stockAlgorithm.train();
     stockAlgorithm.evaluate();
+    stockAlgorithm.save();
   }
 }
