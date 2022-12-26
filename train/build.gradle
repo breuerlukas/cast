@@ -8,7 +8,7 @@ group 'de.lukasbreuer.stockalgorithm'
 version '1.0.0-SNAPSHOT'
 
 ext {
-  javacppPlatform = 'linux-x86_64'
+  javacppPlatform = 'windows-x86_64'
 }
 
 repositories {
