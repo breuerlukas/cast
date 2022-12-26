@@ -1,5 +1,5 @@
-rootProject.name = 'stockalgorithm'
-include 'core'
-include 'train'
-include 'deploy'
+rootProject.name = "stockalgorithm"
+includeBuild("core")
+includeBuild("train")
+includeBuild("deploy")
 
