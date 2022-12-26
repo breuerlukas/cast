@@ -36,8 +36,9 @@ public final class Model {
   public void initialize() {
     try {
       symbol = Symbol.createAndFetch(stock);
-      buyNeuralNetwork = NeuralNetwork.createAndLoad(buyModelPath);
-      sellNeuralNetwork = NeuralNetwork.createAndLoad(sellModelPath);
+      var executionPath = System.getProperty("user.dir");
+      buyNeuralNetwork = NeuralNetwork.createAndLoad(executionPath + buyModelPath);
+      sellNeuralNetwork = NeuralNetwork.createAndLoad(executionPath + sellModelPath);
       log.info("The " + stock.toUpperCase() + " model has been successfully " +
         "loaded and initialized");
     } catch (Exception exception) {
