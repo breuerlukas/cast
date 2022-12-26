@@ -5,7 +5,7 @@ plugins {
 }
 
 ext {
-  javacppPlatform = 'windows-x86_64'
+  javacppPlatform = 'linux-x86_64'
 }
 
 group 'de.lukasbreuer.stockalgorithm'
