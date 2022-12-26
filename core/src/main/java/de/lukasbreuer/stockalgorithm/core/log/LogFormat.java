@@ -26,6 +26,8 @@ public final class LogFormat extends Formatter {
   private final FormatType formatType;
   private final DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
 
+  private static final String COLOR_RESET = "\u001B[0m";
+
   @Override
   public String format(LogRecord record) {
     var result = new StringBuilder();
@@ -34,6 +36,9 @@ public final class LogFormat extends Formatter {
     }
     result.append(buildPrefix(record));
     result.append(formatMessage(record));
+    if (formatType.isConsole()) {
+      result.append(COLOR_RESET);
+    }
     result.append("\n");
     return result.toString();
   }
