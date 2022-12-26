@@ -1,38 +1,39 @@
 plugins {
-  id 'java'
-  id 'java-library'
-  id 'org.bytedeco.gradle-javacpp-platform' version "1.5.8"
+  id "java"
 }
 
-group 'de.lukasbreuer.stockalgorithm'
-version '1.0.0-SNAPSHOT'
-
-ext {
-  javacppPlatform = 'windows-x86_64'
-}
+group "de.lukasbreuer.stockalgorithm"
+version "1.0.0-SNAPSHOT"
 
 repositories {
   mavenCentral()
 }
 
 configurations {
-  runtimeProject
+  archiveImplementation
 }
 
 sourceSets {
   main {
-    compileClasspath += configurations.runtimeProject
+    compileClasspath += configurations.archiveImplementation
   }
 }
 
 dependencies {
-  runtimeProject("de.lukasbreuer.stockalgorithm:core:1.0.0-SNAPSHOT")
   implementation("de.lukasbreuer.stockalgorithm:core:1.0.0-SNAPSHOT")
+  archiveImplementation("de.lukasbreuer.stockalgorithm:core:1.0.0-SNAPSHOT")
 
-  annotationProcessor 'org.projectlombok:lombok:1.18.24'
-  testAnnotationProcessor 'org.projectlombok:lombok:1.18.24'
+  implementation "com.google.inject:guice:5.1.0"
 
-  implementation 'com.github.sh0nk:matplotlib4j:0.5.0'
+  annotationProcessor "org.projectlombok:lombok:1.18.24"
+  testAnnotationProcessor "org.projectlombok:lombok:1.18.24"
+
+  implementation "org.mongodb:mongodb-driver-reactivestreams:4.8.1"
+
+  implementation "org.deeplearning4j:deeplearning4j-core:1.0.0-M2.1"
+  implementation "org.nd4j:nd4j-native-platform:1.0.0-M2.1"
+
+  implementation "com.github.sh0nk:matplotlib4j:0.5.0"
 }
 
 test {
@@ -44,18 +45,23 @@ jar {
 
   manifest {
     attributes(
-      'Main-Class': 'de.lukasbreuer.stockalgorithm.train.TrainApplication'
+      "Main-Class": "de.lukasbreuer.stockalgorithm.train.TrainApplication",
+      "Class-Path":
+        "libraries/org.deeplearning4j-1.0.0-M2.1.jar " +
+          "libraries/com.google.inject.guice-5.1.0.jar " +
+          "libraries/org.mongodbmongodb.driver.reactivestreams-4.8.1.jar " +
+          "libraries/com.github.sh0nk.matplotlib4j-0.5.0.jar "
     )
   }
 
   from {
-    configurations.runtimeClasspath.collect {
+    (configurations.archiveImplementation).collect {
       it.isDirectory() ? it : zipTree(it)
     }
   }
 
-  exclude 'META-INF/MANIFEST.MF'
-  exclude 'META-INF/*.SF'
-  exclude 'META-INF/*.DSA'
-  exclude 'META-INF/*.RSA'
+  exclude "META-INF/MANIFEST.MF"
+  exclude "META-INF/*.SF"
+  exclude "META-INF/*.DSA"
+  exclude "META-INF/*.RSA"
 }
