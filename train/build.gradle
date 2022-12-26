@@ -1,5 +1,33 @@
+plugins {
+  id 'java'
+}
+
+group 'de.lukasbreuer.stockalgorithm'
+version '1.0.0-SNAPSHOT'
+
+repositories {
+  mavenCentral()
+}
+
+configurations {
+  projectImplementation
+}
+
+sourceSets {
+  main {
+    compileClasspath += configurations.projectImplementation
+  }
+}
+
 dependencies {
-  implementation project(":core")
+  projectImplementation("de.lukasbreuer.stockalgorithm:core:1.0.0-SNAPSHOT")
+
+  annotationProcessor 'org.projectlombok:lombok:1.18.24'
+  testAnnotationProcessor 'org.projectlombok:lombok:1.18.24'
 
   implementation 'com.github.sh0nk:matplotlib4j:0.5.0'
+}
+
+test {
+  useJUnitPlatform()
 }

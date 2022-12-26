@@ -1,0 +1,2 @@
+rootProject.name = 'train'
+includeBuild("../core")
