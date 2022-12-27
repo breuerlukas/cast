@@ -15,8 +15,18 @@ public final class DirectionalMovementIndicator extends ReviewIndicator {
     super(data);
   }
 
+  private static final int AVERAGE_REVIEW = 5;
+
   @Override
   public double calculate(int index, int review) {
+    var directionalIndexSum = 0D;
+    for (var i = 0; i < AVERAGE_REVIEW; i++) {
+      directionalIndexSum += calculateDirectionalIndex(index - i, review);
+    }
+    return directionalIndexSum / AVERAGE_REVIEW;
+  }
+
+  private double calculateDirectionalIndex(int index, int review) {
     var trueRangeSum = calculateTrueRangeSum(index, review);
     var positiveDirectionalMovementSum = calculateDirectionalMovementSum(index, review, +1);
     var negativeDirectionalMovementSum = calculateDirectionalMovementSum(index, review, -1);

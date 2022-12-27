@@ -23,7 +23,7 @@ public final class DatasetDay {
     calculations.addAll(createRegularReviewIndicatorBundle(StochasticOscillatorIndicator.class));
     calculations.addAll(createRegularReviewIndicatorBundle(AverageRangeIndicator.class));
     calculations.addAll(createRegularReviewIndicatorBundle(BalanceVolumeIndicator.class));
-    calculations.addAll(createRegularReviewIndicatorBundle(DirectionalMovementIndicator.class));
+    calculations.addAll(createReviewIndicatorBundle(DirectionalMovementIndicator.class, new int[] {4, 8, 12, 16}));
     calculations.add(indicatorRepository.find(BullishPatternIndicator.class).calculate(index));
     calculations.add(indicatorRepository.find(BearishPatternIndicator.class).calculate(index));
     data = calculations.stream().mapToDouble(value -> value).toArray();
