@@ -15,7 +15,7 @@ public final class Trade {
   public static Trade of(Document document) {
     return create(UUID.fromString(document.getString("id")),
       document.getString("stock"), TradeType.valueOf(document.getString("tradeType")),
-      document.getInteger("tradeTime"), document.getInteger("tradePrice"));
+      document.getLong("tradeTime"), document.getDouble("tradePrice"));
   }
 
   private final UUID id;
