@@ -62,17 +62,17 @@ public final class TradeExecution {
 
   private static final int MODEL_PREDICTION_PERIOD = 20;
 
-  private void verify(
+  private synchronized void verify(
     TradeType tradeType, Optional<Trade> latestBuyTrade,
     Optional<Trade> latestSellTrade, Consumer<Action> actionFuture
   ) {
     var prediction = model.predict(tradeType, MODEL_PREDICTION_PERIOD);
-    var shouldExecute = TradeDecision.create(tradeType, latestBuyTrade,
+    var shouldExecute = TradeDecision.create(log, stock, tradeType, latestBuyTrade,
       latestSellTrade, prediction, tradeType.isBuy() ? model.buyTradePredictionMinimum() :
         model.sellTradePredictionMinimum()).decide();
     if (shouldExecute) {
       log.fine("It has been decided that the " + tradeType + " of stock " +
-        stock.formattedStockName() + " will be executed.");
+        stock.formattedStockName() + " will be executed");
       storeTrade(model, tradeType, success ->
         actionFuture.accept(Action.TRADE));
       /*new Thread(() -> perform(tradeType, 1, () ->
@@ -81,7 +81,7 @@ public final class TradeExecution {
       return;
     }
     log.info("It has been decided that the " + tradeType + " of stock " +
-      stock.formattedStockName() + " will not be executed.");
+      stock.formattedStockName() + " will not be executed");
     actionFuture.accept(Action.REMAIN);
   }
 
