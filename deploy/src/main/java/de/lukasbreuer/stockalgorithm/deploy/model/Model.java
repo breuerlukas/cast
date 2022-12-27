@@ -52,8 +52,8 @@ public final class Model {
 
   public float[] predict(TradeType tradeType, int timeSpan) {
     var dataset = StockDataset.create(symbol, tradeType, ModelState.EVALUATING,
-      0, 0, 0, timeSpan, 0, reviewPeriod, 0, 0, 0, 0, INPUT_SIZE_PER_DAY,
-      DAY_LONGEST_REVIEW);
+      0, 0, 0, timeSpan + DAY_LONGEST_REVIEW + reviewPeriod, 0, reviewPeriod,
+      0, 0, 1, 1, INPUT_SIZE_PER_DAY, DAY_LONGEST_REVIEW);
     dataset.build();
     var predictions = new float[timeSpan];
     for (var i = 0; i < timeSpan; i++) {
