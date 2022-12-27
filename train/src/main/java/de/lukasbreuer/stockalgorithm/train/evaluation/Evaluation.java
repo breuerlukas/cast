@@ -52,7 +52,7 @@ public final class Evaluation {
   private Map<Integer, Float> createTimePredictionAllocation() {
     var allocation = Maps.<Integer, Float>newHashMap();
     var rawDataset = evaluationDataset.raw();
-    for (var i = 1; i < evaluationDataset.size() - 1; i++) {
+    for (var i = 1; i < evaluationDataset.size(); i++) {
       var entryTime = i + dayLongestReview + reviewPeriod;
       allocation.put(entryTime, neuralNetwork.evaluate(entryTime, rawDataset.get(i), true));
     }
