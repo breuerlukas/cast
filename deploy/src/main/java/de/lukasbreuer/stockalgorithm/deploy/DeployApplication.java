@@ -12,9 +12,11 @@ import de.lukasbreuer.stockalgorithm.deploy.portfolio.StockCollection;
 import de.lukasbreuer.stockalgorithm.deploy.trade.TradeCollection;
 import de.lukasbreuer.stockalgorithm.deploy.trade.TradeSchedule;
 import de.lukasbreuer.stockalgorithm.deploy.trade.execution.TradeExecutionFactory;
+import org.nd4j.linalg.factory.Nd4j;
 
 public final class DeployApplication {
   public static void main(String[] args) {
+    Nd4j.getRandom().setSeed(-1);
     var injector = Guice.createInjector(DeployModule.create());
     var log = injector.getInstance(Log.class);
     var commandRegistry = injector.getInstance(CommandRegistry.class);
