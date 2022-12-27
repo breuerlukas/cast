@@ -7,11 +7,12 @@ import com.google.inject.name.Named;
 import lombok.RequiredArgsConstructor;
 import org.deeplearning4j.nn.weights.WeightInit;
 import org.nd4j.linalg.activations.Activation;
-import org.nd4j.linalg.learning.config.*;
+import org.nd4j.linalg.learning.config.IUpdater;
+import org.nd4j.linalg.learning.config.Sgd;
 
 @RequiredArgsConstructor(staticName = "create")
 public final class NeuralNetworkModule extends AbstractModule {
-  private static final int NETWORK_EPOCHS = 50;
+  private static final int NETWORK_EPOCHS = 20;
 
   @Provides
   @Singleton
