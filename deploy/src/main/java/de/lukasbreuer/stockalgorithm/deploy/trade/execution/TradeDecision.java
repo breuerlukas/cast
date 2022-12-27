@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 import java.util.Optional;
 
 @RequiredArgsConstructor(staticName = "create")
-public final class TradeExecutionDecision {
+public final class TradeDecision {
   private final Stock stock;
   private final TradeType tradeType;
   private final Optional<Trade> latestTrade;
