@@ -15,21 +15,18 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.Optional;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
 @RequiredArgsConstructor(staticName = "create")
 public final class TradeExecution {
-  public static CompletableFuture<TradeExecution> createAndInitialize(
+  public static void createAndInitialize(
     Log log, ModelCollection modelCollection, TradeCollection tradeCollection,
     String investopediaUsername, String investopediaPassword,
-    String investopediaGame, Stock stock
+    String investopediaGame, Stock stock, Consumer<TradeExecution> futureExecution
   ) {
-    var completableFuture = new CompletableFuture<TradeExecution>();
     var execution = create(log, modelCollection, tradeCollection,
       investopediaUsername, investopediaPassword, investopediaGame, stock);
-    execution.initialize(() -> completableFuture.complete(execution));
-    return completableFuture;
+    execution.initialize(() -> futureExecution.accept(execution));
   }
 
   public enum Action {
@@ -47,8 +44,8 @@ public final class TradeExecution {
   private Model model;
 
   public void initialize(Runnable completed) {
-    modelCollection.findByStock(stock.stockName())
-      .thenAccept(model -> initialize(model, completed));
+    modelCollection.findByStock(stock.stockName(),
+      model -> initialize(model, completed));
   }
 
   private void initialize(Model model, Runnable completed) {
@@ -57,33 +54,34 @@ public final class TradeExecution {
     completed.run();
   }
 
-  public CompletableFuture<Action> verify(TradeType tradeType) {
-    var actionFuture = new CompletableFuture<Action>();
-    tradeCollection.findLatestByStock(stock.stockName(), tradeType)
-        .thenAccept(latestTrade -> verify(tradeType, latestTrade, actionFuture));
-    return actionFuture;
+  public void verify(TradeType tradeType, Consumer<Action> actionFuture) {
+    tradeCollection.findLatestByStock(stock.stockName(), TradeType.BUY,
+      latestBuyTrade -> tradeCollection.findLatestByStock(stock.stockName(), TradeType.SELL,
+        latestSellTrade -> verify(tradeType, latestBuyTrade, latestSellTrade, actionFuture)));
   }
 
   private static final int MODEL_PREDICTION_PERIOD = 20;
 
   private void verify(
-    TradeType tradeType, Optional<Trade> latestTrade,
-    CompletableFuture<Action> actionFuture
+    TradeType tradeType, Optional<Trade> latestBuyTrade,
+    Optional<Trade> latestSellTrade, Consumer<Action> actionFuture
   ) {
     var prediction = model.predict(tradeType, MODEL_PREDICTION_PERIOD);
     var shouldExecute = TradeDecision.create(stock, tradeType,
-      latestTrade, prediction).decide();
+      latestBuyTrade, latestSellTrade, prediction).decide();
     if (shouldExecute) {
       log.fine("It has been decided that the " + tradeType + " of stock " +
         stock.formattedStockName() + " will be executed.");
-      new Thread(() -> perform(tradeType, 1, () ->
+      storeTrade(model, tradeType, success ->
+        actionFuture.accept(Action.TRADE));
+      /*new Thread(() -> perform(tradeType, 1, () ->
         storeTrade(model, tradeType, success ->
-          actionFuture.complete(Action.TRADE)))).start();
+          actionFuture.accept(Action.TRADE)))).start();*/
       return;
     }
     log.info("It has been decided that the " + tradeType + " of stock " +
       stock.formattedStockName() + " will not be executed.");
-    actionFuture.complete(Action.REMAIN);
+    actionFuture.accept(Action.REMAIN);
   }
 
   private void perform(TradeType tradeType, int amount, Runnable success) {
