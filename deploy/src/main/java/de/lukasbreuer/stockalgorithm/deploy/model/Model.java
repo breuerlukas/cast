@@ -20,7 +20,8 @@ public final class Model {
     return create(log, UUID.fromString(document.getString("id")),
       document.getString("stock"), document.getString("buyModelPath"),
       document.getString("sellModelPath"), document.getInteger("reviewPeriod"),
-      document.getDouble("tradePredictionMinimum"));
+      document.getDouble("buyTradePredictionMinimum"),
+      document.getDouble("sellTradePredictionMinimum"));
   }
 
   private final Log log;
@@ -31,7 +32,9 @@ public final class Model {
   private final String sellModelPath;
   private final int reviewPeriod;
   @Getter
-  private final double tradePredictionMinimum;
+  private final double buyTradePredictionMinimum;
+  @Getter
+  private final double sellTradePredictionMinimum;
   private Symbol symbol;
   private NeuralNetwork buyNeuralNetwork;
   private NeuralNetwork sellNeuralNetwork;
