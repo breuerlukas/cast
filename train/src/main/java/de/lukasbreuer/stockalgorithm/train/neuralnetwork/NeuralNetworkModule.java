@@ -37,7 +37,7 @@ public final class NeuralNetworkModule extends AbstractModule {
     return NETWORK_ACTIVATION;
   }
 
-  private static final IUpdater NETWORK_UPDATER = new Sgd(1e-2);
+  private static final IUpdater NETWORK_UPDATER = new Sgd(0.005);
 
   @Provides
   @Singleton
