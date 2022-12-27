@@ -1,14 +1,14 @@
 package de.lukasbreuer.stockalgorithm.core.dataset;
 
 import com.clearspring.analytics.util.Lists;
+import de.lukasbreuer.stockalgorithm.core.dataset.indicator.IndicatorRepository;
+import de.lukasbreuer.stockalgorithm.core.dataset.trade.TradeGeneration;
 import de.lukasbreuer.stockalgorithm.core.neuralnetwork.HistoryIterator;
 import de.lukasbreuer.stockalgorithm.core.neuralnetwork.ModelState;
 import de.lukasbreuer.stockalgorithm.core.symbol.HistoryEntry;
 import de.lukasbreuer.stockalgorithm.core.symbol.Symbol;
 import de.lukasbreuer.stockalgorithm.core.trade.Trade;
 import de.lukasbreuer.stockalgorithm.core.trade.TradeType;
-import de.lukasbreuer.stockalgorithm.core.dataset.indicator.IndicatorRepository;
-import de.lukasbreuer.stockalgorithm.core.dataset.trade.TradeGeneration;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.Accessors;

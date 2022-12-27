@@ -1,10 +1,10 @@
 package de.lukasbreuer.stockalgorithm.train;
 
+import de.lukasbreuer.stockalgorithm.core.dataset.StockDataset;
 import de.lukasbreuer.stockalgorithm.core.neuralnetwork.ModelState;
 import de.lukasbreuer.stockalgorithm.core.neuralnetwork.NeuralNetwork;
 import de.lukasbreuer.stockalgorithm.core.symbol.Symbol;
 import de.lukasbreuer.stockalgorithm.core.trade.TradeType;
-import de.lukasbreuer.stockalgorithm.core.dataset.StockDataset;
 import de.lukasbreuer.stockalgorithm.train.dataset.StockDatasetFactory;
 import de.lukasbreuer.stockalgorithm.train.evaluation.EvaluationFactory;
 import de.lukasbreuer.stockalgorithm.train.evaluation.IllustrationFactory;
