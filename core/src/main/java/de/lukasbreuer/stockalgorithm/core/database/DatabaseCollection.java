@@ -11,7 +11,6 @@ import org.bson.Document;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
@@ -33,29 +32,25 @@ public class DatabaseCollection {
       .subscribe(SingleSubscriber.of(response::accept));;
   }
 
-  protected CompletableFuture<Document> findById(UUID id) {
-    return findSingleByAttribute("id", id.toString());
+  protected void findById(UUID id, Consumer<Document> result) {
+    findSingleByAttribute("id", id.toString(), result);
   }
 
-  protected CompletableFuture<Document> findSingleByAttribute(String key, String value) {
-    var completableFuture = new CompletableFuture<Document>();
-    collection.find(Filters.eq(key, value))
-      .subscribe(SingleSubscriber.of(completableFuture::complete));
-    return completableFuture;
-  }
-
-  protected CompletableFuture<List<Document>> findMultipleByAttribute(
-    String key, String value
+  protected void findSingleByAttribute(
+    String key, String value, Consumer<Document> result
   ) {
-    var completableFuture = new CompletableFuture<List<Document>>();
     collection.find(Filters.eq(key, value))
-      .subscribe(FullSubscriber.of(completableFuture::complete));
-    return completableFuture;
+      .subscribe(SingleSubscriber.of(result::accept));
   }
 
-  protected CompletableFuture<List<Document>> findAll() {
-    var completableFuture = new CompletableFuture<List<Document>>();
-    collection.find().subscribe(FullSubscriber.of(completableFuture::complete));
-    return completableFuture;
+  protected void findMultipleByAttribute(
+    String key, String value, Consumer<List<Document>> result
+  ) {
+    collection.find(Filters.eq(key, value))
+      .subscribe(FullSubscriber.of(result::accept));
+  }
+
+  protected void findAll(Consumer<List<Document>> result) {
+    collection.find().subscribe(FullSubscriber.of(result::accept));
   }
 }

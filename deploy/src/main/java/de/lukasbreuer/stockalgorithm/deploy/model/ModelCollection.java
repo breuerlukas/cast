@@ -9,7 +9,6 @@ import de.lukasbreuer.stockalgorithm.core.database.DatabaseConnection;
 import org.bson.Document;
 
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
 public final class ModelCollection extends DatabaseCollection {
@@ -47,11 +46,12 @@ public final class ModelCollection extends DatabaseCollection {
     remove(modelID, response);
   }
 
-  public CompletableFuture<Model> findModelById(UUID modelId) {
-    return findById(modelId).thenApply(modelFactory::of);
+  public void findModelById(UUID modelId, Consumer<Model> result) {
+    findById(modelId, document -> result.accept(modelFactory.of(document)));
   }
 
-  public CompletableFuture<Model> findByStock(String stock) {
-    return findSingleByAttribute("stock", stock).thenApply(modelFactory::of);
+  public void findByStock(String stock, Consumer<Model> result) {
+    findSingleByAttribute("stock", stock,
+      document -> result.accept(modelFactory.of(document)));
   }
 }

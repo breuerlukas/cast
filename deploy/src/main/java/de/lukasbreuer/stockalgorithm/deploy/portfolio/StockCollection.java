@@ -10,7 +10,6 @@ import org.bson.Document;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -42,12 +41,12 @@ public final class StockCollection extends DatabaseCollection {
     remove(stockId, response);
   }
 
-  public CompletableFuture<Stock> findStockById(UUID stockId) {
-    return findById(stockId).thenApply(Stock::of);
+  public void findStockById(UUID stockId, Consumer<Stock> result) {
+    findById(stockId, document -> result.accept(Stock.of(document)));
   }
 
-  public CompletableFuture<List<Stock>> totalPortfolio() {
-    return findAll().thenApply(documents ->
-      documents.stream().map(Stock::of).collect(Collectors.toList()));
+  public void totalPortfolio(Consumer<List<Stock>> result) {
+    findAll(documents -> result.accept(documents.stream().map(Stock::of)
+      .collect(Collectors.toList())));
   }
 }

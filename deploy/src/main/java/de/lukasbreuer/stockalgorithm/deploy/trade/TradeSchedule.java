@@ -9,10 +9,7 @@ import de.lukasbreuer.stockalgorithm.deploy.trade.execution.TradeExecution;
 import de.lukasbreuer.stockalgorithm.deploy.trade.execution.TradeExecutionFactory;
 import lombok.RequiredArgsConstructor;
 
-import java.util.AbstractMap;
-import java.util.Calendar;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -56,7 +53,7 @@ public final class TradeSchedule {
   }
 
   private void execute() {
-    stockCollection.totalPortfolio().thenAccept(this::execute);
+    stockCollection.totalPortfolio(this::execute);
   }
 
   private void execute(List<Stock> portfolio) {
@@ -70,7 +67,7 @@ public final class TradeSchedule {
   private void executeIndividual(
     List<Map.Entry<Stock, TradeType>> executions, int portfolioSize, Stock stock
   ) {
-    tradeExecutionFactory.createAndInitialize(stock).thenAccept(execution ->
+    tradeExecutionFactory.createAndInitialize(stock, execution ->
       executeIndividual(executions, portfolioSize, stock, execution));
   }
 
@@ -78,9 +75,9 @@ public final class TradeSchedule {
     List<Map.Entry<Stock, TradeType>> executions, int portfolioSize, Stock stock,
     TradeExecution execution
   ) {
-    execution.verify(TradeType.BUY).thenAccept(action ->
+    execution.verify(TradeType.BUY, action ->
       finishExecution(executions, portfolioSize, stock, TradeType.BUY));
-    execution.verify(TradeType.SELL).thenAccept(action ->
+    execution.verify(TradeType.SELL, action ->
       finishExecution(executions, portfolioSize, stock, TradeType.SELL));
   }
 

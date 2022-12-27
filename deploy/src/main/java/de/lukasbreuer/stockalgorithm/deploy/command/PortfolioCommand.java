@@ -21,7 +21,7 @@ public final class PortfolioCommand extends Command {
 
   @Override
   public boolean execute(String[] arguments) {
-    stockCollection.totalPortfolio().thenAccept(this::printPortfolio);
+    stockCollection.totalPortfolio(this::printPortfolio);
     return true;
   }
 

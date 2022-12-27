@@ -13,7 +13,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -45,20 +44,22 @@ public final class TradeCollection extends DatabaseCollection {
     remove(tradeId, response);
   }
 
-  public CompletableFuture<Trade> findTradeById(UUID tradeID) {
-    return findById(tradeID).thenApply(Trade::of);
+  public void findTradeById(UUID tradeID, Consumer<Trade> result) {
+    findById(tradeID, document -> result.accept(Trade.of(document)));
   }
 
-  public CompletableFuture<Optional<Trade>> findLatestByStock(
-    String stock, TradeType tradeType
+  public void findLatestByStock(
+    String stock, TradeType tradeType, Consumer<Optional<Trade>> result
   ) {
-    return findByStock(stock).thenApply(trades -> trades.stream()
+    findByStock(stock, trades -> result.accept(trades.stream()
       .filter(trade -> trade.tradeType().equals(tradeType))
-      .min(Comparator.comparing(Trade::tradeTime)));
+      .max(Comparator.comparing(Trade::tradeTime))));
   }
 
-  public CompletableFuture<List<Trade>> findByStock(String stock) {
-    return findMultipleByAttribute("stock", stock).thenApply(documents ->
-      documents.stream().map(Trade::of).collect(Collectors.toList()));
+  public void findByStock(
+    String stock, Consumer<List<Trade>> result
+  ) {
+    findMultipleByAttribute("stock", stock, documents ->
+      result.accept(documents.stream().map(Trade::of).collect(Collectors.toList())));
   }
 }

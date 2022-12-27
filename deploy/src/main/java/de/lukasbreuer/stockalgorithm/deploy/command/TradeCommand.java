@@ -29,8 +29,7 @@ public final class TradeCommand extends Command {
       return false;
     }
     var stock = arguments[0].toUpperCase();
-    tradeCollection.findByStock(stock).thenAccept(trades ->
-      printTrades(stock, trades));
+    tradeCollection.findByStock(stock, trades -> printTrades(stock, trades));
     return true;
   }
 
