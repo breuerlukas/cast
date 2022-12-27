@@ -122,20 +122,25 @@ public final class NeuralNetwork {
     while (epochCount < epochs) {
       network.fit(dataSetIterator);
       dataSetIterator.reset();
-      evaluate(0, entry);
+      evaluate(0, entry, true);
       epochCount++;
       System.out.println("Finished Epoch " + epochCount);
     }
   }
 
-  public float evaluate(int index, Map.Entry<List<double[]>, Double> entry) {
+  public float evaluate(
+    int index, Map.Entry<List<double[]>, Double> entry, boolean print
+  ) {
     var input = buildInputVector(entry.getKey());
     var prediction = network.output(input, false).getFloat(0) * 100;
     var prefix = "";
     if (prediction > 30f) {
       prefix = "\u001B[31m";
     }
-    System.out.println(prefix + index + ": " + entry.getValue() + " <-> " + prediction + "\u001B[0m");
+    if (print) {
+      System.out.println(prefix + index + ": " + entry.getValue() + " <-> " +
+        prediction + "\u001B[0m");
+    }
     return prediction;
   }
 

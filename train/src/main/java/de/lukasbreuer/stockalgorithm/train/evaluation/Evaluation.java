@@ -54,7 +54,7 @@ public final class Evaluation {
     var rawDataset = evaluationDataset.raw();
     for (var i = 1; i < evaluationDataset.size() - 1; i++) {
       var entryTime = i + dayLongestReview + reviewPeriod;
-      allocation.put(entryTime, neuralNetwork.evaluate(entryTime, rawDataset.get(i)));
+      allocation.put(entryTime, neuralNetwork.evaluate(entryTime, rawDataset.get(i), true));
     }
     return allocation;
   }

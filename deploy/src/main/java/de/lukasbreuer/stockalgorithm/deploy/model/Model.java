@@ -57,8 +57,8 @@ public final class Model {
     dataset.build();
     var predictions = new float[timeSpan];
     for (var i = 0; i < timeSpan; i++) {
-      predictions[i] = tradeType.isBuy() ? buyNeuralNetwork.evaluate(0, dataset.raw().get(i)) :
-        sellNeuralNetwork.evaluate(0, dataset.raw().get(i));
+      predictions[i] = tradeType.isBuy() ? buyNeuralNetwork.evaluate(0, dataset.raw().get(i), false) :
+        sellNeuralNetwork.evaluate(0, dataset.raw().get(i), false);
     }
     return predictions;
   }
