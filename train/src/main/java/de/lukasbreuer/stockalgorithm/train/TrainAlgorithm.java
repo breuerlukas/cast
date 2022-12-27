@@ -12,6 +12,8 @@ import de.lukasbreuer.stockalgorithm.train.neuralnetwork.NeuralNetworkFactory;
 import lombok.RequiredArgsConstructor;
 import org.nd4j.linalg.factory.Nd4j;
 
+import java.util.Arrays;
+
 @RequiredArgsConstructor(staticName = "create")
 public final class TrainAlgorithm {
   private final String symbolName;
@@ -37,6 +39,7 @@ public final class TrainAlgorithm {
 
   private NeuralNetwork buildNeuralNetwork(TradeType tradeType) {
     var dataset = datasetFactory.createAndBuild(symbol, tradeType, ModelState.TRAINING, seed);
+    System.out.println(Arrays.toString(dataset.raw().get(0).getKey().get(0)));
     var network = neuralNetworkFactory.create(dataset.historyIterator(), seed);
     network.build();
     return network;

@@ -51,7 +51,6 @@ public final class StockDataset {
       tradeGeneralisationStepSize, tradeNoiseRemovalStepSize).determineBestTrades();
     fillDataset();
     dataset = normalizeData(dataset);
-    System.out.println(Arrays.toString(dataset.get(0).getKey().get(0)));
     historyIterator = HistoryIterator.create(dataset, new Random(seed), batchSize, totalBatches);
   }
 
