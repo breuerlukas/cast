@@ -16,7 +16,7 @@ public final class TradeCommand extends Command {
   }
 
   private final TradeCollection tradeCollection;
-  private final DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
+  private final DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm");
 
   private TradeCommand(Log log, TradeCollection tradeCollection) {
     super(log, "trades", new String[] {"stock"});
