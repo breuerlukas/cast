@@ -47,10 +47,10 @@ public final class TradeNoiseFilter extends TradeFilter {
       var backwardOptimal = calculateDirectionalNoiselessSignal(updatedTrade,
         closeData, type, noiseRemovalStepSize - 2 * i, - 1);
       var noiselessSignal = determineOptimalSignal(updatedTrade, closeData, type, forwardOptimal, backwardOptimal);
-      updatedTrade = Trade.create(type == TradeType.BUY ? noiselessSignal : updatedTrade.buyTime(),
-        type == TradeType.SELL ? noiselessSignal : updatedTrade.sellTime());
+      updatedTrade = Trade.create(type.isBuy() ? noiselessSignal : updatedTrade.buyTime(),
+        type.isSell() ? noiselessSignal : updatedTrade.sellTime());
     }
-    return type == TradeType.BUY ? updatedTrade.buyTime() : updatedTrade.sellTime();
+    return type.isBuy() ? updatedTrade.buyTime() : updatedTrade.sellTime();
   }
 
   private int determineOptimalSignal(
@@ -60,14 +60,14 @@ public final class TradeNoiseFilter extends TradeFilter {
     var forwardPrice = closeData.get(forwardOptimal);
     var backwardPrice = closeData.get(backwardOptimal);
     var tradeBuyPrice = closeData.get(trade.buyTime());
-    if (type == TradeType.BUY && tradeBuyPrice < forwardPrice && tradeBuyPrice < backwardPrice) {
+    if (type.isBuy() && tradeBuyPrice < forwardPrice && tradeBuyPrice < backwardPrice) {
       return trade.buyTime();
     }
     var tradeSellPrice = closeData.get(trade.sellTime());
-    if (type == TradeType.SELL && tradeSellPrice > forwardPrice && tradeSellPrice > backwardPrice) {
+    if (type.isSell() && tradeSellPrice > forwardPrice && tradeSellPrice > backwardPrice) {
       return trade.sellTime();
     }
-    if (type == TradeType.BUY && forwardPrice < backwardPrice || type == TradeType.SELL && forwardPrice > backwardPrice) {
+    if (type.isBuy() && forwardPrice < backwardPrice || type.isSell() && forwardPrice > backwardPrice) {
       return forwardOptimal;
     }
     return backwardOptimal;
@@ -77,13 +77,13 @@ public final class TradeNoiseFilter extends TradeFilter {
     Trade trade, List<Double> closeData, TradeType type,
     int stepSize, int direction
   ) {
-    var initialSignal = type == TradeType.BUY ? trade.buyTime() : trade.sellTime();
+    var initialSignal = type.isBuy() ? trade.buyTime() : trade.sellTime();
     var lastAverage = calculateMovingAverage(closeData, initialSignal - ((stepSize - 1) / 2) - direction, stepSize);
     var calculationLength = direction > 0 ? Math.min(closeData.size() - initialSignal - stepSize, 30) :
       Math.min(initialSignal - 30 - stepSize, 30);
     for (var i = 0; i < calculationLength; i++) {
       var average = calculateMovingAverage(closeData, initialSignal - ((stepSize - 1) / 2) + i * direction, stepSize);
-      if (type == TradeType.BUY ? average > lastAverage : average < lastAverage) {
+      if (type.isBuy() ? average > lastAverage : average < lastAverage) {
         return initialSignal + i * direction;
       }
       lastAverage = average;

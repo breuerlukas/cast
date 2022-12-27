@@ -72,10 +72,10 @@ public final class TradePage extends Page {
   }
 
   private int calculateActionIndex(TradeType action) {
-    if (action == TradeType.BUY) {
+    if (action.isBuy()) {
       return 0;
     }
-    if (action == TradeType.SELL) {
+    if (action.isSell()) {
       return 1;
     }
     return -1;
