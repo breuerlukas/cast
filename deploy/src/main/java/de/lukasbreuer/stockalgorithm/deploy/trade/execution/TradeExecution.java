@@ -1,5 +1,6 @@
 package de.lukasbreuer.stockalgorithm.deploy.trade.execution;
 
+import com.mongodb.client.result.InsertOneResult;
 import de.lukasbreuer.stockalgorithm.core.log.Log;
 import de.lukasbreuer.stockalgorithm.core.trade.TradeType;
 import de.lukasbreuer.stockalgorithm.deploy.investopedia.LoginPage;
@@ -14,9 +15,28 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
 
 @RequiredArgsConstructor(staticName = "create")
 public final class TradeExecution {
+  public static CompletableFuture<TradeExecution> createAndInitialize(
+    Log log, ModelCollection modelCollection, TradeCollection tradeCollection,
+    String investopediaUsername, String investopediaPassword,
+    String investopediaGame, Stock stock
+  ) {
+    var completableFuture = new CompletableFuture<TradeExecution>();
+    var execution = create(log, modelCollection, tradeCollection,
+      investopediaUsername, investopediaPassword, investopediaGame, stock);
+    execution.initialize(() -> completableFuture.complete(execution));
+    return completableFuture;
+  }
+
+  public enum Action {
+    TRADE,
+    REMAIN
+  }
+
   private final Log log;
   private final ModelCollection modelCollection;
   private final TradeCollection tradeCollection;
@@ -24,29 +44,46 @@ public final class TradeExecution {
   private final String investopediaPassword;
   private final String investopediaGame;
   private final Stock stock;
+  private Model model;
 
-  public void verify(TradeType tradeType) {
+  public void initialize(Runnable completed) {
     modelCollection.findByStock(stock.stockName())
-      .thenAccept(model -> tradeCollection.findLatestByStock(stock.stockName(), tradeType)
-        .thenAccept(latestTrade -> verify(model, tradeType, latestTrade)));
+      .thenAccept(model -> initialize(model, completed));
+  }
+
+  private void initialize(Model model, Runnable completed) {
+    this.model = model;
+    model.initialize();
+    completed.run();
+  }
+
+  public CompletableFuture<Action> verify(TradeType tradeType) {
+    var actionFuture = new CompletableFuture<Action>();
+    tradeCollection.findLatestByStock(stock.stockName(), tradeType)
+        .thenAccept(latestTrade -> verify(tradeType, latestTrade, actionFuture));
+    return actionFuture;
   }
 
   private static final int MODEL_PREDICTION_PERIOD = 20;
 
-  private void verify(Model model, TradeType tradeType, Optional<Trade> latestTrade) {
-    model.initialize();
+  private void verify(
+    TradeType tradeType, Optional<Trade> latestTrade,
+    CompletableFuture<Action> actionFuture
+  ) {
     var prediction = model.predict(tradeType, MODEL_PREDICTION_PERIOD);
-    var shouldExecute = TradeExecutionDecision.create(stock, tradeType,
+    var shouldExecute = TradeDecision.create(stock, tradeType,
       latestTrade, prediction).decide();
     if (shouldExecute) {
-      log.fine("It has been decided that the trading of stock " +
+      log.fine("It has been decided that the " + tradeType + " of stock " +
         stock.formattedStockName() + " will be executed.");
       new Thread(() -> perform(tradeType, 1, () ->
-        storeTrade(model, tradeType))).start();
+        storeTrade(model, tradeType, success ->
+          actionFuture.complete(Action.TRADE)))).start();
       return;
     }
-    log.info("It has been decided that the trading of stock " +
+    log.info("It has been decided that the " + tradeType + " of stock " +
       stock.formattedStockName() + " will not be executed.");
+    actionFuture.complete(Action.REMAIN);
   }
 
   private void perform(TradeType tradeType, int amount, Runnable success) {
@@ -65,10 +102,10 @@ public final class TradeExecution {
     }
   }
 
-  private void storeTrade(Model model, TradeType tradeType) {
+  private void storeTrade(
+    Model model, TradeType tradeType, Consumer<InsertOneResult> response
+  ) {
     tradeCollection.addTrade(Trade.create(UUID.randomUUID(), stock.stockName(),
-        tradeType, System.currentTimeMillis(), model.currentStockPrice()),
-      result -> log.fine("Successfully stored " +
-        stock.formattedStockName() + " trade"));
+        tradeType, System.currentTimeMillis(), model.currentStockPrice()), response);
   }
 }

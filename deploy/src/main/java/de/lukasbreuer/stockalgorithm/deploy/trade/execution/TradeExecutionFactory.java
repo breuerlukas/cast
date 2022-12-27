@@ -10,6 +10,8 @@ import de.lukasbreuer.stockalgorithm.deploy.trade.TradeCollection;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 
+import java.util.concurrent.CompletableFuture;
+
 @Singleton
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE, onConstructor = @__({@Inject}))
 public final class TradeExecutionFactory {
@@ -25,6 +27,11 @@ public final class TradeExecutionFactory {
   private final String investopediaPassword;
   @Inject @Named("investopediaGame")
   private final String investopediaGame;
+
+  public CompletableFuture<TradeExecution> createAndInitialize(Stock stock) {
+    return TradeExecution.createAndInitialize(log, modelCollection, tradeCollection,
+      investopediaUsername, investopediaPassword, investopediaGame, stock);
+  }
 
   public TradeExecution create(Stock stock) {
     return TradeExecution.create(log, modelCollection, tradeCollection,

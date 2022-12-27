@@ -1,14 +1,17 @@
 package de.lukasbreuer.stockalgorithm.deploy.trade;
 
+import com.google.common.collect.Maps;
 import de.lukasbreuer.stockalgorithm.core.log.Log;
 import de.lukasbreuer.stockalgorithm.core.trade.TradeType;
 import de.lukasbreuer.stockalgorithm.deploy.portfolio.Stock;
 import de.lukasbreuer.stockalgorithm.deploy.portfolio.StockCollection;
+import de.lukasbreuer.stockalgorithm.deploy.trade.execution.TradeExecution;
 import de.lukasbreuer.stockalgorithm.deploy.trade.execution.TradeExecutionFactory;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Calendar;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -57,17 +60,40 @@ public final class TradeSchedule {
 
   private void execute(List<Stock> portfolio) {
     log.info("Start schedule execution");
+    var executions = Maps.<Stock, TradeType>newHashMap();
     for (var stock : portfolio) {
-      executeIndividual(stock);
+      executeIndividual(executions, portfolio.size(), stock);
     }
-    log.info("Finished schedule execution");
   }
 
-  private void executeIndividual(Stock stock) {
-    var execution = tradeExecutionFactory.create(stock);
-    execution.verify(TradeType.BUY);
-    execution.verify(TradeType.SELL);
-    log.info("Finished " + stock.formattedStockName() + " execution");
+  private void executeIndividual(
+    Map<Stock, TradeType> executions, int portfolioSize, Stock stock
+  ) {
+    tradeExecutionFactory.createAndInitialize(stock).thenAccept(execution ->
+      executeIndividual(executions, portfolioSize, stock, execution));
+  }
+
+  private void executeIndividual(
+    Map<Stock, TradeType> executions, int portfolioSize, Stock stock,
+    TradeExecution execution
+  ) {
+    execution.verify(TradeType.BUY).thenAccept(action ->
+      finishExecution(executions, portfolioSize, stock, TradeType.BUY));
+    execution.verify(TradeType.SELL).thenAccept(action ->
+      finishExecution(executions, portfolioSize, stock, TradeType.SELL));
+  }
+
+  private void finishExecution(
+    Map<Stock, TradeType> executions, int portfolioSize, Stock stock,
+    TradeType tradeType
+  ) {
+    if (executions.containsKey(stock)) {
+      log.info("Finished " + stock.formattedStockName() + " execution");
+    }
+    executions.put(stock, tradeType);
+    if (executions.size() == portfolioSize) {
+      log.info("Finished schedule execution");
+    }
   }
 
   public void stop() {
