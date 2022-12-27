@@ -19,7 +19,8 @@ public final class Model {
   public static Model of(Log log, Document document) {
     return create(log, UUID.fromString(document.getString("id")),
       document.getString("stock"), document.getString("buyModelPath"),
-      document.getString("sellModelPath"), document.getInteger("reviewPeriod"));
+      document.getString("sellModelPath"), document.getInteger("reviewPeriod"),
+      document.getDouble("tradePredictionMinimum"));
   }
 
   private final Log log;
@@ -29,6 +30,8 @@ public final class Model {
   private final String buyModelPath;
   private final String sellModelPath;
   private final int reviewPeriod;
+  @Getter
+  private final double tradePredictionMinimum;
   private Symbol symbol;
   private NeuralNetwork buyNeuralNetwork;
   private NeuralNetwork sellNeuralNetwork;

@@ -67,8 +67,8 @@ public final class TradeExecution {
     Optional<Trade> latestSellTrade, Consumer<Action> actionFuture
   ) {
     var prediction = model.predict(tradeType, MODEL_PREDICTION_PERIOD);
-    var shouldExecute = TradeDecision.create(stock, tradeType,
-      latestBuyTrade, latestSellTrade, prediction).decide();
+    var shouldExecute = TradeDecision.create(tradeType, latestBuyTrade,
+      latestSellTrade, prediction, model.tradePredictionMinimum()).decide();
     if (shouldExecute) {
       log.fine("It has been decided that the " + tradeType + " of stock " +
         stock.formattedStockName() + " will be executed.");

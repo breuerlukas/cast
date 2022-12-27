@@ -1,7 +1,6 @@
 package de.lukasbreuer.stockalgorithm.deploy.trade.execution;
 
 import de.lukasbreuer.stockalgorithm.core.trade.TradeType;
-import de.lukasbreuer.stockalgorithm.deploy.portfolio.Stock;
 import de.lukasbreuer.stockalgorithm.deploy.trade.Trade;
 import lombok.RequiredArgsConstructor;
 
@@ -10,11 +9,11 @@ import java.util.Optional;
 
 @RequiredArgsConstructor(staticName = "create")
 public final class TradeDecision {
-  private final Stock stock;
   private final TradeType tradeType;
   private final Optional<Trade> latestBuyTrade;
   private final Optional<Trade> latestSellTrade;
   private final float[] prediction;
+  private final double tradePredictionMinimum;
 
   public boolean decide() {
     System.out.println(tradeType + ":" + Arrays.toString(prediction));
