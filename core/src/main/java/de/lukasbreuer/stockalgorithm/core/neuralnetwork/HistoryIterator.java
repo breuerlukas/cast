@@ -47,7 +47,7 @@ public final class HistoryIterator implements MultiDataSetIterator {
     return new org.nd4j.linalg.dataset.MultiDataSet(inputs, labels, null, null);
   }
 
-  public INDArray buildInputVector(List<double[]> data) {
+  private INDArray buildInputVector(List<double[]> data) {
     INDArray result = Nd4j.zeros(1, data.size() * data.get(0).length);
     for (int i = 0; i < data.size(); i++) {
       var dayVector = data.get(i);

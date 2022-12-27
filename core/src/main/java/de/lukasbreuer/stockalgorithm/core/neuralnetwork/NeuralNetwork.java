@@ -1,12 +1,13 @@
 package de.lukasbreuer.stockalgorithm.core.neuralnetwork;
 
-import lombok.RequiredArgsConstructor;
 import org.deeplearning4j.nn.conf.NeuralNetConfiguration;
 import org.deeplearning4j.nn.conf.layers.DenseLayer;
 import org.deeplearning4j.nn.conf.layers.OutputLayer;
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
 import org.deeplearning4j.nn.weights.WeightInit;
 import org.nd4j.linalg.activations.Activation;
+import org.nd4j.linalg.api.ndarray.INDArray;
+import org.nd4j.linalg.factory.Nd4j;
 import org.nd4j.linalg.learning.config.IUpdater;
 import org.nd4j.linalg.lossfunctions.LossFunctions;
 
@@ -128,7 +129,7 @@ public final class NeuralNetwork {
   }
 
   public float evaluate(int index, Map.Entry<List<double[]>, Double> entry) {
-    var input = dataSetIterator.buildInputVector(entry.getKey());
+    var input = buildInputVector(entry.getKey());
     var prediction = network.output(input, false).getFloat(0) * 100;
     var prefix = "";
     if (prediction > 30f) {
@@ -136,6 +137,17 @@ public final class NeuralNetwork {
     }
     System.out.println(prefix + index + ": " + entry.getValue() + " <-> " + prediction + "\u001B[0m");
     return prediction;
+  }
+
+  private INDArray buildInputVector(List<double[]> data) {
+    INDArray result = Nd4j.zeros(1, data.size() * data.get(0).length);
+    for (int i = 0; i < data.size(); i++) {
+      var dayVector = data.get(i);
+      for (var j = 0; j < dayVector.length; j++) {
+        result.putScalar(0, (long) i * dayVector.length + j, dayVector[j]);
+      }
+    }
+    return result;
   }
 
   public void save(String path) throws Exception {
