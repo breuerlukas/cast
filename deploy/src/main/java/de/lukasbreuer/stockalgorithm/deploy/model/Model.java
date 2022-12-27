@@ -28,8 +28,11 @@ public final class Model {
   @Getter
   private final UUID id;
   private final String stock;
+  @Getter
   private final String buyModelPath;
+  @Getter
   private final String sellModelPath;
+  @Getter
   private final int reviewPeriod;
   @Getter
   private final double buyTradePredictionMinimum;
@@ -79,6 +82,8 @@ public final class Model {
     document.append("buyModelPath", buyModelPath);
     document.append("sellModelPath", sellModelPath);
     document.append("reviewPeriod", reviewPeriod);
+    document.append("buyTradePredictionMinimum", buyTradePredictionMinimum);
+    document.append("sellTradePredictionMinimum", sellTradePredictionMinimum);
     return document;
   }
 }
