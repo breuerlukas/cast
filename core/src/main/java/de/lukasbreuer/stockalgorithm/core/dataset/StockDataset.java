@@ -80,7 +80,6 @@ public final class StockDataset {
     var bestTradeDates = optimalTrades.stream()
       .map(trade -> tradeType == TradeType.BUY ? trade.buyTime() : trade.sellTime())
       .collect(Collectors.toList());
-    System.out.println(dayLongestReview + reviewPeriod + ":" + bestTradeDates);
     for (var i = dayLongestReview + reviewPeriod; i < historyData.size(); i++) {
       var entry = new AbstractMap.SimpleEntry<>(createInputData(i - dayLongestReview),
         calculateTradeValue(bestTradeDates, i));
