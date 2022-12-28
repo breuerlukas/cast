@@ -33,18 +33,12 @@ public final class TradePage extends Page {
   @Override
   public void open() throws Exception {
     super.open();
-    acceptRightsInformation();
     selectGame();
     selectStock();
     selectAction();
     selectQuantity();
     selectDuration();
     confirmTrade();
-  }
-
-  private void acceptRightsInformation() throws Exception {
-    browser().findElement(By.id("onetrust-accept-btn-handler")).click();
-    Thread.sleep(500);
   }
 
   private void selectGame() throws Exception {
@@ -67,7 +61,7 @@ public final class TradePage extends Page {
     browser().findElement(By.cssSelector("input[data-cy='action-select']"))
       .findElement(By.xpath("./..")).click();
     Thread.sleep(200);
-    browser().findElement(By.id("list-item-173-" +
+    browser().findElement(By.id("list-item-190-" +
       calculateActionIndex(tradeType))).click();
   }
 
@@ -90,7 +84,7 @@ public final class TradePage extends Page {
     browser().findElement(By.cssSelector("input[data-cy='duration-select']"))
       .findElement(By.xpath("./..")).click();
     Thread.sleep(200);
-    browser().findElement(By.id("list-item-181-1")).click();
+    browser().findElement(By.id("list-item-198-1")).click();
   }
 
   private void confirmTrade() throws Exception {

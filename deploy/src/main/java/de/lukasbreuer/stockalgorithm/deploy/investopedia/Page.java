@@ -11,7 +11,7 @@ public abstract class Page {
 
   public void open() throws Exception {
     browser.get(url);
-    Thread.sleep(1000);
+    Thread.sleep(2000);
   }
 
   protected WebDriver browser() {
