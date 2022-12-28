@@ -16,7 +16,7 @@ public final class PortfolioCommand extends Command {
   private final StockCollection stockCollection;
 
   private PortfolioCommand(Log log, StockCollection stockCollection) {
-    super(log, "portfolio", new String[] {" ", "add <stock>", "remove <stock>"});
+    super(log, "portfolio", new String[] {"add <stock>", "remove <stock>"});
     this.stockCollection = stockCollection;
   }
 
@@ -41,7 +41,7 @@ public final class PortfolioCommand extends Command {
     }
     var stock = arguments[1].toUpperCase();
     stockCollection.addStock(Stock.create(UUID.randomUUID(), stock), success ->
-      log().info("Stock " + stock + " was successfully added to the portfolio"));
+      log().info("Stock " + stock + " has been successfully added to the portfolio"));
     return true;
   }
 
