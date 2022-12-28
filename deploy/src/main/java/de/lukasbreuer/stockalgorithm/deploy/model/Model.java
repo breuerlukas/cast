@@ -6,15 +6,15 @@ import de.lukasbreuer.stockalgorithm.core.neuralnetwork.ModelState;
 import de.lukasbreuer.stockalgorithm.core.neuralnetwork.NeuralNetwork;
 import de.lukasbreuer.stockalgorithm.core.symbol.Symbol;
 import de.lukasbreuer.stockalgorithm.core.trade.TradeType;
+import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.bson.Document;
 
 import java.util.UUID;
 
 @Accessors(fluent = true)
-@RequiredArgsConstructor(staticName = "create")
 public final class Model {
   public static Model of(Log log, Document document) {
     return create(log, UUID.fromString(document.getString("id")),
@@ -24,23 +24,47 @@ public final class Model {
       document.getDouble("sellTradePredictionMinimum"));
   }
 
-  private final Log log;
+  public static Model create(
+    Log log, UUID id, String stock, String buyModelPath, String sellModelPath,
+    int reviewPeriod, double buyTradePredictionMinimum,
+    double sellTradePredictionMinimum
+  ) {
+    return new Model(log, id, stock, buyModelPath, sellModelPath, reviewPeriod,
+      buyTradePredictionMinimum, sellTradePredictionMinimum);
+  }
+
+  private Log log;
   @Getter
-  private final UUID id;
-  private final String stock;
-  @Getter
-  private final String buyModelPath;
-  @Getter
-  private final String sellModelPath;
-  @Getter
-  private final int reviewPeriod;
-  @Getter
-  private final double buyTradePredictionMinimum;
-  @Getter
-  private final double sellTradePredictionMinimum;
+  private UUID id;
+  private String stock;
+  @Getter @Setter(AccessLevel.PRIVATE)
+  private String buyModelPath;
+  @Getter @Setter(AccessLevel.PRIVATE)
+  private String sellModelPath;
+  @Getter @Setter(AccessLevel.PRIVATE)
+  private int reviewPeriod;
+  @Getter @Setter(AccessLevel.PRIVATE)
+  private double buyTradePredictionMinimum;
+  @Getter @Setter(AccessLevel.PRIVATE)
+  private double sellTradePredictionMinimum;
   private Symbol symbol;
   private NeuralNetwork buyNeuralNetwork;
   private NeuralNetwork sellNeuralNetwork;
+
+  private Model(
+    Log log, UUID id, String stock, String buyModelPath, String sellModelPath,
+    int reviewPeriod, double buyTradePredictionMinimum,
+    double sellTradePredictionMinimum
+  ) {
+    this.log = log;
+    this.id = id;
+    this.stock = stock;
+    this.buyModelPath = buyModelPath;
+    this.sellModelPath = sellModelPath;
+    this.reviewPeriod = reviewPeriod;
+    this.buyTradePredictionMinimum = buyTradePredictionMinimum;
+    this.sellTradePredictionMinimum = sellTradePredictionMinimum;
+  }
 
   public void initialize() {
     try {
@@ -74,6 +98,16 @@ public final class Model {
 
   public double currentStockPrice() {
     return symbol.findPartOfHistory(1).get(0).close();
+  }
+
+  public void updateParameter(String parameter, String value) {
+    switch (parameter.toLowerCase()) {
+      case "buymodelpath" -> buyModelPath(value);
+      case "sellmodelpath" -> sellModelPath(value);
+      case "reviewperiod" -> reviewPeriod(Integer.parseInt(value));
+      case "buytradepredictionminimum" -> buyTradePredictionMinimum(Double.parseDouble(value));
+      case "selltradepredictionminimum" -> sellTradePredictionMinimum(Double.parseDouble(value));
+    }
   }
 
   public Document buildDocument() {
