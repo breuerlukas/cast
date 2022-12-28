@@ -28,6 +28,8 @@ dependencies {
 
   implementation "com.google.inject:guice:5.1.0"
 
+  implementation "com.google.guava:guava:31.1-jre"
+
   implementation "org.projectlombok:lombok:1.18.24"
   annotationProcessor "org.projectlombok:lombok:1.18.24"
   testImplementation "org.projectlombok:lombok:1.18.24"
@@ -56,6 +58,7 @@ jar {
       "Main-Class": "de.lukasbreuer.stockalgorithm.deploy.DeployApplication",
       "Class-Path":
         "libraries/com.google.inject.guice-5.1.0.jar " +
+          "libraries/com.google.guava-31.1-jre.jar " +
           "libraries/org.projectlombok.lombok-1.18.24.jar " +
           "libraries/org.mongodbmongodb.driver.reactivestreams-4.8.1.jar " +
           "libraries/org.deeplearning4j-1.0.0-M2.1.jar " +
