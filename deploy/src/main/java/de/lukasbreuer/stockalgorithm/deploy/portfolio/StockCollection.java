@@ -33,6 +33,10 @@ public final class StockCollection extends DatabaseCollection {
     update(stock.id(), stock.buildDocument(), response);
   }
 
+  public void removeStock(String stockName, Consumer<DeleteResult> response) {
+    findStockByName(stockName, stock -> removeStock(stock, response));
+  }
+
   public void removeStock(Stock stock, Consumer<DeleteResult> response) {
     removeStock(stock.id(), response);
   }
@@ -43,6 +47,11 @@ public final class StockCollection extends DatabaseCollection {
 
   public void findStockById(UUID stockId, Consumer<Stock> result) {
     findById(stockId, document -> result.accept(Stock.of(document)));
+  }
+
+  public void findStockByName(String stockName, Consumer<Stock> result) {
+    findSingleByAttribute("stockName", stockName, document ->
+      result.accept(Stock.of(document)));
   }
 
   public void totalPortfolio(Consumer<List<Stock>> result) {

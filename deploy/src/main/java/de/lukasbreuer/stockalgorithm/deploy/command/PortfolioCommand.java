@@ -6,6 +6,7 @@ import de.lukasbreuer.stockalgorithm.deploy.portfolio.Stock;
 import de.lukasbreuer.stockalgorithm.deploy.portfolio.StockCollection;
 
 import java.util.List;
+import java.util.UUID;
 
 public final class PortfolioCommand extends Command {
   public static PortfolioCommand create(Log log, StockCollection stockCollection) {
@@ -15,13 +16,42 @@ public final class PortfolioCommand extends Command {
   private final StockCollection stockCollection;
 
   private PortfolioCommand(Log log, StockCollection stockCollection) {
-    super(log, "portfolio", new String[0]);
+    super(log, "portfolio", new String[] {" ", "add <stock>", "remove <stock>"});
     this.stockCollection = stockCollection;
   }
 
   @Override
   public boolean execute(String[] arguments) {
-    stockCollection.totalPortfolio(this::printPortfolio);
+    if (arguments.length == 0) {
+      stockCollection.totalPortfolio(this::printPortfolio);
+      return true;
+    }
+    if (arguments[0].equalsIgnoreCase("add")) {
+      return executeAdd(arguments);
+    }
+    if (arguments[0].equalsIgnoreCase("remove")) {
+      return executeRemove(arguments);
+    }
+    return false;
+  }
+
+  private boolean executeAdd(String[] arguments) {
+    if (arguments.length != 2) {
+      return false;
+    }
+    var stock = arguments[1].toUpperCase();
+    stockCollection.addStock(Stock.create(UUID.randomUUID(), stock), success ->
+      log().info("Stock " + stock + " was successfully added to the portfolio"));
+    return true;
+  }
+
+  private boolean executeRemove(String[] arguments) {
+    if (arguments.length != 2) {
+      return false;
+    }
+    var stock = arguments[1].toUpperCase();
+    stockCollection.removeStock(stock, success ->
+      log().info("Stock " + stock + " has been successfully removed from the portfolio"));
     return true;
   }
 
