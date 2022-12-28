@@ -3,6 +3,7 @@ package de.lukasbreuer.stockalgorithm.deploy.trade.execution;
 import com.mongodb.client.result.InsertOneResult;
 import de.lukasbreuer.stockalgorithm.core.log.Log;
 import de.lukasbreuer.stockalgorithm.core.trade.TradeType;
+import de.lukasbreuer.stockalgorithm.deploy.investopedia.HomePage;
 import de.lukasbreuer.stockalgorithm.deploy.investopedia.LoginPage;
 import de.lukasbreuer.stockalgorithm.deploy.investopedia.TradePage;
 import de.lukasbreuer.stockalgorithm.deploy.model.Model;
@@ -12,6 +13,7 @@ import de.lukasbreuer.stockalgorithm.deploy.trade.Trade;
 import de.lukasbreuer.stockalgorithm.deploy.trade.TradeCollection;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import lombok.RequiredArgsConstructor;
+import org.openqa.selenium.chrome.ChromeOptions;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -73,11 +75,9 @@ public final class TradeExecution {
     if (shouldExecute) {
       log.fine("It has been decided that the " + tradeType + " of stock " +
         stock.formattedStockName() + " will be executed");
-      storeTrade(model, tradeType, success ->
-        actionFuture.accept(Action.TRADE));
-      /*new Thread(() -> perform(tradeType, 1, () ->
+      new Thread(() -> perform(tradeType, 1, () ->
         storeTrade(model, tradeType, success ->
-          actionFuture.accept(Action.TRADE)))).start();*/
+          actionFuture.accept(Action.TRADE)))).start();
       return;
     }
     log.info("It has been decided that the " + tradeType + " of stock " +
@@ -87,9 +87,11 @@ public final class TradeExecution {
 
   private void perform(TradeType tradeType, int amount, Runnable success) {
     try {
-      WebDriverManager.chromedriver().setup();
-      var browser = WebDriverManager.chromedriver().create();
-      browser.manage().window().maximize();
+      var driver = WebDriverManager.chromedriver();
+      driver.setup();
+      configureBrowser(driver);
+      var browser = driver.create();
+      HomePage.create(browser).open();
       LoginPage.create(browser, investopediaUsername, investopediaPassword).open();
       TradePage.create(browser, investopediaGame, stock.formattedStockName(),
         tradeType, amount).open();
@@ -99,6 +101,20 @@ public final class TradeExecution {
       log.severe("Performance of " + stock.formattedStockName() + " trade failed");
       exception.printStackTrace();
     }
+  }
+
+  private static final String BROWSER_USER_AGENT = "Mozilla/5.0 (X11; Linux x86_64) " +
+    "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.5359.124 Safari/537.36";
+
+  private void configureBrowser(WebDriverManager driver) {
+    var options = new ChromeOptions();
+    options.addArguments("--window-size=1920x1080");
+    options.addArguments("--disable-extensions");
+    options.addArguments("--disable-dev-shm-usage");
+    options.addArguments("--no-sandbox");
+    options.addArguments("--headless");
+    options.addArguments("--user-agent=" + BROWSER_USER_AGENT);
+    driver.capabilities(options);
   }
 
   private void storeTrade(
