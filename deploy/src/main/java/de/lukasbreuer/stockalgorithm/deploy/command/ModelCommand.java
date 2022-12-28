@@ -5,6 +5,8 @@ import de.lukasbreuer.stockalgorithm.core.log.Log;
 import de.lukasbreuer.stockalgorithm.deploy.model.Model;
 import de.lukasbreuer.stockalgorithm.deploy.model.ModelCollection;
 
+import java.util.UUID;
+
 public final class ModelCommand extends Command {
   public static ModelCommand create(Log log, ModelCollection modelCollection) {
     return new ModelCommand(log, modelCollection);
@@ -13,9 +15,9 @@ public final class ModelCommand extends Command {
   private final ModelCollection modelCollection;
 
   private ModelCommand(Log log, ModelCollection modelCollection) {
-    super(log, "model", new String[] {"stock", "update <stock> " +
-      "<buyModelPath/sellModelPath/reviewPeriod/buyTradePredictionMinimum/" +
-      "sellTradePredictionMinimum> <value>"});
+    super(log, "model", new String[] {"stock", "add <stock> <buy model> " +
+      "<sell model> <review period> <buy prediction minimum> <sell prediction minimum>",
+      "update <stock> <parameter> <value>", "remove <stock>"});
     this.modelCollection = modelCollection;
   }
 
@@ -24,11 +26,34 @@ public final class ModelCommand extends Command {
     if (arguments.length == 0) {
       return false;
     }
+    if (arguments[0].equalsIgnoreCase("add")) {
+      return executeAdd(arguments);
+    }
     if (arguments[0].equalsIgnoreCase("update")) {
       return executeUpdate(arguments);
     }
+    if (arguments[0].equalsIgnoreCase("remove")) {
+      return executeRemove(arguments);
+    }
     var stock = arguments[0].toUpperCase();
     modelCollection.findByStock(stock, model -> printModel(stock, model));
+    return true;
+  }
+
+  private boolean executeAdd(String[] arguments) {
+    if (arguments.length != 7) {
+      return false;
+    }
+    var stock = arguments[1].toUpperCase();
+    var buyModelPath = arguments[2];
+    var sellModelPath = arguments[3];
+    var reviewPeriod = Integer.parseInt(arguments[4]);
+    var buyTradePredictionMinimum = Double.parseDouble(arguments[5]);
+    var sellTradePredictionMaximum = Double.parseDouble(arguments[6]);
+    modelCollection.addModel(Model.create(log(), UUID.randomUUID(), stock,
+      buyModelPath, sellModelPath, reviewPeriod, buyTradePredictionMinimum,
+      sellTradePredictionMaximum), success ->
+      log().info("Stock " + stock + " has been successfully added"));
     return true;
   }
 
@@ -40,6 +65,16 @@ public final class ModelCommand extends Command {
     var parameter = arguments[2];
     var value = arguments[3];
     modelCollection.findByStock(stock, model -> updateModel(stock, model, parameter, value));
+    return true;
+  }
+
+  private boolean executeRemove(String[] arguments) {
+    if (arguments.length != 2) {
+      return false;
+    }
+    var stock = arguments[1].toUpperCase();
+    modelCollection.removeModel(stock, success ->
+      log().info("Model " + stock + " has been successfully removed"));
     return true;
   }
 

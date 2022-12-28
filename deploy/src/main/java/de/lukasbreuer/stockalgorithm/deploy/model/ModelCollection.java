@@ -38,6 +38,10 @@ public final class ModelCollection extends DatabaseCollection {
     update(model.id(), model.buildDocument(), response);
   }
 
+  public void removeModel(String stock, Consumer<DeleteResult> response) {
+    findByStock(stock, model -> removeModel(model, response));
+  }
+
   public void removeModel(Model model, Consumer<DeleteResult> response) {
     removeModel(model.id(), response);
   }
