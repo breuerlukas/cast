@@ -9,7 +9,10 @@ import de.lukasbreuer.stockalgorithm.deploy.trade.execution.TradeExecution;
 import de.lukasbreuer.stockalgorithm.deploy.trade.execution.TradeExecutionFactory;
 import lombok.RequiredArgsConstructor;
 
-import java.util.*;
+import java.util.AbstractMap;
+import java.util.Calendar;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -28,10 +31,7 @@ public final class TradeSchedule {
     schedule = executorService.scheduleAtFixedRate(this::execute,
       initialDelay, 1000 * 60 * 60 * 24, TimeUnit.MILLISECONDS);
     log.info("Initialized trade schedule");
-    log.info("First schedule execution in " +
-      ((int) ((initialDelay / (1000 * 60 * 60)) % 24)) + " hour(s), " +
-      ((int) ((initialDelay / (1000 * 60)) % 60)) + " minute(s), " +
-      ((int) (initialDelay / 1000) % 60) + " second(s)");
+    log.info("First schedule execution in " + formatInitialDelay(initialDelay));
   }
 
   private static final int MARKET_CLOSE_TIME = 22;
@@ -50,6 +50,14 @@ public final class TradeSchedule {
     calendar.set(Calendar.SECOND, 0);
     calendar.set(Calendar.MILLISECOND, 0);
     return calendar.getTimeInMillis() - System.currentTimeMillis();
+  }
+
+  private String formatInitialDelay(long delay) {
+    var result = new StringBuilder();
+    result.append(((int) ((delay / (1000 * 60 * 60)) % 24)) + " hour(s), ");
+    result.append(((int) ((delay / (1000 * 60)) % 60)) + " minute(s), ");
+    result.append(((int) ((delay / 1000) % 60)) + " second(s)");
+    return result.toString();
   }
 
   private void execute() {
