@@ -55,8 +55,9 @@ public final class CommandTask {
   private void printOutSyntax(Command command) {
     var arguments = command.arguments();
     var syntax = new StringBuilder("Syntax: " + command.name() + " ");
-    for (var argument : arguments) {
-      syntax.append("<").append(argument).append("> ");
+    for (var i = 0; i < arguments.length; i++) {
+      syntax.append("<").append(arguments[i]).append(">")
+        .append(i != arguments.length - 1 ? " / " : " ");
     }
     log.info(syntax.toString());
   }
