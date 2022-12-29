@@ -1,6 +1,6 @@
 group 'de.lukasbreuer.cast'
 version '1.0.0-SNAPSHOT'
 
-task buildAll {
+task build {
   dependsOn gradle.includedBuilds*.task(':build')
 }
