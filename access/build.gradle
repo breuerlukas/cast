@@ -1,0 +1,35 @@
+plugins {
+  id "java"
+  id "org.springframework.boot" version "3.0.1"
+}
+
+group "de.lukasbreuer.cast"
+version "1.0.0-SNAPSHOT"
+
+repositories {
+  mavenCentral()
+}
+
+configurations {
+  archiveImplementation
+}
+
+sourceSets {
+  main {
+    compileClasspath += configurations.archiveImplementation
+  }
+}
+
+dependencies {
+  implementation("de.lukasbreuer.cast:deploy:1.0.0-SNAPSHOT") {
+    exclude group: 'org.deeplearning4j', module: 'deeplearning4j-core'
+    exclude group: 'org.nd4j', module: 'nd4j-native-platform'
+  }
+  archiveImplementation("de.lukasbreuer.cast:deploy:1.0.0-SNAPSHOT")
+
+  implementation 'org.springframework.boot:spring-boot-starter-web:3.0.1'
+}
+
+test {
+  useJUnitPlatform()
+}
