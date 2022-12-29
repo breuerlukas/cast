@@ -1,4 +1,4 @@
-group 'de.lukasbreuer.stockalgorithm'
+group 'de.lukasbreuer.cast'
 version '1.0.0-SNAPSHOT'
 
 task buildAll {

@@ -1,0 +1,34 @@
+package de.lukasbreuer.cast.core.dataset.indicator;
+
+import com.clearspring.analytics.util.Lists;
+import de.lukasbreuer.cast.core.symbol.HistoryEntry;
+import lombok.RequiredArgsConstructor;
+
+import java.util.List;
+
+@RequiredArgsConstructor(staticName = "create")
+public final class IndicatorRepository {
+  private final List<HistoryEntry> data;
+  private final List<Indicator> indicators = Lists.newArrayList();
+
+  public void fill() {
+    indicators.add(ChangeIndicator.create(data));
+    indicators.add(MovingAverageIndicator.create(data));
+    indicators.add(ExponentialMovingAverageIndicator.create(data));
+    indicators.add(ChangeRateIndicator.create(data));
+    indicators.add(RelativeStrengthIndicator.create(data));
+    indicators.add(CommodityChannelIndicator.create(data));
+    indicators.add(StochasticOscillatorIndicator.create(data));
+    indicators.add(AverageRangeIndicator.create(data));
+    indicators.add(BalanceVolumeIndicator.create(data));
+    indicators.add(DirectionalMovementIndicator.create(data));
+    indicators.add(BullishPatternIndicator.create(data));
+    indicators.add(BearishPatternIndicator.create(data));
+  }
+
+  public <T extends Indicator> T find(Class<T> type) {
+    return (T) indicators.stream()
+      .filter(indicator -> indicator.getClass() == type)
+      .findFirst().get();
+  }
+}

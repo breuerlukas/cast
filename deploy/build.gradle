@@ -2,7 +2,7 @@ plugins {
   id "java"
 }
 
-group "de.lukasbreuer.stockalgorithm"
+group "de.lukasbreuer.cast"
 version "1.0.0-SNAPSHOT"
 
 repositories {
@@ -23,8 +23,8 @@ dependencies {
   testImplementation "org.junit.jupiter:junit-jupiter-api:5.9.0"
   testImplementation "org.junit.jupiter:junit-jupiter-engine:5.9.0"
 
-  implementation("de.lukasbreuer.stockalgorithm:core:1.0.0-SNAPSHOT")
-  archiveImplementation("de.lukasbreuer.stockalgorithm:core:1.0.0-SNAPSHOT")
+  implementation("de.lukasbreuer.cast:core:1.0.0-SNAPSHOT")
+  archiveImplementation("de.lukasbreuer.cast:core:1.0.0-SNAPSHOT")
 
   implementation "com.google.inject:guice:5.1.0"
 
@@ -55,7 +55,7 @@ jar {
 
   manifest {
     attributes(
-      "Main-Class": "de.lukasbreuer.stockalgorithm.deploy.DeployApplication",
+      "Main-Class": "de.lukasbreuer.cast.deploy.DeployApplication",
       "Class-Path":
         "libraries/com.google.inject.guice-5.1.0.jar " +
           "libraries/com.google.guava-31.1-jre.jar " +

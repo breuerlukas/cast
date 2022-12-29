@@ -1,4 +1,4 @@
-rootProject.name = "stockalgorithm"
+rootProject.name = "cast"
 includeBuild("core")
 includeBuild("train")
 includeBuild("deploy")
