@@ -3,8 +3,8 @@ package de.lukasbreuer.cast.train;
 import com.google.inject.AbstractModule;
 import de.lukasbreuer.cast.core.CoreModule;
 import de.lukasbreuer.cast.core.log.Log;
-import de.lukasbreuer.cast.train.neuralnetwork.NeuralNetworkModule;
 import de.lukasbreuer.cast.train.dataset.DatasetModule;
+import de.lukasbreuer.cast.train.neuralnetwork.NeuralNetworkModule;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor(staticName = "create")

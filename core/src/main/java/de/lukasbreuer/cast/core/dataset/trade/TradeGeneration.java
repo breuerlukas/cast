@@ -1,9 +1,9 @@
 package de.lukasbreuer.cast.core.dataset.trade;
 
 import com.clearspring.analytics.util.Lists;
+import de.lukasbreuer.cast.core.dataset.trade.filter.TradeIntersectionFilter;
 import de.lukasbreuer.cast.core.dataset.trade.filter.TradeNoiseFilter;
 import de.lukasbreuer.cast.core.dataset.trade.filter.TradeProfitFilter;
-import de.lukasbreuer.cast.core.dataset.trade.filter.TradeIntersectionFilter;
 import de.lukasbreuer.cast.core.symbol.HistoryEntry;
 import de.lukasbreuer.cast.core.trade.Trade;
 import lombok.RequiredArgsConstructor;
