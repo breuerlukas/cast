@@ -20,6 +20,15 @@ public final class Verification {
       authenticated.accept(false);
       return;
     }
+    accountCollection.accountExists(username, exists ->
+      isAuthenticated(authenticated, exists));
+  }
+
+  private void isAuthenticated(Consumer<Boolean> authenticated, boolean exists) {
+    if (!exists) {
+      authenticated.accept(false);
+      return;
+    }
     accountCollection.findAccountByName(username, account ->
       authenticated.accept(account.password().equals(password)));
   }

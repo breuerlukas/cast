@@ -43,6 +43,10 @@ public final class AccountCollection extends DatabaseCollection {
     remove(accountId, response);
   }
 
+  public void accountExists(String username, Consumer<Boolean> result) {
+    exists("username", username, result);
+  }
+
   public void findAccountById(UUID accountId, Consumer<Account> result) {
     findById(accountId, document -> result.accept(Account.of(document)));
   }
