@@ -1,7 +1,6 @@
 package de.lukasbreuer.cast.access;
 
 import com.google.inject.Guice;
-import de.lukasbreuer.cast.access.account.AccountModule;
 import jakarta.annotation.PostConstruct;
 import org.springframework.context.annotation.Configuration;
 
@@ -9,7 +8,7 @@ import org.springframework.context.annotation.Configuration;
 public class AccessConfiguration {
   @PostConstruct
   private void createModuleInjector() {
-    var injector = Guice.createInjector(AccountModule.create());
+    var injector = Guice.createInjector(AccessModule.create());
     injector.injectMembers(this);
   }
 }

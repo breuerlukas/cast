@@ -3,7 +3,9 @@ package de.lukasbreuer.cast.access;
 import com.google.inject.AbstractModule;
 import de.lukasbreuer.cast.access.account.AccountModule;
 import de.lukasbreuer.cast.deploy.DeployModule;
+import lombok.RequiredArgsConstructor;
 
+@RequiredArgsConstructor(staticName = "create")
 public final class AccessModule extends AbstractModule {
   @Override
   protected void configure() {
