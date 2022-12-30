@@ -32,6 +32,11 @@ public class DatabaseCollection {
       .subscribe(SingleSubscriber.of(response::accept));;
   }
 
+  protected void exists(String key, String value, Consumer<Boolean> result) {
+    collection.countDocuments(Filters.eq(key, value))
+      .subscribe(SingleSubscriber.of(count -> result.accept(count > 0)));
+  }
+
   protected void findById(UUID id, Consumer<Document> result) {
     findSingleByAttribute("id", id.toString(), result);
   }
