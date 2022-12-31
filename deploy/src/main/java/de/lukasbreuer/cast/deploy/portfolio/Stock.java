@@ -1,7 +1,8 @@
 package de.lukasbreuer.cast.deploy.portfolio;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.bson.Document;
 
@@ -9,7 +10,7 @@ import java.util.UUID;
 
 @Getter
 @Accessors(fluent = true)
-@RequiredArgsConstructor(staticName = "create")
+@AllArgsConstructor(staticName = "create")
 public final class Stock {
   public static Stock of(Document document) {
     return create(UUID.fromString(document.getString("id")),
@@ -17,7 +18,8 @@ public final class Stock {
   }
 
   private final UUID id;
-  private final String stockName;
+  @Setter
+  private String stockName;
 
   public String formattedStockName() {
     return stockName.toUpperCase();

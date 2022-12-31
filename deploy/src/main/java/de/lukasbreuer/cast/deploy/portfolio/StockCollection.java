@@ -29,6 +29,15 @@ public final class StockCollection extends DatabaseCollection {
     add(stock.buildDocument(), response);
   }
 
+  public void updateStock(UUID stockId, String stockName, Consumer<UpdateResult> response) {
+    findStockById(stockId, stock -> updateStock(stock, stockName, response));
+  }
+
+  public void updateStock(Stock stock, String stockName, Consumer<UpdateResult> response) {
+    stock.stockName(stockName);
+    updateStock(stock, response);
+  }
+
   public void updateStock(Stock stock, Consumer<UpdateResult> response) {
     update(stock.id(), stock.buildDocument(), response);
   }
