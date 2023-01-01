@@ -1,21 +1,29 @@
 package de.lukasbreuer.cast.train;
 
-import com.google.inject.AbstractModule;
 import de.lukasbreuer.cast.core.CoreModule;
 import de.lukasbreuer.cast.core.log.Log;
 import de.lukasbreuer.cast.train.dataset.DatasetModule;
 import de.lukasbreuer.cast.train.neuralnetwork.NeuralNetworkModule;
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 
-@RequiredArgsConstructor(staticName = "create")
-public final class TrainModule extends AbstractModule {
+@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
+public final class TrainModule extends CoreModule {
+  public static TrainModule create() {
+    return new TrainModule();
+  }
+
   @Override
   protected void configure() {
-    install(CoreModule.create());
+    super.configure();
     install(DatasetModule.create());
     install(NeuralNetworkModule.create());
+  }
+
+  @Override
+  protected void configureLog() {
     try {
-      bind(Log.class).toInstance(Log.create("Train"));
+      bind(Log.class).toInstance(Log.create("Train", "/logs/train/"));
     } catch (Exception exception) {
       exception.printStackTrace();
     }

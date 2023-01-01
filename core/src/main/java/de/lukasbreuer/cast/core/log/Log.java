@@ -6,13 +6,11 @@ import java.util.Date;
 import java.util.logging.*;
 
 public final class Log extends Logger {
-  private static final String LOG_PATH = "/logs/";
-
-  public static Log create(String name) throws Exception {
+  public static Log create(String name, String path) throws Exception {
     var consoleHandler = new ConsoleHandler();
     consoleHandler.setFormatter(LogFormat.create(LogFormat.FormatType.CONSOLE));
     consoleHandler.setLevel(Level.ALL);
-    var fileHandler = new FileHandler(System.getProperty("user.dir") + LOG_PATH +
+    var fileHandler = new FileHandler(System.getProperty("user.dir") + path +
       new SimpleDateFormat("yyyy-MM-dd-HHmmss").format(new Date()) + ".log");
     fileHandler.setFormatter(LogFormat.create(LogFormat.FormatType.FILE));
     var log = new Log(name, consoleHandler, fileHandler);

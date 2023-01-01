@@ -40,7 +40,6 @@ public final class StockController {
     futureResponse.complete(response);
   }
 
-  //TODO: PUT DL4J LIBRARY TO JAR CLASSPATH
   @RequestMapping(path = "/stock/predictions", method = RequestMethod.POST)
   public CompletableFuture<Map<String, Object>> findPredictions(
     @RequestBody Map<String, Object> input
