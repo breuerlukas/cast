@@ -15,6 +15,13 @@ repositories {
 
 configurations {
   archiveImplementation
+  library
+
+  all {
+    exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
+    exclude group: 'ch.qos.logback', module: 'logback-classic'
+    exclude group: 'org.apache.logging.log4j', module: 'log4j-to-slf4j'
+  }
 }
 
 sourceSets {
@@ -24,11 +31,10 @@ sourceSets {
 }
 
 dependencies {
-  implementation("de.lukasbreuer.cast:deploy:1.0.0-SNAPSHOT") {
-    exclude group: 'org.deeplearning4j', module: 'deeplearning4j-core'
-    exclude group: 'org.nd4j', module: 'nd4j-native-platform'
-  }
+  implementation("de.lukasbreuer.cast:deploy:1.0.0-SNAPSHOT")
   archiveImplementation("de.lukasbreuer.cast:deploy:1.0.0-SNAPSHOT")
+  library "org.deeplearning4j:deeplearning4j-core:1.0.0-M2.1"
+  library "org.nd4j:nd4j-native-platform:1.0.0-M2.1"
 
   annotationProcessor "org.projectlombok:lombok:1.18.24"
   testAnnotationProcessor "org.projectlombok:lombok:1.18.24"
@@ -42,4 +48,15 @@ dependencies {
 
 test {
   useJUnitPlatform()
+}
+
+bootJar {
+  manifest {
+    attributes(
+      "Class-Path": "libraries/org.deeplearning4j-1.0.0-M2.1.jar"
+    )
+  }
+  exclude {
+    configurations.library.resolvedConfiguration.files.contains(it.file)
+  }
 }
