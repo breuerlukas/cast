@@ -50,6 +50,10 @@ public final class ModelCollection extends DatabaseCollection {
     remove(modelID, response);
   }
 
+  public void modelExists(String stock, Consumer<Boolean> result) {
+    exists("stock", stock, result);
+  }
+
   public void findModelById(UUID modelId, Consumer<Model> result) {
     findById(modelId, document -> result.accept(modelFactory.of(document)));
   }

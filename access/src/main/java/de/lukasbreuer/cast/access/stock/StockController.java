@@ -6,6 +6,7 @@ import de.lukasbreuer.cast.core.symbol.Symbol;
 import de.lukasbreuer.cast.core.trade.TradeType;
 import de.lukasbreuer.cast.deploy.model.Model;
 import de.lukasbreuer.cast.deploy.model.ModelCollection;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -42,14 +43,29 @@ public final class StockController {
 
   @RequestMapping(path = "/stock/predictions", method = RequestMethod.POST)
   public CompletableFuture<Map<String, Object>> findPredictions(
-    @RequestBody Map<String, Object> input
+    @RequestBody Map<String, Object> input, HttpServletResponse servletResponse
   ) {
     var completableFuture = new CompletableFuture<Map<String, Object>>();
-    modelCollection.findByStock((String) input.get("stock"),
-      model -> new Thread(() -> findPredictions(completableFuture, model,
-        TradeType.valueOf((String) input.get("tradeType")),
-        Integer.parseInt((String) input.get("reviewPeriod")))).start());
+    var stock = ((String) input.get("stock")).toUpperCase();
+    modelCollection.modelExists(stock, exists ->
+      findPredictions(servletResponse, completableFuture,
+        stock, TradeType.valueOf((String) input.get("tradeType")),
+        Integer.parseInt((String) input.get("reviewPeriod")), exists));
     return completableFuture;
+  }
+
+  private void findPredictions(
+    HttpServletResponse servletResponse,
+    CompletableFuture<Map<String, Object>> futureResponse, String stock,
+    TradeType tradeType, int reviewPeriod, boolean exists
+  ) {
+    if (!exists) {
+      servletResponse.setStatus(HttpServletResponse.SC_NOT_FOUND);
+      futureResponse.complete(Maps.newHashMap());
+      return;
+    }
+    modelCollection.findByStock(stock, model -> new Thread(() ->
+      findPredictions(futureResponse, model, tradeType, reviewPeriod)).start());
   }
 
   private void findPredictions(
