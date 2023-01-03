@@ -30,7 +30,7 @@ public final class TrainAlgorithm {
 
   public void initialize() throws Exception {
     Nd4j.getRandom().setSeed(seed);
-    symbol = Symbol.createAndFetch(symbolName);
+    symbol = Symbol.createAndFetch(symbolName, -1);
     buyNeuralNetwork = buildNeuralNetwork(TradeType.BUY);
     sellNeuralNetwork = buildNeuralNetwork(TradeType.SELL);
     buyEvaluationDataset = datasetFactory.createAndBuild(symbol, TradeType.BUY, ModelState.EVALUATING, seed);

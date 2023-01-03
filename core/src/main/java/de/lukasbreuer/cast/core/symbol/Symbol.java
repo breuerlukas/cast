@@ -24,8 +24,8 @@ import java.util.stream.Collectors;
 @Accessors(fluent = true)
 @RequiredArgsConstructor(staticName = "create")
 public final class Symbol {
-  public static Symbol createAndFetch(String name) {
-    var symbol = create(name);
+  public static Symbol createAndFetch(String name, int fetchPeriod) {
+    var symbol = create(name, fetchPeriod);
     try {
       symbol.refreshHistory();
     } catch (Exception exception) {
@@ -35,7 +35,7 @@ public final class Symbol {
   }
 
   public static Symbol createAndLoad(String name) {
-    var symbol = create(name);
+    var symbol = create(name, -1);
     try {
       symbol.loadData(Path.of("./src/main/resources/" + name + ".json"));
     } catch (Exception exception) {
@@ -46,6 +46,7 @@ public final class Symbol {
 
   @Getter
   private final String name;
+  private final long fetchPeriod;
   private final Map<Long, HistoryEntry> history = Maps.newHashMap();
 
   public void refreshHistory() throws Exception {
@@ -58,7 +59,7 @@ public final class Symbol {
 
   private String fetchData() throws Exception {
     var result = new StringBuilder();
-    var url = new URL(String.format(DATA_FETCH_FORMAT, name, "100y", "1d"));
+    var url = new URL(String.format(DATA_FETCH_FORMAT, name, determineFetchPeriod(), "1d"));
     var connection = (HttpURLConnection) url.openConnection();
     connection.setRequestMethod("GET");
     try (var reader = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
@@ -67,6 +68,13 @@ public final class Symbol {
       }
     }
     return result.toString();
+  }
+
+  private String determineFetchPeriod() {
+    if (fetchPeriod < 0) {
+      return "100y";
+    }
+    return fetchPeriod + "d";
   }
 
   private void safeData(String data) throws Exception {

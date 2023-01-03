@@ -68,7 +68,7 @@ public final class Model {
 
   public void initialize() {
     try {
-      symbol = Symbol.createAndFetch(stock);
+      symbol = Symbol.createAndFetch(stock, -1);
       var executionPath = System.getProperty("user.dir");
       buyNeuralNetwork = NeuralNetwork.createAndLoad(executionPath + buyModelPath);
       sellNeuralNetwork = NeuralNetwork.createAndLoad(executionPath + sellModelPath);

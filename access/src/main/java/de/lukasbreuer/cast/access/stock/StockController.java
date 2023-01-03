@@ -27,8 +27,9 @@ public final class StockController {
     @RequestBody Map<String, Object> input
   ) {
     var completableFuture = new CompletableFuture<Map<String, Object>>();
-    new Thread(() -> findPrices(completableFuture, Symbol.createAndFetch((String) input.get("stock"))
-      .findPartOfHistory(Integer.parseInt((String) input.get("reviewPeriod"))))).start();
+    var reviewPeriod = Integer.parseInt((String) input.get("reviewPeriod"));
+    new Thread(() -> findPrices(completableFuture, Symbol.createAndFetch(
+      (String) input.get("stock"), reviewPeriod).findPartOfHistory(reviewPeriod))).start();
     return completableFuture;
   }
 
