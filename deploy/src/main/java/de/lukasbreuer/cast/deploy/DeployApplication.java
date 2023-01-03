@@ -5,21 +5,28 @@ import com.google.inject.Injector;
 import de.lukasbreuer.cast.core.command.CommandRegistry;
 import de.lukasbreuer.cast.core.command.CommandTask;
 import de.lukasbreuer.cast.core.log.Log;
+import de.lukasbreuer.cast.core.symbol.Symbol;
+import de.lukasbreuer.cast.core.trade.TradeType;
 import de.lukasbreuer.cast.deploy.command.ModelCommand;
 import de.lukasbreuer.cast.deploy.command.PortfolioCommand;
 import de.lukasbreuer.cast.deploy.command.ShutdownCommand;
 import de.lukasbreuer.cast.deploy.command.TradeCommand;
 import de.lukasbreuer.cast.deploy.model.ModelCollection;
 import de.lukasbreuer.cast.deploy.portfolio.StockCollection;
+import de.lukasbreuer.cast.deploy.trade.Trade;
 import de.lukasbreuer.cast.deploy.trade.TradeCollection;
 import de.lukasbreuer.cast.deploy.trade.TradeSchedule;
 import de.lukasbreuer.cast.deploy.trade.execution.TradeExecutionFactory;
 import org.nd4j.linalg.factory.Nd4j;
 
+import java.util.UUID;
+
 public final class DeployApplication {
   public static void main(String[] args) {
     Nd4j.getRandom().setSeed(-1);
     var injector = Guice.createInjector(DeployModule.create());
+    var stock = "NEE";
+    injector.getInstance(TradeCollection.class).addTrade(Trade.create(UUID.randomUUID(), stock, TradeType.BUY, System.currentTimeMillis(), Symbol.createAndFetch(stock, 1).findPartOfHistory(1).get(0).close()), success -> {});
     var log = injector.getInstance(Log.class);
     var commandRegistry = injector.getInstance(CommandRegistry.class);
     registerCommands(injector, log, commandRegistry);
