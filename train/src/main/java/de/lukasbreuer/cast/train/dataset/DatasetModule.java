@@ -26,7 +26,7 @@ public final class DatasetModule extends AbstractModule {
     return MODEL_TRAIN_MAXIMUM_TRADES;
   }
 
-  private static final int MODEL_EVALUATION_PERIOD = 370;
+  private static final int MODEL_EVALUATION_PERIOD = 365;
 
   @Provides
   @Singleton
@@ -44,7 +44,7 @@ public final class DatasetModule extends AbstractModule {
     return MODEL_EVALUATION_MAXIMUM_TRADES;
   }
 
-  private static final int MODEL_REVIEW_PERIOD = 7;
+  private static final int MODEL_REVIEW_PERIOD = 14;
 
   @Provides
   @Singleton
