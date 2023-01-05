@@ -6,6 +6,8 @@ import de.lukasbreuer.cast.core.symbol.Symbol;
 import de.lukasbreuer.cast.core.trade.TradeType;
 import de.lukasbreuer.cast.deploy.model.Model;
 import de.lukasbreuer.cast.deploy.model.ModelCollection;
+import de.lukasbreuer.cast.deploy.trade.Trade;
+import de.lukasbreuer.cast.deploy.trade.TradeCollection;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
@@ -21,6 +24,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class StockController {
   private final ModelCollection modelCollection;
+  private final TradeCollection tradeCollection;
 
   @RequestMapping(path = "/stock/prices", method = RequestMethod.POST)
   public CompletableFuture<Map<String, Object>> findPrices(
@@ -50,29 +54,38 @@ public final class StockController {
     var stock = ((String) input.get("stock")).toUpperCase();
     modelCollection.modelExists(stock, exists ->
       findPredictions(servletResponse, completableFuture,
-        stock, TradeType.valueOf((String) input.get("tradeType")),
-        Integer.parseInt((String) input.get("reviewPeriod")), exists));
+        stock, Integer.parseInt((String) input.get("reviewPeriod")), exists));
     return completableFuture;
   }
 
   private void findPredictions(
     HttpServletResponse servletResponse,
     CompletableFuture<Map<String, Object>> futureResponse, String stock,
-    TradeType tradeType, int reviewPeriod, boolean exists
+    int reviewPeriod, boolean exists
   ) {
     if (!exists) {
       servletResponse.setStatus(HttpServletResponse.SC_NOT_FOUND);
       futureResponse.complete(Maps.newHashMap());
       return;
     }
-    modelCollection.findByStock(stock, model -> new Thread(() ->
-      findPredictions(futureResponse, model, tradeType, reviewPeriod)).start());
+    modelCollection.findByStock(stock, model ->
+      tradeCollection.findLatestByStock(stock, TradeType.BUY, latestBuy ->
+        tradeCollection.findLatestByStock(stock, TradeType.SELL, latestSell ->
+          new Thread(() -> findPredictions(futureResponse, model, reviewPeriod,
+            latestBuy, latestSell)).start())));
   }
 
   private void findPredictions(
     CompletableFuture<Map<String, Object>> futureResponse, Model model,
-    TradeType tradeType, int reviewPeriod
+    int reviewPeriod, Optional<Trade> latestBuy, Optional<Trade> latestSell
   ) {
+    var tradeType = TradeType.BUY;
+    if ((latestBuy.isPresent() && latestSell.isEmpty()) ||
+      (latestBuy.isPresent() && latestSell.isPresent() &&
+        latestBuy.get().tradeTime() > latestSell.get().tradeTime())
+    ) {
+      tradeType = TradeType.SELL;
+    }
     model.initialize();
     var response = Maps.<String, Object>newHashMap();
     response.put("predictions", model.predict(tradeType, reviewPeriod));

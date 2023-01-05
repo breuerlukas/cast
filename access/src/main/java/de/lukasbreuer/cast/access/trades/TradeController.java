@@ -92,6 +92,28 @@ public final class TradeController {
     return regularTransformation;
   }
 
+  @RequestMapping(path = "/trades/latest", method = RequestMethod.POST)
+  public CompletableFuture<Map<String, Object>> findLatestTrades(
+    @RequestBody Map<String, Object> input
+  ) {
+    var stock = ((String) input.get("stock")).toUpperCase();
+    var completableFuture = new CompletableFuture<Map<String, Object>>();
+    tradeCollection.findLatestByStock(stock, TradeType.BUY, latestBuy ->
+      tradeCollection.findLatestByStock(stock, TradeType.SELL, latestSell ->
+        findLatestTrades(completableFuture, latestBuy, latestSell)));
+    return completableFuture;
+  }
+
+  private void findLatestTrades(
+    CompletableFuture<Map<String, Object>> futureResponse,
+    Optional<Trade> latestBuy, Optional<Trade> latestSell
+  ) {
+    var response = Maps.<String, Object>newHashMap();
+    latestBuy.ifPresent(trade -> response.put("latestBuy", transformTrade(trade)));
+    latestSell.ifPresent(trade -> response.put("latestSell", transformTrade(trade)));
+    futureResponse.complete(response);
+  }
+
   @RequestMapping(path = "/trades", method = RequestMethod.POST)
   public CompletableFuture<Map<String, Object>> findTrades(
     @RequestBody Map<String, Object> input

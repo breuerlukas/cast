@@ -5,6 +5,7 @@ import com.google.inject.Inject;
 import de.lukasbreuer.cast.core.log.Log;
 import de.lukasbreuer.cast.deploy.model.ModelCollection;
 import de.lukasbreuer.cast.deploy.portfolio.StockCollection;
+import de.lukasbreuer.cast.deploy.trade.TradeCollection;
 import jakarta.annotation.PostConstruct;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,6 +18,8 @@ public class AccessConfiguration {
   private StockCollection stockCollection;
   @Inject
   private ModelCollection modelCollection;
+  @Inject
+  private TradeCollection tradeCollection;
 
   @Bean
   Log provideLog() {
@@ -31,6 +34,11 @@ public class AccessConfiguration {
   @Bean
   ModelCollection provideModelCollection() {
     return modelCollection;
+  }
+
+  @Bean
+  TradeCollection provideTradeCollection() {
+    return tradeCollection;
   }
 
   @PostConstruct
