@@ -11,7 +11,10 @@ import de.lukasbreuer.cast.core.trade.Trade;
 import de.lukasbreuer.cast.core.trade.TradeType;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.Accessors;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 
 import java.util.AbstractMap;
 import java.util.List;
@@ -52,9 +55,65 @@ public final class StockDataset {
     optimalTrades = TradeGeneration.create(historyData,
       modelState == ModelState.TRAINING ? trainMaximumTrades : evaluationMaximumTrades,
       tradeGeneralisationStepSize, tradeNoiseRemovalStepSize).determineBestTrades();
+    if (modelState == ModelState.TRAINING) {
+      optimalTrades.clear();
+      //RPM
+      /*optimalTrades.add(calculateTradeFromDate(2020, 3, 23));
+      optimalTrades.add(calculateTradeFromDate(2021, 2, 26));
+      optimalTrades.add(calculateTradeFromDate(2019, 5, 31));*/
+      //ES
+      if (symbol.name().equals("ES")) {
+        optimalTrades.add(calculateTradeFromDate(2020, 3, 23));
+        optimalTrades.add(calculateTradeFromDate(2020, 5, 12));
+        optimalTrades.add(calculateTradeFromDate(2020, 6, 26));
+        optimalTrades.add(calculateTradeFromDate(2020, 9, 21));
+        optimalTrades.add(calculateTradeFromDate(2020, 12, 23));
+        //optimalTrades.add(calculateTradeFromDate(2021, 2, 22));
+        //optimalTrades.add(calculateTradeFromDate(2018, 6, 11));
+        //optimalTrades.add(calculateTradeFromDate(2019, 11, 12));
+      }
+      //TECH
+      /*if (symbol.name().equals("TECH")) {
+        optimalTrades.add(calculateTradeFromDate(2020, 3, 16));
+        optimalTrades.add(calculateTradeFromDate(2020, 9, 24));
+        optimalTrades.add(calculateTradeFromDate(2018, 12, 24));
+      }*/
+      //O
+      /*optimalTrades.add(calculateTradeFromDate(2019, 5, 7));
+      optimalTrades.add(calculateTradeFromDate(2018, 12, 24));
+      optimalTrades.add(calculateTradeFromDate(2021, 3, 4));
+      optimalTrades.add(calculateTradeFromDate(2018, 2, 8));*/
+      /*if (symbol.name().equals("ON")) {
+        optimalTrades.add(calculateTradeFromDate(2020, 3, 18));
+        optimalTrades.add(calculateTradeFromDate(2019, 10, 8));
+        optimalTrades.add(calculateTradeFromDate(2018, 12, 24));
+        optimalTrades.add(calculateTradeFromDate(2017, 7, 3));
+      }*/
+      //NEE
+      if (symbol.name().equals("NEE")) {
+        optimalTrades.add(calculateTradeFromDate(2020, 3, 23));
+        optimalTrades.add(calculateTradeFromDate(2020, 5, 6));
+        optimalTrades.add(calculateTradeFromDate(2020, 6, 26));
+        optimalTrades.add(calculateTradeFromDate(2020, 12, 4));
+        optimalTrades.add(calculateTradeFromDate(2021, 3, 19));
+        //optimalTrades.add(calculateTradeFromDate(2019, 11, 8));
+        //optimalTrades.add(calculateTradeFromDate(2021, 9, 28));
+        //optimalTrades.add(calculateTradeFromDate(2018, 12, 24));
+        //optimalTrades.add(calculateTradeFromDate(2018, 2, 8));
+        //optimalTrades.add(calculateTradeFromDate(2016, 11, 11));
+      }
+    }
     fillDataset();
     dataset = normalizeData(dataset);
     historyIterator = HistoryIterator.create(dataset, new Random(seed), batchSize, totalBatches);
+  }
+
+  //TODO: ADD SELL TRADE
+  private Trade calculateTradeFromDate(int year, int month, int day) {
+    var dateTime = new DateTime(year, month, day, 9, 30, DateTimeZone.forID("US/Eastern"));
+    return Trade.create(historyData.indexOf(historyData.stream()
+      .filter(entry -> entry.timeStep() == dateTime.getMillis() / 1000)
+      .findFirst().get()), 0);
   }
 
   private List<HistoryEntry> createHistoryData() {
@@ -139,7 +198,7 @@ public final class StockDataset {
   }
 
   public List<Map.Entry<List<double[]>, Double>> raw() {
-    return List.copyOf(dataset);
+    return dataset;
   }
 
   public int size() {

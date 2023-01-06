@@ -32,6 +32,11 @@ public final class TrainAlgorithm {
     Nd4j.getRandom().setSeed(seed);
     symbol = Symbol.createAndFetch(symbolName, -1);
     buyNeuralNetwork = buildNeuralNetwork(TradeType.BUY);
+    var buyTrainDataset = datasetFactory.createAndBuild(symbol, TradeType.BUY, ModelState.TRAINING, seed);
+    var buyEvaluation = evaluationFactory.create(buyNeuralNetwork, buyTrainDataset);
+    buyEvaluation.analyse();
+    var buyIllustration = illustrationFactory.create(TradeType.BUY, buyEvaluation, buyTrainDataset, seed);
+    buyIllustration.plot();
     sellNeuralNetwork = buildNeuralNetwork(TradeType.SELL);
     buyEvaluationDataset = datasetFactory.createAndBuild(symbol, TradeType.BUY, ModelState.EVALUATING, seed);
     sellEvaluationDataset = datasetFactory.createAndBuild(symbol, TradeType.SELL, ModelState.EVALUATING, seed);
