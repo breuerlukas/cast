@@ -156,6 +156,10 @@ public final class NeuralNetwork {
   }
 
   public void save(String path) throws Exception {
-    network.save(new File(path));
+    var file = new File(path);
+    if (!file.getParentFile().exists()) {
+      file.getParentFile().mkdirs();
+    }
+    network.save(file);
   }
 }

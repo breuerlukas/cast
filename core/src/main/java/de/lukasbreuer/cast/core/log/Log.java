@@ -1,6 +1,7 @@
 package de.lukasbreuer.cast.core.log;
 
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.logging.*;
@@ -10,8 +11,7 @@ public final class Log extends Logger {
     var consoleHandler = new ConsoleHandler();
     consoleHandler.setFormatter(LogFormat.create(LogFormat.FormatType.CONSOLE));
     consoleHandler.setLevel(Level.ALL);
-    var fileHandler = new FileHandler(System.getProperty("user.dir") + path +
-      new SimpleDateFormat("yyyy-MM-dd-HHmmss").format(new Date()) + ".log");
+    var fileHandler = new FileHandler(buildLogFilePath(path));
     fileHandler.setFormatter(LogFormat.create(LogFormat.FormatType.FILE));
     var log = new Log(name, consoleHandler, fileHandler);
     log.setLevel(Level.ALL);
@@ -19,6 +19,16 @@ public final class Log extends Logger {
     log.addHandler(fileHandler);
     Runtime.getRuntime().addShutdownHook(new Thread(log::close));
     return log;
+  }
+
+  private static String buildLogFilePath(String basePath) {
+    var logPath = System.getProperty("user.dir") + basePath +
+      new SimpleDateFormat("yyyy-MM-dd-HHmmss").format(new Date()) + ".log";
+    var logFile = new File(logPath);
+    if (!logFile.getParentFile().exists()) {
+      logFile.getParentFile().mkdirs();
+    }
+    return logPath;
   }
 
   private final ConsoleHandler consoleHandler;
