@@ -15,9 +15,6 @@ public final class AccessModule extends DeployModule {
     install(AccountModule.create());
   }
 
-  //TODO: DONT CREATE LOG HERE
-  //      BECAUSE AccessModule IS INSTANTIATED MULTIPLE TIMES DURING RUNTIME
-  //      OUTSOURCE LOG (FILE) CREATION!
   @Override
   protected void configureLog() {
     try {
