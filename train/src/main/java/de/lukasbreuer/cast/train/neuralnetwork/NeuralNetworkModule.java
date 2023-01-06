@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.deeplearning4j.nn.weights.WeightInit;
 import org.nd4j.linalg.activations.Activation;
 import org.nd4j.linalg.learning.config.IUpdater;
+import org.nd4j.linalg.learning.config.Nesterovs;
 import org.nd4j.linalg.learning.config.Sgd;
 
 @RequiredArgsConstructor(staticName = "create")
@@ -45,7 +46,7 @@ public final class NeuralNetworkModule extends AbstractModule {
     return NETWORK_UPDATER;
   }
 
-  private static final float NETWORK_LEARNING_RATE = 1e-4f;
+  private static final float NETWORK_LEARNING_RATE = -1;
 
   @Provides
   @Singleton
@@ -72,7 +73,7 @@ public final class NeuralNetworkModule extends AbstractModule {
     return reviewPeriod * inputSizePerDay;
   }
 
-  private static final int[] NETWORK_HIDDEN_NEURONS = new int[] {256, 256};
+  private static final int[] NETWORK_HIDDEN_NEURONS = new int[] {512, 512};
 
   @Provides
   @Singleton

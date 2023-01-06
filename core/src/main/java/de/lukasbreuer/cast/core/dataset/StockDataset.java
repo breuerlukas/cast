@@ -58,9 +58,13 @@ public final class StockDataset {
     if (modelState == ModelState.TRAINING) {
       optimalTrades.clear();
       //RPM
-      /*optimalTrades.add(calculateTradeFromDate(2020, 3, 23));
-      optimalTrades.add(calculateTradeFromDate(2021, 2, 26));
-      optimalTrades.add(calculateTradeFromDate(2019, 5, 31));*/
+      if (symbol.name().equals("RPM")) {
+        optimalTrades.add(calculateTradeFromDate(2020, 3, 23));
+        optimalTrades.add(calculateTradeFromDate(2020, 6, 26));
+        optimalTrades.add(calculateTradeFromDate(2020, 9, 21));
+        optimalTrades.add(calculateTradeFromDate(2021, 2, 26));
+        //optimalTrades.add(calculateTradeFromDate(2019, 5, 31));
+      }
       //ES
       if (symbol.name().equals("ES")) {
         optimalTrades.add(calculateTradeFromDate(2020, 3, 23));
@@ -83,18 +87,24 @@ public final class StockDataset {
       optimalTrades.add(calculateTradeFromDate(2018, 12, 24));
       optimalTrades.add(calculateTradeFromDate(2021, 3, 4));
       optimalTrades.add(calculateTradeFromDate(2018, 2, 8));*/
-      /*if (symbol.name().equals("ON")) {
+      if (symbol.name().equals("ON")) {
         optimalTrades.add(calculateTradeFromDate(2020, 3, 18));
-        optimalTrades.add(calculateTradeFromDate(2019, 10, 8));
-        optimalTrades.add(calculateTradeFromDate(2018, 12, 24));
-        optimalTrades.add(calculateTradeFromDate(2017, 7, 3));
-      }*/
+        optimalTrades.add(calculateTradeFromDate(2020, 9, 23));
+        optimalTrades.add(calculateTradeFromDate(2020, 11, 2));
+        optimalTrades.add(calculateTradeFromDate(2021, 1, 27));
+        optimalTrades.add(calculateTradeFromDate(2021, 5, 12));
+        //optimalTrades.add(calculateTradeFromDate(2019, 10, 8));
+        //optimalTrades.add(calculateTradeFromDate(2018, 12, 24));
+        //optimalTrades.add(calculateTradeFromDate(2017, 7, 3));
+      }
       //NEE
       if (symbol.name().equals("NEE")) {
         optimalTrades.add(calculateTradeFromDate(2020, 3, 23));
-        optimalTrades.add(calculateTradeFromDate(2020, 5, 6));
+        //optimalTrades.add(calculateTradeFromDate(2020, 5, 6));
         optimalTrades.add(calculateTradeFromDate(2020, 6, 26));
-        optimalTrades.add(calculateTradeFromDate(2020, 12, 4));
+        optimalTrades.add(calculateTradeFromDate(2020, 9, 23));
+        //optimalTrades.add(calculateTradeFromDate(2020, 12, 4));
+        //optimalTrades.add(calculateTradeFromDate(2021, 1, 4));
         optimalTrades.add(calculateTradeFromDate(2021, 3, 19));
         //optimalTrades.add(calculateTradeFromDate(2019, 11, 8));
         //optimalTrades.add(calculateTradeFromDate(2021, 9, 28));
