@@ -57,6 +57,12 @@ public final class StockDataset {
       tradeGeneralisationStepSize, tradeNoiseRemovalStepSize).determineBestTrades();
     if (modelState == ModelState.TRAINING) {
       optimalTrades.clear();
+      if (symbol.name().equals("WWE")) {
+        optimalTrades.add(calculateTradeFromDate(2020, 3, 16));
+        optimalTrades.add(calculateTradeFromDate(2020, 3, 30));
+        optimalTrades.add(calculateTradeFromDate(2020, 9, 23));
+        optimalTrades.add(calculateTradeFromDate(2020, 10, 30));
+      }
       //RPM
       if (symbol.name().equals("RPM")) {
         optimalTrades.add(calculateTradeFromDate(2020, 3, 23));
@@ -92,7 +98,11 @@ public final class StockDataset {
         optimalTrades.add(calculateTradeFromDate(2020, 9, 23));
         optimalTrades.add(calculateTradeFromDate(2020, 11, 2));
         optimalTrades.add(calculateTradeFromDate(2021, 1, 27));
+        //optimalTrades.add(calculateTradeFromDate(2021, 3, 8));
         optimalTrades.add(calculateTradeFromDate(2021, 5, 12));
+        //optimalTrades.add(calculateTradeFromDate(2021, 7, 19));
+        //optimalTrades.add(calculateTradeFromDate(2021, 8, 19));
+        //optimalTrades.add(calculateTradeFromDate(2021, 10, 13));
         //optimalTrades.add(calculateTradeFromDate(2019, 10, 8));
         //optimalTrades.add(calculateTradeFromDate(2018, 12, 24));
         //optimalTrades.add(calculateTradeFromDate(2017, 7, 3));
