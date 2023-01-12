@@ -56,7 +56,7 @@ public final class PortfolioCommand extends Command {
   }
 
   private void printPortfolio(List<Stock> portfolio) {
-    log().info("Portfolio: ");
+    log().info("Portfolio (" + portfolio.size() + "): ");
     if (portfolio.size() == 0) {
       log().info(" Empty");
       return;
