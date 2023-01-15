@@ -9,14 +9,13 @@ import de.lukasbreuer.cast.train.neuralnetwork.NeuralNetworkFactory;
 public final class TrainApplication {
   public static void main(String[] args) throws Exception {
     var injector = Guice.createInjector(TrainModule.create());
-    var stockAlgorithm = TrainAlgorithm.create("WWE", 1,
+    var stockAlgorithm = TrainAlgorithm.create("ON", 1,
       injector.getInstance(StockDatasetFactory.class),
       injector.getInstance(NeuralNetworkFactory.class),
       injector.getInstance(EvaluationFactory.class),
       injector.getInstance(IllustrationFactory.class));
     stockAlgorithm.initialize();
-    stockAlgorithm.train();
-    stockAlgorithm.evaluate();
-    stockAlgorithm.save();
+    stockAlgorithm.processBuyNetwork();
+    stockAlgorithm.processSellNetwork();
   }
 }
