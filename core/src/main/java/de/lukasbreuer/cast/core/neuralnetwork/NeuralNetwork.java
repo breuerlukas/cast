@@ -117,12 +117,11 @@ public final class NeuralNetwork {
     network = MultiLayerNetwork.load(new File(path), true);
   }
 
-  public void train(Map.Entry<List<double[]>, Double> entry) {
+  public void train() {
     var epochCount = 0;
     while (epochCount < epochs) {
       network.fit(dataSetIterator);
       dataSetIterator.reset();
-      evaluate(0, entry, true);
       epochCount++;
       System.out.println("Finished Epoch " + epochCount);
     }
