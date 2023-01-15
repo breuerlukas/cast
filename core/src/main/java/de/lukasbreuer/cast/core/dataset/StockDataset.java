@@ -3,6 +3,7 @@ package de.lukasbreuer.cast.core.dataset;
 import com.clearspring.analytics.util.Lists;
 import de.lukasbreuer.cast.core.dataset.indicator.IndicatorRepository;
 import de.lukasbreuer.cast.core.dataset.trade.TradeGeneration;
+import de.lukasbreuer.cast.core.dataset.trade.TradeTime;
 import de.lukasbreuer.cast.core.neuralnetwork.HistoryIterator;
 import de.lukasbreuer.cast.core.neuralnetwork.ModelState;
 import de.lukasbreuer.cast.core.symbol.HistoryEntry;
@@ -40,10 +41,11 @@ public final class StockDataset {
   private final int tradeNoiseRemovalStepSize;
   private final int inputSizePerDay;
   private final int dayLongestReview;
+  private final List<Integer> optimalBuyTrades = Lists.newArrayList();
+  private final List<Integer> optimalSellTrades = Lists.newArrayList();
   private List<Map.Entry<List<double[]>, Double>> dataset = Lists.newArrayList();
   private List<HistoryEntry> historyData;
   private List<DatasetDay> dayData;
-  private List<Trade> optimalTrades;
   @Getter
   private HistoryIterator historyIterator;
 
@@ -52,12 +54,11 @@ public final class StockDataset {
     var indicatorRepository = IndicatorRepository.create(historyData);
     indicatorRepository.fill();
     dayData = createDayData(indicatorRepository);
-    optimalTrades = TradeGeneration.create(historyData,
+    /*optimalTrades = TradeGeneration.create(historyData,
       modelState == ModelState.TRAINING ? trainMaximumTrades : evaluationMaximumTrades,
-      tradeGeneralisationStepSize, tradeNoiseRemovalStepSize).determineBestTrades();
+      tradeGeneralisationStepSize, tradeNoiseRemovalStepSize).determineBestTrades();*/
     if (modelState == ModelState.TRAINING) {
-      optimalTrades.clear();
-      if (symbol.name().equals("WWE")) {
+      /*if (symbol.name().equals("WWE")) {
         optimalTrades.add(calculateTradeFromDate(2020, 3, 16));
         optimalTrades.add(calculateTradeFromDate(2020, 3, 30));
         optimalTrades.add(calculateTradeFromDate(2020, 9, 23));
@@ -70,17 +71,23 @@ public final class StockDataset {
         optimalTrades.add(calculateTradeFromDate(2020, 9, 21));
         optimalTrades.add(calculateTradeFromDate(2021, 2, 26));
         //optimalTrades.add(calculateTradeFromDate(2019, 5, 31));
-      }
+      }*/
       //ES
       if (symbol.name().equals("ES")) {
-        optimalTrades.add(calculateTradeFromDate(2020, 3, 23));
-        optimalTrades.add(calculateTradeFromDate(2020, 5, 12));
-        optimalTrades.add(calculateTradeFromDate(2020, 6, 26));
-        optimalTrades.add(calculateTradeFromDate(2020, 9, 21));
-        optimalTrades.add(calculateTradeFromDate(2020, 12, 23));
-        //optimalTrades.add(calculateTradeFromDate(2021, 2, 22));
-        //optimalTrades.add(calculateTradeFromDate(2018, 6, 11));
-        //optimalTrades.add(calculateTradeFromDate(2019, 11, 12));
+        optimalBuyTrades.add(TradeTime.create(2020, 3, 23).findEntryIndex(historyData));
+        optimalBuyTrades.add(TradeTime.create(2020, 4, 1).findEntryIndex(historyData));
+        optimalBuyTrades.add(TradeTime.create(2020, 5, 12).findEntryIndex(historyData));
+        optimalBuyTrades.add(TradeTime.create(2020, 6, 26).findEntryIndex(historyData));
+        optimalBuyTrades.add(TradeTime.create(2020, 9, 21).findEntryIndex(historyData));
+        //optimalBuyTrades.add(TradeTime.create(2020, 12, 23).findEntryIndex(historyData));
+        optimalBuyTrades.add(TradeTime.create(2021, 3, 4).findEntryIndex(historyData));
+
+        optimalSellTrades.add(TradeTime.create(2020, 3, 30).findEntryIndex(historyData));
+        optimalSellTrades.add(TradeTime.create(2020, 4, 9).findEntryIndex(historyData));
+        optimalSellTrades.add(TradeTime.create(2020, 6, 3).findEntryIndex(historyData));
+        optimalSellTrades.add(TradeTime.create(2020, 7, 23).findEntryIndex(historyData));
+        optimalSellTrades.add(TradeTime.create(2020, 10, 8).findEntryIndex(historyData));
+        optimalSellTrades.add(TradeTime.create(2021, 4, 20).findEntryIndex(historyData));
       }
       //TECH
       /*if (symbol.name().equals("TECH")) {
@@ -94,21 +101,26 @@ public final class StockDataset {
       optimalTrades.add(calculateTradeFromDate(2021, 3, 4));
       optimalTrades.add(calculateTradeFromDate(2018, 2, 8));*/
       if (symbol.name().equals("ON")) {
-        optimalTrades.add(calculateTradeFromDate(2020, 3, 18));
-        optimalTrades.add(calculateTradeFromDate(2020, 9, 23));
-        optimalTrades.add(calculateTradeFromDate(2020, 11, 2));
-        optimalTrades.add(calculateTradeFromDate(2021, 1, 27));
-        //optimalTrades.add(calculateTradeFromDate(2021, 3, 8));
-        optimalTrades.add(calculateTradeFromDate(2021, 5, 12));
-        //optimalTrades.add(calculateTradeFromDate(2021, 7, 19));
-        //optimalTrades.add(calculateTradeFromDate(2021, 8, 19));
-        //optimalTrades.add(calculateTradeFromDate(2021, 10, 13));
-        //optimalTrades.add(calculateTradeFromDate(2019, 10, 8));
-        //optimalTrades.add(calculateTradeFromDate(2018, 12, 24));
-        //optimalTrades.add(calculateTradeFromDate(2017, 7, 3));
+        //optimalBuyTrades.add(TradeTime.create(2018, 12, 24).findEntryIndex(historyData));
+        //optimalBuyTrades.add(TradeTime.create(2019, 10, 8).findEntryIndex(historyData));
+        optimalBuyTrades.add(TradeTime.create(2020, 3, 18).findEntryIndex(historyData));
+        optimalBuyTrades.add(TradeTime.create(2020, 9, 23).findEntryIndex(historyData));
+        optimalBuyTrades.add(TradeTime.create(2020, 11, 2).findEntryIndex(historyData));
+        optimalBuyTrades.add(TradeTime.create(2021, 1, 27).findEntryIndex(historyData));
+        optimalBuyTrades.add(TradeTime.create(2021, 3, 8).findEntryIndex(historyData));
+        optimalBuyTrades.add(TradeTime.create(2021, 5, 12).findEntryIndex(historyData));
+
+        optimalSellTrades.add(TradeTime.create(2019, 2, 6).findEntryIndex(historyData));
+        optimalSellTrades.add(TradeTime.create(2019, 5, 3).findEntryIndex(historyData));
+        optimalSellTrades.add(TradeTime.create(2019, 7, 24).findEntryIndex(historyData));
+        optimalSellTrades.add(TradeTime.create(2020, 1, 2).findEntryIndex(historyData));
+        //optimalSellTrades.add(TradeTime.create(2020, 6, 8).findEntryIndex(historyData));
+       // optimalSellTrades.add(TradeTime.create(2020, 10, 12).findEntryIndex(historyData));
+        optimalSellTrades.add(TradeTime.create(2021, 1, 14).findEntryIndex(historyData));
+        optimalSellTrades.add(TradeTime.create(2021, 4, 5).findEntryIndex(historyData));
       }
       //NEE
-      if (symbol.name().equals("NEE")) {
+      /*if (symbol.name().equals("NEE")) {
         optimalTrades.add(calculateTradeFromDate(2020, 3, 23));
         //optimalTrades.add(calculateTradeFromDate(2020, 5, 6));
         optimalTrades.add(calculateTradeFromDate(2020, 6, 26));
@@ -121,19 +133,16 @@ public final class StockDataset {
         //optimalTrades.add(calculateTradeFromDate(2018, 12, 24));
         //optimalTrades.add(calculateTradeFromDate(2018, 2, 8));
         //optimalTrades.add(calculateTradeFromDate(2016, 11, 11));
-      }
+      }*/
     }
     fillDataset();
     dataset = normalizeData(dataset);
     historyIterator = HistoryIterator.create(dataset, new Random(seed), batchSize, totalBatches);
   }
 
-  //TODO: ADD SELL TRADE
-  private Trade calculateTradeFromDate(int year, int month, int day) {
-    var dateTime = new DateTime(year, month, day, 9, 30, DateTimeZone.forID("US/Eastern"));
-    return Trade.create(historyData.indexOf(historyData.stream()
-      .filter(entry -> entry.timeStep() == dateTime.getMillis() / 1000)
-      .findFirst().get()), 0);
+  private Trade calculateTradeFromDate(TradeTime buyTime, TradeTime sellTime) {
+    return Trade.create(buyTime.findEntryIndex(historyData),
+      sellTime.findEntryIndex(historyData));
   }
 
   private List<HistoryEntry> createHistoryData() {
@@ -158,9 +167,7 @@ public final class StockDataset {
   }
 
   private void fillDataset() {
-    var bestTradeDates = optimalTrades.stream()
-      .map(trade -> tradeType.isBuy() ? trade.buyTime() : trade.sellTime())
-      .collect(Collectors.toList());
+    var bestTradeDates = tradeType.isBuy() ? optimalBuyTrades : optimalSellTrades;
     for (var i = dayLongestReview + reviewPeriod; i < historyData.size(); i++) {
       var entry = new AbstractMap.SimpleEntry<>(createInputData(i - dayLongestReview),
         calculateTradeValue(bestTradeDates, i));
