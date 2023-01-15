@@ -28,59 +28,81 @@ public final class TrainAlgorithm {
   private StockDataset buyEvaluationDataset;
   private StockDataset sellEvaluationDataset;
 
-  public void initialize() throws Exception {
+  public void initialize() {
     Nd4j.getRandom().setSeed(seed);
     symbol = Symbol.createAndFetch(symbolName, -1);
+  }
+
+  public void processBuyNetwork() throws Exception {
+    initializeBuyNetwork();
+    trainBuyNetwork();
+    evaluateBuyNetwork();
+    saveBuyNetwork();
+  }
+
+  public void processSellNetwork() throws Exception {
+    initializeSellNetwork();
+    trainSellNetwork();
+    evaluateSellNetwork();
+    saveSellNetwork();
+  }
+
+  private void initializeBuyNetwork() {
     buyNeuralNetwork = buildNeuralNetwork(TradeType.BUY);
-    var buyTrainDataset = datasetFactory.createAndBuild(symbol, TradeType.BUY, ModelState.TRAINING, seed);
-    var buyEvaluation = evaluationFactory.create(buyNeuralNetwork, buyTrainDataset);
-    buyEvaluation.analyse();
-    var buyIllustration = illustrationFactory.create(TradeType.BUY, buyEvaluation, buyTrainDataset, seed);
-    buyIllustration.plot();
-    sellNeuralNetwork = buildNeuralNetwork(TradeType.SELL);
     buyEvaluationDataset = datasetFactory.createAndBuild(symbol, TradeType.BUY, ModelState.EVALUATING, seed);
+  }
+
+  private void initializeSellNetwork() {
+    sellNeuralNetwork = buildNeuralNetwork(TradeType.SELL);
     sellEvaluationDataset = datasetFactory.createAndBuild(symbol, TradeType.SELL, ModelState.EVALUATING, seed);
   }
 
   private NeuralNetwork buildNeuralNetwork(TradeType tradeType) {
     var dataset = datasetFactory.createAndBuild(symbol, tradeType, ModelState.TRAINING, seed);
-    System.out.println(Arrays.toString(dataset.raw().get(0).getKey().get(0)));
     var network = neuralNetworkFactory.create(dataset.historyIterator(), seed);
     network.build();
+    var evaluation = evaluationFactory.create(network, dataset);
+    evaluation.analyse();
+    var illustration = illustrationFactory.create(tradeType, evaluation, dataset, seed);
+    illustration.plot();
+    System.out.println(Arrays.toString(dataset.raw().get(0).getKey().get(0)));
     return network;
   }
 
-  public void train() {
-    System.out.println("TRAINING");
-    System.out.println("");
+  private void trainBuyNetwork() {
     System.out.println("TRAIN BUY NETWORK");
-    buyNeuralNetwork.train(buyEvaluationDataset.raw().stream()
-      .filter(entry -> entry.getValue() == 1).findFirst().get());
-    /*System.out.println("TRAIN SELL NETWORK");
-    sellNeuralNetwork.train(sellEvaluationDataset.raw().stream()
-      .filter(entry -> entry.getValue() == 1).findFirst().get());*/
+    buyNeuralNetwork.train();
   }
 
-  public void evaluate() {
-    System.out.println("EVALUATING");
-    System.out.println("");
+  private void trainSellNetwork() {
+    System.out.println("TRAIN SELL NETWORK");
+    sellNeuralNetwork.train();
+  }
+
+  private void evaluateBuyNetwork() {
     System.out.println("EVALUATE BUY NETWORK");
     var buyEvaluation = evaluationFactory.create(buyNeuralNetwork, buyEvaluationDataset);
     buyEvaluation.analyse();
     var buyIllustration = illustrationFactory.create(TradeType.BUY, buyEvaluation, buyEvaluationDataset, seed);
     buyIllustration.plot();
-    /*System.out.println("EVALUATE SELL NETWORK");
+  }
+
+  private void evaluateSellNetwork() {
+    System.out.println("EVALUATE SELL NETWORK");
     var sellEvaluation = evaluationFactory.create(sellNeuralNetwork, sellEvaluationDataset);
     sellEvaluation.analyse();
     var sellIllustration = illustrationFactory.create(TradeType.SELL, sellEvaluation, sellEvaluationDataset, seed);
-    sellIllustration.plot();*/
+    sellIllustration.plot();
   }
 
   private final String MODEL_PATH = "/models/";
 
-  public void save() throws Exception {
+  private void saveBuyNetwork() throws Exception {
     buyNeuralNetwork.save(System.getProperty("user.dir") + MODEL_PATH +
       symbolName.toUpperCase() + "/buyModel.zip");
+  }
+
+  private void saveSellNetwork() throws Exception {
     sellNeuralNetwork.save(System.getProperty("user.dir") + MODEL_PATH +
       symbolName.toUpperCase() + "/sellModel.zip");
   }
