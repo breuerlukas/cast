@@ -40,21 +40,26 @@ public final class Illustration {
     }
     plot.plot()
       .add(averageData.stream().map(Map.Entry::getKey).collect(Collectors.toList()),
-        averageData.stream().map(Map.Entry::getValue).collect(Collectors.toList()));
-    plot.plot().add(prices).label("Prices");
+        averageData.stream().map(Map.Entry::getValue).collect(Collectors.toList()))
+      .color("black");
+    plot.plot().add(prices).label("Prices").color("blue");
   }
 
   private static final int ILLUSTRATION_SCALE = 75;
 
   private void addTradeSignals(Plot plot) {
-    for (var optimalSignal : evaluation.optimalSignals()) {
-      plot.plot().add(List.of(optimalSignal, optimalSignal),
+    for (var i = 0; i < evaluation.optimalSignals().size(); i++) {
+      var optimalSignal = evaluation.optimalSignals().get(i);
+      var line = plot.plot().add(List.of(optimalSignal, optimalSignal),
           List.of(ILLUSTRATION_SCALE / 4, ILLUSTRATION_SCALE + (ILLUSTRATION_SCALE / 4)))
-        .label("Optimal");
+        .color("green");
+      if (i == evaluation.optimalSignals().size() - 1) {
+        line.label("Optimal");
+      }
     }
     for (var determinedSignal : evaluation.determinedSignals()) {
       plot.plot().add(List.of(determinedSignal, determinedSignal),
-        List.of(0, ILLUSTRATION_SCALE));
+        List.of(0, ILLUSTRATION_SCALE)).color("red");
     }
   }
 
@@ -71,7 +76,7 @@ public final class Illustration {
       predictions.add(ILLUSTRATION_SCALE / 2 + ((prediction - minimumPrediction) /
         (maximumPrediction - minimumPrediction)) * ILLUSTRATION_SCALE / 8);
     }
-    plot.plot().add(dates, predictions).label("Prediction Distribution");
+    plot.plot().add(dates, predictions).label("Prediction Distribution").color("magenta");
   }
 
   private static final String PLOT_TITLE_FORMAT = "%s (SEED: %s)";
