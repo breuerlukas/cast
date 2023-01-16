@@ -30,7 +30,7 @@ public final class NeuralNetworkModule extends AbstractModule {
     return NETWORK_WEIGHT_INIT;
   }
 
-  private static final Activation NETWORK_ACTIVATION = Activation.TANH;
+  private static final Activation NETWORK_ACTIVATION = Activation.RELU;
 
   @Provides
   @Singleton
@@ -46,7 +46,7 @@ public final class NeuralNetworkModule extends AbstractModule {
     return NETWORK_UPDATER;
   }
 
-  private static final float NETWORK_LEARNING_RATE = -1;
+  private static final float NETWORK_LEARNING_RATE = 1e-4f;
 
   @Provides
   @Singleton
@@ -73,7 +73,7 @@ public final class NeuralNetworkModule extends AbstractModule {
     return reviewPeriod * inputSizePerDay;
   }
 
-  private static final int[] NETWORK_HIDDEN_NEURONS = new int[] {512, 512};
+  private static final int[] NETWORK_HIDDEN_NEURONS = new int[] {64, 64};
 
   @Provides
   @Singleton

@@ -16,6 +16,6 @@ public final class TrainApplication {
       injector.getInstance(IllustrationFactory.class));
     stockAlgorithm.initialize();
     stockAlgorithm.processBuyNetwork();
-    stockAlgorithm.processSellNetwork();
+    //stockAlgorithm.processSellNetwork();
   }
 }
