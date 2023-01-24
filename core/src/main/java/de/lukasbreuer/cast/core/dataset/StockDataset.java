@@ -60,18 +60,18 @@ public final class StockDataset {
     if (modelState == ModelState.TRAINING) {
       if (symbol.name().equals("ES")) {
         //BUY
-        optimalBuyTrades.add(TradeTime.create(2016, 1, 21).findEntryIndex(historyData));
-        optimalBuyTrades.add(TradeTime.create(2016, 12, 1).findEntryIndex(historyData));
+        //optimalBuyTrades.add(TradeTime.create(2016, 1, 21).findEntryIndex(historyData));
+        //optimalBuyTrades.add(TradeTime.create(2016, 12, 1).findEntryIndex(historyData));
         optimalBuyTrades.add(TradeTime.create(2018, 6, 11).findEntryIndex(historyData));
-        optimalBuyTrades.add(TradeTime.create(2018, 12, 24).findEntryIndex(historyData));
-        optimalBuyTrades.add(TradeTime.create(2019, 11, 12).findEntryIndex(historyData));
-        optimalBuyTrades.add(TradeTime.create(2020, 1, 7).findEntryIndex(historyData));
+        //optimalBuyTrades.add(TradeTime.create(2019, 1, 3).findEntryIndex(historyData));
+        //optimalBuyTrades.add(TradeTime.create(2019, 11, 12).findEntryIndex(historyData));
+        //optimalBuyTrades.add(TradeTime.create(2020, 1, 7).findEntryIndex(historyData));
         optimalBuyTrades.add(TradeTime.create(2020, 3, 23).findEntryIndex(historyData));
-        optimalBuyTrades.add(TradeTime.create(2020, 4, 1).findEntryIndex(historyData));
-        optimalBuyTrades.add(TradeTime.create(2020, 9, 21).findEntryIndex(historyData));
-        optimalBuyTrades.add(TradeTime.create(2021, 3, 4).findEntryIndex(historyData));
+        //optimalBuyTrades.add(TradeTime.create(2020, 4, 3).findEntryIndex(historyData));
+        //optimalBuyTrades.add(TradeTime.create(2020, 9, 21).findEntryIndex(historyData));
+        //optimalBuyTrades.add(TradeTime.create(2021, 3, 4).findEntryIndex(historyData));
         //SELL
-        optimalSellTrades.add(TradeTime.create(2016, 4, 1).findEntryIndex(historyData));
+        /*optimalSellTrades.add(TradeTime.create(2016, 4, 1).findEntryIndex(historyData));
         optimalSellTrades.add(TradeTime.create(2017, 6, 16).findEntryIndex(historyData));
         optimalSellTrades.add(TradeTime.create(2019, 9, 30).findEntryIndex(historyData));
         optimalSellTrades.add(TradeTime.create(2020, 1, 30).findEntryIndex(historyData));
@@ -80,7 +80,7 @@ public final class StockDataset {
         optimalSellTrades.add(TradeTime.create(2020, 4, 9).findEntryIndex(historyData));
         optimalSellTrades.add(TradeTime.create(2020, 7, 23).findEntryIndex(historyData));
         optimalSellTrades.add(TradeTime.create(2020, 10, 12).findEntryIndex(historyData));
-        optimalSellTrades.add(TradeTime.create(2021, 4, 20).findEntryIndex(historyData));
+        optimalSellTrades.add(TradeTime.create(2021, 4, 20).findEntryIndex(historyData));*/
       }
       if (symbol.name().equals("ON")) {
         //BUY
@@ -150,18 +150,16 @@ public final class StockDataset {
     return inputData;
   }
 
+  private static final int TRADE_VALUE_DISTRIBUTION = 3;
+
   private double calculateTradeValue(
     List<Integer> optimalTradeDates, int currentDate
   ) {
     for (var date : optimalTradeDates) {
-      if (currentDate == date) {
-        return 1;
-      }
-      if (currentDate == date + 1 || currentDate == date - 1) {
-        return 0.67;
-      }
-      if (currentDate == date + 2 || currentDate == date - 2) {
-        return 0.33;
+      for (var i = 0; i < TRADE_VALUE_DISTRIBUTION; i++) {
+        if (currentDate == date - i || currentDate == date + i) {
+          return (TRADE_VALUE_DISTRIBUTION - i) / ((double) TRADE_VALUE_DISTRIBUTION);
+        }
       }
     }
     return 0;

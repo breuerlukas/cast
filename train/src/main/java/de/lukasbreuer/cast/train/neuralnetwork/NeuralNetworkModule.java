@@ -13,7 +13,7 @@ import org.nd4j.linalg.learning.config.Sgd;
 
 @RequiredArgsConstructor(staticName = "create")
 public final class NeuralNetworkModule extends AbstractModule {
-  private static final int NETWORK_EPOCHS = 20;
+  private static final int NETWORK_EPOCHS = 50;
 
   @Provides
   @Singleton
@@ -38,7 +38,7 @@ public final class NeuralNetworkModule extends AbstractModule {
     return NETWORK_ACTIVATION;
   }
 
-  private static final IUpdater NETWORK_UPDATER = new Sgd(0.1);
+  private static final IUpdater NETWORK_UPDATER = new Nesterovs(0.005, 0.9);
 
   @Provides
   @Singleton
@@ -46,7 +46,7 @@ public final class NeuralNetworkModule extends AbstractModule {
     return NETWORK_UPDATER;
   }
 
-  private static final float NETWORK_LEARNING_RATE = 1e-4f;
+  private static final float NETWORK_LEARNING_RATE = -1;
 
   @Provides
   @Singleton
