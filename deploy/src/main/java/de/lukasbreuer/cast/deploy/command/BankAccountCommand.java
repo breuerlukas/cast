@@ -1,5 +1,6 @@
 package de.lukasbreuer.cast.deploy.command;
 
+import com.clearspring.analytics.util.Lists;
 import de.lukasbreuer.cast.core.command.Command;
 import de.lukasbreuer.cast.core.log.Log;
 import de.lukasbreuer.cast.deploy.finance.BankAccount;
@@ -44,7 +45,8 @@ public final class BankAccountCommand extends Command {
     }
     var bankAccountName = arguments[1].toUpperCase();
     var bankAccountMoney = Double.parseDouble(arguments[2]);
-    bankAccountCollection.addBankAccount(BankAccount.create(UUID.randomUUID(), bankAccountName, bankAccountMoney), success ->
+    bankAccountCollection.addBankAccount(BankAccount.create(UUID.randomUUID(),
+      bankAccountName, bankAccountMoney, Lists.newArrayList()),success ->
       log().info("Bank Account " + bankAccountName + " has been successfully added"));
     return true;
   }
@@ -66,7 +68,7 @@ public final class BankAccountCommand extends Command {
       return;
     }
     for (var bankAccount : bankAccounts) {
-      log().info(" - " + bankAccount.name() + ": " + bankAccount.money());
+      log().info(" - " + bankAccount.name() + ": " + bankAccount.balance());
     }
   }
 }
