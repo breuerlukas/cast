@@ -30,14 +30,8 @@ public final class TradeDecision {
     ) {
       return false;
     }
-    log.info("A decision is currently being made on the purchase of a " +
-      stock.formattedStockName() + " stock");
-    log.info("These are the last 5 daily predictions " +
-      Arrays.toString(Arrays.copyOfRange(prediction, prediction.length - 5, prediction.length)));
-    if (prediction[prediction.length - 1] > tradePredictionMinimum) {
-      return true;
-    }
-    return false;
+    return prediction[prediction.length - 2] > tradePredictionMinimum &&
+      prediction[prediction.length - 1] < prediction[prediction.length - 2];
   }
 
   private boolean decideSellTrade() {
@@ -46,13 +40,7 @@ public final class TradeDecision {
         (latestSellTrade.get().tradeTime() > latestBuyTrade.get().tradeTime()))) {
       return false;
     }
-    log.info("A decision is currently being made on the sale of a " +
-      stock.formattedStockName() + " stock");
-    log.info("These are the last 5 daily predictions " +
-      Arrays.toString(Arrays.copyOfRange(prediction, prediction.length - 5, prediction.length)));
-    if (prediction[prediction.length - 1] > tradePredictionMinimum) {
-      return true;
-    }
-    return false;
+    return prediction[prediction.length - 2] > tradePredictionMinimum &&
+      prediction[prediction.length - 1] < prediction[prediction.length - 2];
   }
 }

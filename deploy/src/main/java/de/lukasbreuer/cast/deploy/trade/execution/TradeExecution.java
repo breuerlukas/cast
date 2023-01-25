@@ -16,6 +16,7 @@ import io.github.bonigarcia.wdm.WebDriverManager;
 import lombok.RequiredArgsConstructor;
 import org.openqa.selenium.chrome.ChromeOptions;
 
+import java.util.Arrays;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -78,6 +79,8 @@ public final class TradeExecution {
     if (shouldExecute) {
       log.fine("It has been decided that the " + tradeType + " of stock " +
         stock.formattedStockName() + " will be executed");
+      log.info("These are the last 5 daily predictions " +
+        Arrays.toString(Arrays.copyOfRange(prediction, prediction.length - 5, prediction.length)));
       var amount = 1;
       new Thread(() -> perform(tradeType, amount, () ->
         storeTrade(model, tradeType, amount, success ->
