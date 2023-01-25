@@ -4,7 +4,6 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import de.lukasbreuer.cast.core.database.DatabaseConnection;
-import de.lukasbreuer.cast.deploy.trade.TradeCollection;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor(staticName = "create")

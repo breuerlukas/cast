@@ -2,20 +2,15 @@ package de.lukasbreuer.cast.core.dataset;
 
 import com.clearspring.analytics.util.Lists;
 import de.lukasbreuer.cast.core.dataset.indicator.IndicatorRepository;
-import de.lukasbreuer.cast.core.dataset.trade.TradeGeneration;
 import de.lukasbreuer.cast.core.dataset.trade.TradeTime;
 import de.lukasbreuer.cast.core.neuralnetwork.HistoryIterator;
 import de.lukasbreuer.cast.core.neuralnetwork.ModelState;
 import de.lukasbreuer.cast.core.symbol.HistoryEntry;
 import de.lukasbreuer.cast.core.symbol.Symbol;
-import de.lukasbreuer.cast.core.trade.Trade;
 import de.lukasbreuer.cast.core.trade.TradeType;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import lombok.experimental.Accessors;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
 
 import java.util.AbstractMap;
 import java.util.List;

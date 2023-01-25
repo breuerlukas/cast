@@ -9,7 +9,6 @@ import org.deeplearning4j.nn.weights.WeightInit;
 import org.nd4j.linalg.activations.Activation;
 import org.nd4j.linalg.learning.config.IUpdater;
 import org.nd4j.linalg.learning.config.Nesterovs;
-import org.nd4j.linalg.learning.config.Sgd;
 
 @RequiredArgsConstructor(staticName = "create")
 public final class NeuralNetworkModule extends AbstractModule {

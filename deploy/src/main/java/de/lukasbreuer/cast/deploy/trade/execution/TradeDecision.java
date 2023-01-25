@@ -6,7 +6,6 @@ import de.lukasbreuer.cast.deploy.portfolio.Stock;
 import de.lukasbreuer.cast.deploy.trade.Trade;
 import lombok.RequiredArgsConstructor;
 
-import java.util.Arrays;
 import java.util.Optional;
 
 @RequiredArgsConstructor(staticName = "create")
