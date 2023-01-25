@@ -9,7 +9,7 @@ public final class ShutdownCommand extends Command {
   }
 
   private ShutdownCommand(Log log) {
-    super(log, "shutdown", new String[0]);
+    super(log, "shutdown", new String[] {"exit"}, new String[0]);
   }
 
   @Override

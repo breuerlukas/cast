@@ -19,7 +19,7 @@ public final class TradeCommand extends Command {
   private final DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm");
 
   private TradeCommand(Log log, TradeCollection tradeCollection) {
-    super(log, "trades", new String[] {"stock"});
+    super(log, "trades", new String[] {"trade"}, new String[] {"stock"});
     this.tradeCollection = tradeCollection;
   }
 

@@ -34,7 +34,7 @@ public final class CommandTask {
   private void superviseInput(String line) {
     var input = line.split(" ");
     var commandName = input[0];
-    commandRegistry.findByName(commandName)
+    commandRegistry.find(commandName)
       .ifPresent(command -> executeCommand(command, line, input));
   }
 

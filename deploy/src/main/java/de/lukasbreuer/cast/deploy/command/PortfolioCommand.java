@@ -16,7 +16,8 @@ public final class PortfolioCommand extends Command {
   private final StockCollection stockCollection;
 
   private PortfolioCommand(Log log, StockCollection stockCollection) {
-    super(log, "portfolio", new String[] {"add <stock>", "remove <stock>"});
+    super(log, "portfolio", new String[] {"stocks", "stock"},
+      new String[] {"add <stock>", "remove <stock>"});
     this.stockCollection = stockCollection;
   }
 
