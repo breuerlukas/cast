@@ -5,10 +5,8 @@ import com.google.inject.Injector;
 import de.lukasbreuer.cast.core.command.CommandRegistry;
 import de.lukasbreuer.cast.core.command.CommandTask;
 import de.lukasbreuer.cast.core.log.Log;
-import de.lukasbreuer.cast.deploy.command.ModelCommand;
-import de.lukasbreuer.cast.deploy.command.PortfolioCommand;
-import de.lukasbreuer.cast.deploy.command.ShutdownCommand;
-import de.lukasbreuer.cast.deploy.command.TradeCommand;
+import de.lukasbreuer.cast.deploy.command.*;
+import de.lukasbreuer.cast.deploy.finance.BankAccountCollection;
 import de.lukasbreuer.cast.deploy.model.ModelCollection;
 import de.lukasbreuer.cast.deploy.portfolio.StockCollection;
 import de.lukasbreuer.cast.deploy.trade.TradeCollection;
@@ -38,6 +36,8 @@ public final class DeployApplication {
       injector.getInstance(ModelCollection.class)));
     commandRegistry.register(TradeCommand.create(log,
       injector.getInstance(TradeCollection.class)));
+    commandRegistry.register(BankAccountCommand.create(log,
+      injector.getInstance(BankAccountCollection.class)));
     commandRegistry.register(ShutdownCommand.create(log));
   }
 }
