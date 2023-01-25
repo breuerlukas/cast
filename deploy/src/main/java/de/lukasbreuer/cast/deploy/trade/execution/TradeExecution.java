@@ -3,6 +3,7 @@ package de.lukasbreuer.cast.deploy.trade.execution;
 import com.mongodb.client.result.InsertOneResult;
 import de.lukasbreuer.cast.core.log.Log;
 import de.lukasbreuer.cast.core.trade.TradeType;
+import de.lukasbreuer.cast.deploy.finance.BankAccountCollection;
 import de.lukasbreuer.cast.deploy.investopedia.HomePage;
 import de.lukasbreuer.cast.deploy.investopedia.LoginPage;
 import de.lukasbreuer.cast.deploy.investopedia.TradePage;
@@ -22,11 +23,12 @@ import java.util.function.Consumer;
 @RequiredArgsConstructor(staticName = "create")
 public final class TradeExecution {
   public static void createAndInitialize(
-          Log log, ModelCollection modelCollection, TradeCollection tradeCollection,
-          String investopediaUsername, String investopediaPassword,
-          String investopediaGame, Stock stock, Consumer<TradeExecution> futureExecution
+    Log log, ModelCollection modelCollection, TradeCollection tradeCollection,
+    BankAccountCollection bankAccountCollection, String investopediaUsername,
+    String investopediaPassword, String investopediaGame, Stock stock,
+    Consumer<TradeExecution> futureExecution
   ) {
-    var execution = create(log, modelCollection, tradeCollection,
+    var execution = create(log, modelCollection, tradeCollection, bankAccountCollection,
       investopediaUsername, investopediaPassword, investopediaGame, stock);
     execution.initialize(() -> futureExecution.accept(execution));
   }
@@ -39,6 +41,7 @@ public final class TradeExecution {
   private final Log log;
   private final ModelCollection modelCollection;
   private final TradeCollection tradeCollection;
+  private final BankAccountCollection bankAccountCollection;
   private final String investopediaUsername;
   private final String investopediaPassword;
   private final String investopediaGame;
@@ -75,8 +78,9 @@ public final class TradeExecution {
     if (shouldExecute) {
       log.fine("It has been decided that the " + tradeType + " of stock " +
         stock.formattedStockName() + " will be executed");
-      new Thread(() -> perform(tradeType, 1, () ->
-        storeTrade(model, tradeType, success ->
+      var amount = 1;
+      new Thread(() -> perform(tradeType, amount, () ->
+        storeTrade(model, tradeType, amount, success ->
           actionFuture.accept(Action.TRADE)))).start();
       return;
     }
@@ -118,9 +122,15 @@ public final class TradeExecution {
   }
 
   private void storeTrade(
-    Model model, TradeType tradeType, Consumer<InsertOneResult> response
+    Model model, TradeType tradeType, int amount, Consumer<InsertOneResult> response
   ) {
+    var currentPrice = model.currentStockPrice();
     tradeCollection.addTrade(Trade.create(UUID.randomUUID(), stock.stockName(),
-        tradeType, System.currentTimeMillis(), model.currentStockPrice()), response);
+        tradeType, System.currentTimeMillis(), currentPrice), response);
+    if (tradeType.isBuy()) {
+      bankAccountCollection.firstBankAccount(bank -> bank.debit(currentPrice * amount));
+      return;
+    }
+    bankAccountCollection.firstBankAccount(bank -> bank.deposit(currentPrice * amount));
   }
 }
