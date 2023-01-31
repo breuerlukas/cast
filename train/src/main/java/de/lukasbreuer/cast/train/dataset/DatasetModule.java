@@ -27,6 +27,7 @@ public final class DatasetModule extends AbstractModule {
   }
 
   private static final int MODEL_EVALUATION_PERIOD = 420;
+
   @Provides
   @Singleton
   @Named("modelEvaluationPeriod")
@@ -44,7 +45,7 @@ public final class DatasetModule extends AbstractModule {
   }
 
   //BUY: 7 * 8; SELL: 7 * 6 !!!
-  private static final int MODEL_REVIEW_PERIOD = 1;
+  private static final int MODEL_REVIEW_PERIOD = 7 * 8;
 
   @Provides
   @Singleton

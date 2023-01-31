@@ -61,10 +61,10 @@ public final class TrainAlgorithm {
     var dataset = datasetFactory.createAndBuild(symbol, tradeType, ModelState.TRAINING, seed);
     var network = neuralNetworkFactory.create(dataset.historyIterator(), seed);
     network.build();
-    var evaluation = evaluationFactory.create(network, dataset);
+    /*var evaluation = evaluationFactory.create(network, dataset);
     evaluation.analyse();
     var illustration = illustrationFactory.create(tradeType, evaluation, dataset, seed);
-    illustration.plot();
+    illustration.plot();*/
     System.out.println(Arrays.toString(dataset.raw().get(0).getKey().get(0)));
     return network;
   }

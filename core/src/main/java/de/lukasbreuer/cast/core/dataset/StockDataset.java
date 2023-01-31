@@ -2,20 +2,15 @@ package de.lukasbreuer.cast.core.dataset;
 
 import com.clearspring.analytics.util.Lists;
 import de.lukasbreuer.cast.core.dataset.indicator.IndicatorRepository;
-import de.lukasbreuer.cast.core.dataset.trade.TradeGeneration;
 import de.lukasbreuer.cast.core.dataset.trade.TradeTime;
 import de.lukasbreuer.cast.core.neuralnetwork.HistoryIterator;
 import de.lukasbreuer.cast.core.neuralnetwork.ModelState;
 import de.lukasbreuer.cast.core.symbol.HistoryEntry;
 import de.lukasbreuer.cast.core.symbol.Symbol;
-import de.lukasbreuer.cast.core.trade.Trade;
 import de.lukasbreuer.cast.core.trade.TradeType;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import lombok.experimental.Accessors;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
 
 import java.util.AbstractMap;
 import java.util.List;
@@ -60,16 +55,16 @@ public final class StockDataset {
     if (modelState == ModelState.TRAINING) {
       if (symbol.name().equals("ES")) {
         //BUY
-        //optimalBuyTrades.add(TradeTime.create(2016, 1, 21).findEntryIndex(historyData));
-        //optimalBuyTrades.add(TradeTime.create(2016, 12, 1).findEntryIndex(historyData));
+        optimalBuyTrades.add(TradeTime.create(2016, 1, 21).findEntryIndex(historyData));
+        optimalBuyTrades.add(TradeTime.create(2016, 12, 1).findEntryIndex(historyData));
         optimalBuyTrades.add(TradeTime.create(2018, 6, 11).findEntryIndex(historyData));
-        //optimalBuyTrades.add(TradeTime.create(2019, 1, 3).findEntryIndex(historyData));
-        //optimalBuyTrades.add(TradeTime.create(2019, 11, 12).findEntryIndex(historyData));
-        //optimalBuyTrades.add(TradeTime.create(2020, 1, 7).findEntryIndex(historyData));
+        optimalBuyTrades.add(TradeTime.create(2019, 1, 3).findEntryIndex(historyData));
+        optimalBuyTrades.add(TradeTime.create(2019, 11, 12).findEntryIndex(historyData));
+        optimalBuyTrades.add(TradeTime.create(2020, 1, 7).findEntryIndex(historyData));
         optimalBuyTrades.add(TradeTime.create(2020, 3, 23).findEntryIndex(historyData));
-        //optimalBuyTrades.add(TradeTime.create(2020, 4, 3).findEntryIndex(historyData));
-        //optimalBuyTrades.add(TradeTime.create(2020, 9, 21).findEntryIndex(historyData));
-        //optimalBuyTrades.add(TradeTime.create(2021, 3, 4).findEntryIndex(historyData));
+        optimalBuyTrades.add(TradeTime.create(2020, 4, 3).findEntryIndex(historyData));
+        optimalBuyTrades.add(TradeTime.create(2020, 9, 21).findEntryIndex(historyData));
+        optimalBuyTrades.add(TradeTime.create(2021, 3, 4).findEntryIndex(historyData));
         //SELL
         /*optimalSellTrades.add(TradeTime.create(2016, 4, 1).findEntryIndex(historyData));
         optimalSellTrades.add(TradeTime.create(2017, 6, 16).findEntryIndex(historyData));
