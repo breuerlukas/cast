@@ -15,7 +15,7 @@ public final class ModelCommand extends Command {
   private final ModelCollection modelCollection;
 
   private ModelCommand(Log log, ModelCollection modelCollection) {
-    super(log, "model", new String[] {"stock", "add <stock> <buy model> " +
+    super(log, "model", new String[] {"models"}, new String[] {"stock", "add <stock> <buy model> " +
       "<sell model> <review period> <buy prediction minimum> <sell prediction minimum>",
       "update <stock> <parameter> <value>", "remove <stock>"});
     this.modelCollection = modelCollection;

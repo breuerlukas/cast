@@ -1,32 +1,32 @@
 package de.lukasbreuer.cast.core.command;
 
-import com.google.common.collect.Maps;
+import com.clearspring.analytics.util.Lists;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 
-import java.util.Map;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 @Singleton
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE, onConstructor = @__({@Inject}))
 public final class CommandRegistry {
-  private final Map<String, Command> commands = Maps.newHashMap();
+  private final List<Command> commands = Lists.newArrayList();
 
   public void register(Command command) {
-    commands.put(command.name(), command);
+    commands.add(command);
   }
 
-  public void unregister(String name) {
-    commands.remove(name);
+  public void unregister(Command command) {
+    commands.remove(command);
   }
 
-  public boolean exists(String name) {
-    return commands.containsKey(name);
-  }
-
-  public Optional<Command> findByName(String name) {
-    return Optional.ofNullable(commands.get(name));
+  public Optional<Command> find(String input) {
+    return commands.stream()
+      .filter(command -> command.name().equalsIgnoreCase(input) ||
+        Arrays.stream(command.aliases()).anyMatch(alias -> alias.equalsIgnoreCase(input)))
+      .findFirst();
   }
 }

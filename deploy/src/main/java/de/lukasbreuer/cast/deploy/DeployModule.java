@@ -2,6 +2,7 @@ package de.lukasbreuer.cast.deploy;
 
 import de.lukasbreuer.cast.core.CoreModule;
 import de.lukasbreuer.cast.core.log.Log;
+import de.lukasbreuer.cast.deploy.finance.FinanceModule;
 import de.lukasbreuer.cast.deploy.investopedia.InvestopediaModule;
 import de.lukasbreuer.cast.deploy.model.ModelModule;
 import de.lukasbreuer.cast.deploy.portfolio.PortfolioModule;
@@ -22,6 +23,7 @@ public class DeployModule extends CoreModule {
     install(ModelModule.create());
     install(TradeModule.create());
     install(InvestopediaModule.create());
+    install(FinanceModule.create());
   }
 
   @Override

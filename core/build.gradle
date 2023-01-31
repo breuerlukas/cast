@@ -16,8 +16,8 @@ repositories {
 }
 
 dependencies {
-  testCompileOnly "org.junit.jupiter:junit-jupiter-api:5.9.1"
-  testCompileOnly "org.junit.jupiter:junit-jupiter-engine:5.9.1"
+  testCompileOnly "org.junit.jupiter:junit-jupiter-api:5.9.2"
+  testCompileOnly "org.junit.jupiter:junit-jupiter-engine:5.9.2"
 
   compileOnly "com.google.inject:guice:5.1.0"
 
@@ -28,7 +28,7 @@ dependencies {
   testCompileOnly "org.projectlombok:lombok:1.18.24"
   testAnnotationProcessor "org.projectlombok:lombok:1.18.24"
 
-  compileOnly "org.mongodb:mongodb-driver-reactivestreams:4.8.1"
+  compileOnly "org.mongodb:mongodb-driver-reactivestreams:4.8.2"
 
   compileOnly "org.deeplearning4j:deeplearning4j-core:1.0.0-M2.1"
   compileOnly "org.nd4j:nd4j-native-platform:1.0.0-M2.1"

@@ -1,18 +1,13 @@
 package de.lukasbreuer.cast.deploy.trade.execution;
 
-import de.lukasbreuer.cast.core.log.Log;
 import de.lukasbreuer.cast.core.trade.TradeType;
-import de.lukasbreuer.cast.deploy.portfolio.Stock;
 import de.lukasbreuer.cast.deploy.trade.Trade;
 import lombok.RequiredArgsConstructor;
 
-import java.util.Arrays;
 import java.util.Optional;
 
 @RequiredArgsConstructor(staticName = "create")
 public final class TradeDecision {
-  private final Log log;
-  private final Stock stock;
   private final TradeType tradeType;
   private final Optional<Trade> latestBuyTrade;
   private final Optional<Trade> latestSellTrade;
@@ -30,14 +25,8 @@ public final class TradeDecision {
     ) {
       return false;
     }
-    log.info("A decision is currently being made on the purchase of a " +
-      stock.formattedStockName() + " stock");
-    log.info("These are the last 5 daily predictions " +
-      Arrays.toString(Arrays.copyOfRange(prediction, prediction.length - 5, prediction.length)));
-    if (prediction[prediction.length - 1] > tradePredictionMinimum) {
-      return true;
-    }
-    return false;
+    return prediction[prediction.length - 2] > tradePredictionMinimum &&
+      prediction[prediction.length - 1] < prediction[prediction.length - 2];
   }
 
   private boolean decideSellTrade() {
@@ -46,13 +35,7 @@ public final class TradeDecision {
         (latestSellTrade.get().tradeTime() > latestBuyTrade.get().tradeTime()))) {
       return false;
     }
-    log.info("A decision is currently being made on the sale of a " +
-      stock.formattedStockName() + " stock");
-    log.info("These are the last 5 daily predictions " +
-      Arrays.toString(Arrays.copyOfRange(prediction, prediction.length - 5, prediction.length)));
-    if (prediction[prediction.length - 1] > tradePredictionMinimum) {
-      return true;
-    }
-    return false;
+    return prediction[prediction.length - 2] > tradePredictionMinimum &&
+      prediction[prediction.length - 1] < prediction[prediction.length - 2];
   }
 }

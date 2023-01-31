@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.google.inject.name.Named;
 import de.lukasbreuer.cast.core.log.Log;
+import de.lukasbreuer.cast.deploy.finance.BankAccountCollection;
 import de.lukasbreuer.cast.deploy.model.ModelCollection;
 import de.lukasbreuer.cast.deploy.portfolio.Stock;
 import de.lukasbreuer.cast.deploy.trade.TradeCollection;
@@ -21,6 +22,8 @@ public final class TradeExecutionFactory {
   private final ModelCollection modelCollection;
   @Inject
   private final TradeCollection tradeCollection;
+  @Inject
+  private final BankAccountCollection bankAccountCollection;
   @Inject @Named("investopediaUsername")
   private final String investopediaUsername;
   @Inject @Named("investopediaPassword")
@@ -32,11 +35,13 @@ public final class TradeExecutionFactory {
           Stock stock, Consumer<TradeExecution> futureExecution
   ) {
     TradeExecution.createAndInitialize(log, modelCollection, tradeCollection,
-      investopediaUsername, investopediaPassword, investopediaGame, stock, futureExecution);
+      bankAccountCollection, investopediaUsername, investopediaPassword,
+      investopediaGame, stock, futureExecution);
   }
 
   public TradeExecution create(Stock stock) {
     return TradeExecution.create(log, modelCollection, tradeCollection,
-      investopediaUsername, investopediaPassword, investopediaGame, stock);
+      bankAccountCollection, investopediaUsername, investopediaPassword,
+      investopediaGame, stock);
   }
 }

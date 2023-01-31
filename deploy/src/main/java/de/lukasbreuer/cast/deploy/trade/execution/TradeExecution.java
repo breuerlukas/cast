@@ -3,6 +3,7 @@ package de.lukasbreuer.cast.deploy.trade.execution;
 import com.mongodb.client.result.InsertOneResult;
 import de.lukasbreuer.cast.core.log.Log;
 import de.lukasbreuer.cast.core.trade.TradeType;
+import de.lukasbreuer.cast.deploy.finance.BankAccountCollection;
 import de.lukasbreuer.cast.deploy.investopedia.HomePage;
 import de.lukasbreuer.cast.deploy.investopedia.LoginPage;
 import de.lukasbreuer.cast.deploy.investopedia.TradePage;
@@ -15,6 +16,7 @@ import io.github.bonigarcia.wdm.WebDriverManager;
 import lombok.RequiredArgsConstructor;
 import org.openqa.selenium.chrome.ChromeOptions;
 
+import java.util.Arrays;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -22,11 +24,12 @@ import java.util.function.Consumer;
 @RequiredArgsConstructor(staticName = "create")
 public final class TradeExecution {
   public static void createAndInitialize(
-          Log log, ModelCollection modelCollection, TradeCollection tradeCollection,
-          String investopediaUsername, String investopediaPassword,
-          String investopediaGame, Stock stock, Consumer<TradeExecution> futureExecution
+    Log log, ModelCollection modelCollection, TradeCollection tradeCollection,
+    BankAccountCollection bankAccountCollection, String investopediaUsername,
+    String investopediaPassword, String investopediaGame, Stock stock,
+    Consumer<TradeExecution> futureExecution
   ) {
-    var execution = create(log, modelCollection, tradeCollection,
+    var execution = create(log, modelCollection, tradeCollection, bankAccountCollection,
       investopediaUsername, investopediaPassword, investopediaGame, stock);
     execution.initialize(() -> futureExecution.accept(execution));
   }
@@ -39,6 +42,7 @@ public final class TradeExecution {
   private final Log log;
   private final ModelCollection modelCollection;
   private final TradeCollection tradeCollection;
+  private final BankAccountCollection bankAccountCollection;
   private final String investopediaUsername;
   private final String investopediaPassword;
   private final String investopediaGame;
@@ -69,14 +73,17 @@ public final class TradeExecution {
     Optional<Trade> latestSellTrade, Consumer<Action> actionFuture
   ) {
     var prediction = model.predict(tradeType, MODEL_PREDICTION_PERIOD);
-    var shouldExecute = TradeDecision.create(log, stock, tradeType, latestBuyTrade,
-      latestSellTrade, prediction, tradeType.isBuy() ? model.buyTradePredictionMinimum() :
+    var shouldExecute = TradeDecision.create(tradeType, latestBuyTrade, latestSellTrade,
+      prediction, tradeType.isBuy() ? model.buyTradePredictionMinimum() :
         model.sellTradePredictionMinimum()).decide();
     if (shouldExecute) {
       log.fine("It has been decided that the " + tradeType + " of stock " +
         stock.formattedStockName() + " will be executed");
-      new Thread(() -> perform(tradeType, 1, () ->
-        storeTrade(model, tradeType, success ->
+      log.info("These are the last 5 daily predictions " +
+        Arrays.toString(Arrays.copyOfRange(prediction, prediction.length - 5, prediction.length)));
+      var amount = 1;
+      new Thread(() -> perform(tradeType, amount, () ->
+        storeTrade(model, tradeType, amount, success ->
           actionFuture.accept(Action.TRADE)))).start();
       return;
     }
@@ -118,9 +125,15 @@ public final class TradeExecution {
   }
 
   private void storeTrade(
-    Model model, TradeType tradeType, Consumer<InsertOneResult> response
+    Model model, TradeType tradeType, int amount, Consumer<InsertOneResult> response
   ) {
+    var currentPrice = model.currentStockPrice();
     tradeCollection.addTrade(Trade.create(UUID.randomUUID(), stock.stockName(),
-        tradeType, System.currentTimeMillis(), model.currentStockPrice()), response);
+        tradeType, System.currentTimeMillis(), currentPrice), response);
+    if (tradeType.isBuy()) {
+      bankAccountCollection.firstBankAccount(bank -> bank.debit(currentPrice * amount));
+      return;
+    }
+    bankAccountCollection.firstBankAccount(bank -> bank.deposit(currentPrice * amount));
   }
 }

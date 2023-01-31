@@ -14,6 +14,8 @@ public abstract class Command {
   @Getter
   private final String name;
   @Getter
+  private final String[] aliases;
+  @Getter
   private final String[] arguments;
 
   public abstract boolean execute(String[] arguments);
