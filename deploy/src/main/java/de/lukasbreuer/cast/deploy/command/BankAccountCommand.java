@@ -19,7 +19,7 @@ public final class BankAccountCommand extends Command {
   private final BankAccountCollection bankAccountCollection;
 
   private BankAccountCommand(Log log, BankAccountCollection bankAccountCollection) {
-    super(log, "bankAccount", new String[] {},
+    super(log, "bankAccount", new String[] {"bankAccounts"},
       new String[] {"add <name, money>", "remove <name>"});
     this.bankAccountCollection = bankAccountCollection;
   }
