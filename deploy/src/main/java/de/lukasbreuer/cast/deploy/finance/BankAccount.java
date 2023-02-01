@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 public final class BankAccount {
   public static BankAccount of(Document document) {
     return create(UUID.fromString(document.getString("id")),
-      document.getString("name"), document.getDouble("money"),
+      document.getString("name"), document.getDouble("balance"),
       document.getList("accesses", Document.class).stream()
         .map(BankAccountAccess::of).collect(Collectors.toList()));
   }
