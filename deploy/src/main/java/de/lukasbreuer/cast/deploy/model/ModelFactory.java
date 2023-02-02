@@ -21,10 +21,11 @@ public final class ModelFactory {
 
   public Model create(
     UUID id, String stock, String buyModelPath, String sellModelPath,
-    int reviewPeriod, double buyTradePredictionMinimum,
+    int buyReviewPeriod, int sellReviewPeriod, double buyTradePredictionMinimum,
     double sellTradePredictionMinimum
   ) {
     return Model.create(log, id, stock, buyModelPath, sellModelPath,
-      reviewPeriod, buyTradePredictionMinimum, sellTradePredictionMinimum);
+      buyReviewPeriod, sellReviewPeriod, buyTradePredictionMinimum,
+      sellTradePredictionMinimum);
   }
 }

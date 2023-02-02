@@ -16,8 +16,8 @@ public final class ModelCommand extends Command {
 
   private ModelCommand(Log log, ModelCollection modelCollection) {
     super(log, "model", new String[] {"models"}, new String[] {"stock", "add <stock> <buy model> " +
-      "<sell model> <review period> <buy prediction minimum> <sell prediction minimum>",
-      "update <stock> <parameter> <value>", "remove <stock>"});
+      "<sell model> <buy review period> <sell review period> <buy prediction minimum> " +
+      "<sell prediction minimum>", "update <stock> <parameter> <value>", "remove <stock>"});
     this.modelCollection = modelCollection;
   }
 
@@ -47,12 +47,13 @@ public final class ModelCommand extends Command {
     var stock = arguments[1].toUpperCase();
     var buyModelPath = arguments[2];
     var sellModelPath = arguments[3];
-    var reviewPeriod = Integer.parseInt(arguments[4]);
-    var buyTradePredictionMinimum = Double.parseDouble(arguments[5]);
-    var sellTradePredictionMaximum = Double.parseDouble(arguments[6]);
+    var buyReviewPeriod = Integer.parseInt(arguments[4]);
+    var sellReviewPeriod = Integer.parseInt(arguments[5]);
+    var buyTradePredictionMinimum = Double.parseDouble(arguments[6]);
+    var sellTradePredictionMaximum = Double.parseDouble(arguments[7]);
     modelCollection.addModel(Model.create(log(), UUID.randomUUID(), stock,
-      buyModelPath, sellModelPath, reviewPeriod, buyTradePredictionMinimum,
-      sellTradePredictionMaximum), success ->
+      buyModelPath, sellModelPath, buyReviewPeriod, sellReviewPeriod,
+      buyTradePredictionMinimum, sellTradePredictionMaximum), success ->
       log().info("Stock " + stock + " has been successfully added"));
     return true;
   }
@@ -89,7 +90,8 @@ public final class ModelCommand extends Command {
     log().info("Model (" + stock + "): ");
     log().info(" - Buy model: " + model.buyModelPath());
     log().info(" - Sell model: " + model.sellModelPath());
-    log().info(" - Review period: " + model.reviewPeriod());
+    log().info(" - Buy Review period: " + model.buyReviewPeriod());
+    log().info(" - Sell Review period: " + model.sellReviewPeriod());
     log().info(" - Buy trade prediction minimum: " + model.buyTradePredictionMinimum());
     log().info(" - Sell trade prediction minimum: " + model.sellTradePredictionMinimum());
   }

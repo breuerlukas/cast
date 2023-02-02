@@ -19,18 +19,18 @@ public final class Model {
   public static Model of(Log log, Document document) {
     return create(log, UUID.fromString(document.getString("id")),
       document.getString("stock"), document.getString("buyModelPath"),
-      document.getString("sellModelPath"), document.getInteger("reviewPeriod"),
-      document.getDouble("buyTradePredictionMinimum"),
+      document.getString("sellModelPath"), document.getInteger("buyReviewPeriod"),
+      document.getInteger("sellReviewPeriod"), document.getDouble("buyTradePredictionMinimum"),
       document.getDouble("sellTradePredictionMinimum"));
   }
 
   public static Model create(
     Log log, UUID id, String stock, String buyModelPath, String sellModelPath,
-    int reviewPeriod, double buyTradePredictionMinimum,
+    int buyReviewPeriod, int sellReviewPeriod, double buyTradePredictionMinimum,
     double sellTradePredictionMinimum
   ) {
-    return new Model(log, id, stock, buyModelPath, sellModelPath, reviewPeriod,
-      buyTradePredictionMinimum, sellTradePredictionMinimum);
+    return new Model(log, id, stock, buyModelPath, sellModelPath, buyReviewPeriod,
+      sellReviewPeriod, buyTradePredictionMinimum, sellTradePredictionMinimum);
   }
 
   private Log log;
@@ -42,7 +42,9 @@ public final class Model {
   @Getter @Setter(AccessLevel.PRIVATE)
   private String sellModelPath;
   @Getter @Setter(AccessLevel.PRIVATE)
-  private int reviewPeriod;
+  private int buyReviewPeriod;
+  @Getter @Setter(AccessLevel.PRIVATE)
+  private int sellReviewPeriod;
   @Getter @Setter(AccessLevel.PRIVATE)
   private double buyTradePredictionMinimum;
   @Getter @Setter(AccessLevel.PRIVATE)
@@ -53,7 +55,7 @@ public final class Model {
 
   private Model(
     Log log, UUID id, String stock, String buyModelPath, String sellModelPath,
-    int reviewPeriod, double buyTradePredictionMinimum,
+    int buyReviewPeriod, int sellReviewPeriod, double buyTradePredictionMinimum,
     double sellTradePredictionMinimum
   ) {
     this.log = log;
@@ -61,7 +63,8 @@ public final class Model {
     this.stock = stock;
     this.buyModelPath = buyModelPath;
     this.sellModelPath = sellModelPath;
-    this.reviewPeriod = reviewPeriod;
+    this.buyReviewPeriod = buyReviewPeriod;
+    this.sellReviewPeriod = sellReviewPeriod;
     this.buyTradePredictionMinimum = buyTradePredictionMinimum;
     this.sellTradePredictionMinimum = sellTradePredictionMinimum;
   }
@@ -84,6 +87,7 @@ public final class Model {
   private static final int DAY_LONGEST_REVIEW = 21;
 
   public float[] predict(TradeType tradeType, int timeSpan) {
+    var reviewPeriod = tradeType.isBuy() ? buyReviewPeriod : sellReviewPeriod;
     var dataset = StockDataset.create(symbol, tradeType, ModelState.EVALUATING,
       0, 0, 0, timeSpan + DAY_LONGEST_REVIEW + reviewPeriod, 0, reviewPeriod,
       0, 0, 1, 1, INPUT_SIZE_PER_DAY, DAY_LONGEST_REVIEW);
@@ -104,7 +108,8 @@ public final class Model {
     switch (parameter.toLowerCase()) {
       case "buymodelpath" -> buyModelPath(value);
       case "sellmodelpath" -> sellModelPath(value);
-      case "reviewperiod" -> reviewPeriod(Integer.parseInt(value));
+      case "buyreviewperiod" -> buyReviewPeriod(Integer.parseInt(value));
+      case "sellreviewperiod" -> sellReviewPeriod(Integer.parseInt(value));
       case "buytradepredictionminimum" -> buyTradePredictionMinimum(Double.parseDouble(value));
       case "selltradepredictionminimum" -> sellTradePredictionMinimum(Double.parseDouble(value));
     }
@@ -115,7 +120,8 @@ public final class Model {
     document.append("stock", stock);
     document.append("buyModelPath", buyModelPath);
     document.append("sellModelPath", sellModelPath);
-    document.append("reviewPeriod", reviewPeriod);
+    document.append("buyReviewPeriod", buyReviewPeriod);
+    document.append("sellReviewPeriod", sellReviewPeriod);
     document.append("buyTradePredictionMinimum", buyTradePredictionMinimum);
     document.append("sellTradePredictionMinimum", sellTradePredictionMinimum);
     return document;
