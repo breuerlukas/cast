@@ -25,7 +25,8 @@ public final class ModelController {
   ) {
     modelCollection.addModel(Model.create(log, UUID.randomUUID(),
       (String) input.get("stock"), (String) input.get("buyModelPath"),
-      (String) input.get("sellModelPath"), Integer.parseInt((String) input.get("reviewPeriod")),
+      (String) input.get("sellModelPath"), Integer.parseInt((String) input.get("buyReviewPeriod")),
+      Integer.parseInt((String) input.get("sellReviewPeriod")),
       Double.parseDouble((String) input.get("buyTradePredictionMinimum")),
       Double.parseDouble((String) input.get("sellTradePredictionMinimum"))), success -> {});
   }
@@ -85,7 +86,8 @@ public final class ModelController {
     var response = Maps.<String, Object>newHashMap();
     response.put("buyModelPath", model.buyModelPath());
     response.put("sellModelPath", model.sellModelPath());
-    response.put("reviewPeriod", model.reviewPeriod());
+    response.put("buyReviewPeriod", model.buyReviewPeriod());
+    response.put("sellReviewPeriod", model.sellReviewPeriod());
     response.put("buyTradePredictionMinimum", model.buyTradePredictionMinimum());
     response.put("sellTradePredictionMinimum", model.sellTradePredictionMinimum());
     futureResponse.complete(response);
