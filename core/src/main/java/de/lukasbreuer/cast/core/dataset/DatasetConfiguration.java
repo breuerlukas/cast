@@ -2,7 +2,7 @@ package de.lukasbreuer.cast.core.dataset;
 
 import com.clearspring.analytics.util.Lists;
 import de.lukasbreuer.cast.core.configuration.Configuration;
-import de.lukasbreuer.cast.core.dataset.trade.TradeTime;
+import de.lukasbreuer.cast.core.trade.TradeTime;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import org.json.JSONObject;
