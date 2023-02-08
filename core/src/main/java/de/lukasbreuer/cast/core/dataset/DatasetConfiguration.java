@@ -21,7 +21,9 @@ public final class DatasetConfiguration extends Configuration {
   }
 
   @Getter
-  private List<TradeTime> tradeTimes;
+  private List<TradeTime> buyTradeTimes;
+  @Getter
+  private List<TradeTime> sellTradeTimes;
 
   private DatasetConfiguration(String path) {
     super(path);
@@ -29,12 +31,18 @@ public final class DatasetConfiguration extends Configuration {
 
   @Override
   protected void deserialize(JSONObject json) {
-    tradeTimes = Lists.newArrayList();
-    var jsonTradeTimes = json.getJSONArray("tradeTimes");
+    buyTradeTimes = deserializeTradeTimes(json, "buyTradeTimes");
+    sellTradeTimes = deserializeTradeTimes(json, "sellTradeTimes");
+  }
+
+  private List<TradeTime> deserializeTradeTimes(JSONObject json, String key) {
+    var tradeTimes = Lists.<TradeTime>newArrayList();
+    var jsonTradeTimes = json.getJSONArray(key);
     for (var i = 0; i < json.length(); i++) {
       var tradeTime = jsonTradeTimes.getJSONObject(i);
       tradeTimes.add(TradeTime.create(tradeTime.getInt("year"),
         tradeTime.getInt("month"), tradeTime.getInt("day")));
     }
+    return tradeTimes;
   }
 }

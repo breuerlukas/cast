@@ -1,5 +1,16 @@
 {
-  "tradeTimes": [
-
+  "buyTradeTimes": [
+    {
+      "year": 2023,
+      "month": 1,
+      "day": 1
+    }
+  ],
+  "sellTradeTimes": [
+    {
+      "year": 2023,
+      "month": 1,
+      "day": 1
+    }
   ]
 }
