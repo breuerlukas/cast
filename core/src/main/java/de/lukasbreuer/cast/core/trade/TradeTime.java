@@ -1,4 +1,4 @@
-package de.lukasbreuer.cast.core.dataset.trade;
+package de.lukasbreuer.cast.core.trade;
 
 import de.lukasbreuer.cast.core.symbol.HistoryEntry;
 import lombok.Getter;
