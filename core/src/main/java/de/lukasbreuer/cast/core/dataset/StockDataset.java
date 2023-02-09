@@ -6,6 +6,7 @@ import de.lukasbreuer.cast.core.neuralnetwork.HistoryIterator;
 import de.lukasbreuer.cast.core.neuralnetwork.ModelState;
 import de.lukasbreuer.cast.core.symbol.HistoryEntry;
 import de.lukasbreuer.cast.core.symbol.Symbol;
+import de.lukasbreuer.cast.core.trade.TradeTime;
 import de.lukasbreuer.cast.core.trade.TradeType;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +29,8 @@ public final class StockDataset {
   private final int trainMaximumTrades;
   private final int evaluationPeriod;
   private final int evaluationMaximumTrades;
-  private final int reviewPeriod;
+  private final int buyReviewPeriod;
+  private final int sellReviewPeriod;
   private final int batchSize;
   private final int totalBatches;
   private final int tradeGeneralisationStepSize;
@@ -42,12 +44,16 @@ public final class StockDataset {
   @Getter
   private HistoryIterator historyIterator;
 
-  public void build() throws Exception {
+  public void build() {
     historyData = createHistoryData();
     var indicatorRepository = IndicatorRepository.create(historyData);
     indicatorRepository.fill();
     dayData = createDayData(indicatorRepository);
-    datasetConfiguration = DatasetConfiguration.createAndLoad(symbol.name());
+    try {
+      datasetConfiguration = DatasetConfiguration.createAndLoad(symbol.name());
+    } catch (Exception exception) {
+      exception.printStackTrace();
+    }
     fillDataset();
     dataset = normalizeData(dataset);
     historyIterator = HistoryIterator.create(dataset, new Random(seed), batchSize, totalBatches);
@@ -75,11 +81,9 @@ public final class StockDataset {
   }
 
   private void fillDataset() {
-    var bestTradeDates = tradeType.isBuy() ? datasetConfiguration.buyTradeTimes() :
-      datasetConfiguration.sellTradeTimes();
-    for (var i = dayLongestReview + reviewPeriod; i < historyData.size(); i++) {
+    for (var i = dayLongestReview + reviewPeriod(); i < historyData.size(); i++) {
       var entry = new AbstractMap.SimpleEntry<>(createInputData(i - dayLongestReview),
-        calculateTradeValue(bestTradeDates.stream().map(bestTradeDate ->
+        calculateTradeValue(tradeTimes().stream().map(bestTradeDate ->
           bestTradeDate.findEntryIndex(historyData)).collect(Collectors.toList()), i));
       dataset.add(entry);
     }
@@ -87,7 +91,7 @@ public final class StockDataset {
 
   private List<double[]> createInputData(int index) {
     var inputData = Lists.<double[]>newArrayList();
-    for (var i = 0; i < reviewPeriod; i++) {
+    for (var i = 0; i < reviewPeriod(); i++) {
       inputData.add(dayData.get(index - i).raw());
     }
     return inputData;
@@ -126,6 +130,15 @@ public final class StockDataset {
       dayNormalizedInput[i] = Math.tanh(dayInputData[i]);
     }
     return dayNormalizedInput;
+  }
+
+  private List<TradeTime> tradeTimes() {
+    return tradeType.isBuy() ? datasetConfiguration.buyTradeTimes() :
+      datasetConfiguration.sellTradeTimes();
+  }
+
+  private int reviewPeriod() {
+    return tradeType.isBuy() ? buyReviewPeriod : sellReviewPeriod;
   }
 
   public List<HistoryEntry> historyData() {

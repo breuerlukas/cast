@@ -90,8 +90,8 @@ public final class ModelCommand extends Command {
     log().info("Model (" + stock + "): ");
     log().info(" - Buy model: " + model.buyModelPath());
     log().info(" - Sell model: " + model.sellModelPath());
-    log().info(" - Buy Review period: " + model.buyReviewPeriod());
-    log().info(" - Sell Review period: " + model.sellReviewPeriod());
+    log().info(" - Buy review period: " + model.buyReviewPeriod());
+    log().info(" - Sell review period: " + model.sellReviewPeriod());
     log().info(" - Buy trade prediction minimum: " + model.buyTradePredictionMinimum());
     log().info(" - Sell trade prediction minimum: " + model.sellTradePredictionMinimum());
   }

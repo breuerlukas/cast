@@ -5,6 +5,7 @@ import com.google.inject.Singleton;
 import com.google.inject.name.Named;
 import de.lukasbreuer.cast.core.neuralnetwork.HistoryIterator;
 import de.lukasbreuer.cast.core.neuralnetwork.NeuralNetwork;
+import de.lukasbreuer.cast.core.trade.TradeType;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.deeplearning4j.nn.weights.WeightInit;
@@ -26,16 +27,20 @@ public final class NeuralNetworkFactory {
   private final float learningRate;
   @Inject @Named("networkDropoutRate")
   private final float dropoutRate;
-  @Inject @Named("networkInputNeurons")
-  private final int inputNeurons;
+  @Inject @Named("modelInputSizePerDay")
+  private final int inputSizePerDay;
+  @Inject @Named("modelBuyReviewPeriod")
+  private final int buyReviewPeriod;
+  @Inject @Named("modelSellReviewPeriod")
+  private final int sellReviewPeriod;
   @Inject @Named("networkHiddenNeurons")
   private final int[] hiddenNeurons;
-  @Inject @Named("networkOutputNeurons")
-  private final int outputNeurons;
 
-  public NeuralNetwork create(HistoryIterator historyIterator, int seed) {
+  public NeuralNetwork create(
+    TradeType tradeType, HistoryIterator historyIterator, int seed
+  ) {
     return NeuralNetwork.create(seed, epochs, weightInit, activation, updater,
-      learningRate, dropoutRate, inputNeurons, hiddenNeurons, outputNeurons,
-      historyIterator);
+      learningRate, dropoutRate, inputSizePerDay * (tradeType.isBuy() ?
+        buyReviewPeriod : sellReviewPeriod), hiddenNeurons, 2, historyIterator);
   }
 }

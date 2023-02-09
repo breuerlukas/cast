@@ -44,14 +44,22 @@ public final class DatasetModule extends AbstractModule {
     return MODEL_EVALUATION_MAXIMUM_TRADES;
   }
 
-  //BUY: 7 * 8; SELL: 7 * 6 !!!
-  private static final int MODEL_REVIEW_PERIOD = 7 * 8;
+  private static final int MODEL_BUY_REVIEW_PERIOD = 7 * 4;
 
   @Provides
   @Singleton
-  @Named("modelReviewPeriod")
-  int provideModelReviewPeriod() {
-    return MODEL_REVIEW_PERIOD;
+  @Named("modelBuyReviewPeriod")
+  int provideBuyModelReviewPeriod() {
+    return MODEL_BUY_REVIEW_PERIOD;
+  }
+
+  private static final int MODEL_SELL_REVIEW_PERIOD = 7 * 4;
+
+  @Provides
+  @Singleton
+  @Named("modelSellReviewPeriod")
+  int provideSellModelReviewPeriod() {
+    return MODEL_SELL_REVIEW_PERIOD;
   }
 
   private static final int MODEL_BATCH_SIZE = 10;

@@ -9,7 +9,6 @@ import org.deeplearning4j.nn.weights.WeightInit;
 import org.nd4j.linalg.activations.Activation;
 import org.nd4j.linalg.learning.config.IUpdater;
 import org.nd4j.linalg.learning.config.Sgd;
-import org.nd4j.linalg.learning.config.Nesterovs;
 
 @RequiredArgsConstructor(staticName = "create")
 public final class NeuralNetworkModule extends AbstractModule {
@@ -64,15 +63,6 @@ public final class NeuralNetworkModule extends AbstractModule {
     return NETWORK_DROPOUT_RATE;
   }
 
-  @Provides
-  @Singleton
-  @Named("networkInputNeurons")
-  int provideNetworkInputNeurons(
-    @Named("modelReviewPeriod") int reviewPeriod,
-    @Named("modelInputSizePerDay") int inputSizePerDay) {
-    return reviewPeriod * inputSizePerDay;
-  }
-
   private static final int[] NETWORK_HIDDEN_NEURONS = new int[] {16, 16};
 
   @Provides
@@ -80,14 +70,5 @@ public final class NeuralNetworkModule extends AbstractModule {
   @Named("networkHiddenNeurons")
   int[] provideNetworkHiddenNeurons() {
     return NETWORK_HIDDEN_NEURONS;
-  }
-
-  private static final int NETWORK_OUTPUT_NEURONS = 2;
-
-  @Provides
-  @Singleton
-  @Named("networkOutputNeurons")
-  int provideNetworkOutputNeurons() {
-    return NETWORK_OUTPUT_NEURONS;
   }
 }

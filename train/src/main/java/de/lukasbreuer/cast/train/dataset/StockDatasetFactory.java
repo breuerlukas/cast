@@ -21,8 +21,10 @@ public final class StockDatasetFactory {
   private final int evaluationPeriod;
   @Inject @Named("modelEvaluationMaximumTrades")
   private final int evaluationMaximumTrades;
-  @Inject @Named("modelReviewPeriod")
-  private final int reviewPeriod;
+  @Inject @Named("modelBuyReviewPeriod")
+  private final int buyReviewPeriod;
+  @Inject @Named("modelSellReviewPeriod")
+  private final int sellReviewPeriod;
   @Inject @Named("modelBatchSize")
   private final int batchSize;
   @Inject @Named("modelTotalBatches")
@@ -48,8 +50,8 @@ public final class StockDatasetFactory {
     Symbol symbol, TradeType tradeType, ModelState modelState, int seed
   ) {
     return StockDataset.create(symbol, tradeType, modelState, seed, trainPeriod,
-      trainMaximumTrades, evaluationPeriod, evaluationMaximumTrades, reviewPeriod,
-      batchSize, totalBatches, tradeGeneralisationStepSize, tradeNoiseRemovalStepSize,
-      inputSizePerDay, dayLongestReview);
+      trainMaximumTrades, evaluationPeriod, evaluationMaximumTrades, buyReviewPeriod,
+      sellReviewPeriod, batchSize, totalBatches, tradeGeneralisationStepSize,
+      tradeNoiseRemovalStepSize, inputSizePerDay, dayLongestReview);
   }
 }

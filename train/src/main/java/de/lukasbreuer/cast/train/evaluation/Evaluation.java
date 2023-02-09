@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import de.lukasbreuer.cast.core.dataset.StockDataset;
 import de.lukasbreuer.cast.core.neuralnetwork.NeuralNetwork;
+import de.lukasbreuer.cast.core.trade.TradeType;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
@@ -12,9 +13,11 @@ import java.util.stream.Collectors;
 
 @RequiredArgsConstructor(staticName = "create")
 public final class Evaluation {
+  private final TradeType tradeType;
   private final NeuralNetwork neuralNetwork;
   private final StockDataset evaluationDataset;
-  private final int reviewPeriod;
+  private final int buyReviewPeriod;
+  private final int sellReviewPeriod;
   private final int dayLongestReview;
   private final int evaluationMaximumTrades;
   private Map<Integer, Float> timePredictionAllocation;
@@ -41,7 +44,8 @@ public final class Evaluation {
     var result = Lists.<Integer>newArrayList();
     var rawDataset = evaluationDataset.raw();
     for (var i = 1; i < evaluationDataset.size() - 1; i++) {
-      var entryTime = i + dayLongestReview + reviewPeriod;
+      var entryTime = i + dayLongestReview + (tradeType.isBuy() ?
+        buyReviewPeriod : sellReviewPeriod);
       if (rawDataset.get(i).getValue() == 1) {
         result.add(entryTime);
       }
@@ -53,7 +57,8 @@ public final class Evaluation {
     var allocation = Maps.<Integer, Float>newHashMap();
     var rawDataset = evaluationDataset.raw();
     for (var i = 1; i < evaluationDataset.size(); i++) {
-      var entryTime = i + dayLongestReview + reviewPeriod;
+      var entryTime = i + dayLongestReview + (tradeType.isBuy() ?
+        buyReviewPeriod : sellReviewPeriod);
       allocation.put(entryTime, neuralNetwork.evaluate(entryTime, rawDataset.get(i), true));
     }
     return allocation;
