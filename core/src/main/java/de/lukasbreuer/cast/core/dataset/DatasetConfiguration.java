@@ -15,7 +15,7 @@ public final class DatasetConfiguration extends Configuration {
 
   public static DatasetConfiguration createAndLoad(String stock) throws Exception {
     var configuration = new DatasetConfiguration(String.format(
-      CONFIGURATION_PATH_FORMAT, stock));
+      CONFIGURATION_PATH_FORMAT, stock.toLowerCase()));
     configuration.load();
     return configuration;
   }
@@ -38,7 +38,7 @@ public final class DatasetConfiguration extends Configuration {
   private List<TradeTime> deserializeTradeTimes(JSONObject json, String key) {
     var tradeTimes = Lists.<TradeTime>newArrayList();
     var jsonTradeTimes = json.getJSONArray(key);
-    for (var i = 0; i < json.length(); i++) {
+    for (var i = 0; i < jsonTradeTimes.length(); i++) {
       var tradeTime = jsonTradeTimes.getJSONObject(i);
       tradeTimes.add(TradeTime.create(tradeTime.getInt("year"),
         tradeTime.getInt("month"), tradeTime.getInt("day")));
