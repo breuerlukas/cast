@@ -42,7 +42,8 @@ public final class ModelController {
   private void updateModel(Map<String, Object> input, Model model) {
     updateParameter(input, model, "buyModelPath");
     updateParameter(input, model, "sellModelPath");
-    updateParameter(input, model, "reviewPeriod");
+    updateParameter(input, model, "buyReviewPeriod");
+    updateParameter(input, model, "sellReviewPeriod");
     updateParameter(input, model, "buyTradePredictionMinimum");
     updateParameter(input, model, "sellTradePredictionMinimum");
     modelCollection.updateModel(model, success -> {});
