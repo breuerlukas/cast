@@ -30,6 +30,7 @@ public final class DeployApplication {
   private static void registerCommands(
     Injector injector, Log log, CommandRegistry commandRegistry
   ) {
+    commandRegistry.register(HelpCommand.create(log));
     commandRegistry.register(PortfolioCommand.create(log,
       injector.getInstance(StockCollection.class)));
     commandRegistry.register(ModelCommand.create(log,
