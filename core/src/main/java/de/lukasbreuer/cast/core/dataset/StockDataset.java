@@ -49,10 +49,12 @@ public final class StockDataset {
     var indicatorRepository = IndicatorRepository.create(historyData);
     indicatorRepository.fill();
     dayData = createDayData(indicatorRepository);
-    try {
-      datasetConfiguration = DatasetConfiguration.createAndLoad(symbol.name());
-    } catch (Exception exception) {
-      exception.printStackTrace();
+    if (modelState == ModelState.TRAINING) {
+      try {
+        datasetConfiguration = DatasetConfiguration.createAndLoad(symbol.name());
+      } catch (Exception exception) {
+        exception.printStackTrace();
+      }
     }
     fillDataset();
     dataset = normalizeData(dataset);
@@ -133,6 +135,9 @@ public final class StockDataset {
   }
 
   private List<TradeTime> tradeTimes() {
+    if (datasetConfiguration == null) {
+      return Lists.newArrayList();
+    }
     return tradeType.isBuy() ? datasetConfiguration.buyTradeTimes() :
       datasetConfiguration.sellTradeTimes();
   }
