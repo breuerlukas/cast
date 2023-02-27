@@ -34,9 +34,9 @@ dependencies {
   implementation "com.google.guava:guava:31.1-jre"
 
   implementation "org.projectlombok:lombok:1.18.26"
-  annotationProcessor "org.projectlombok:lombok:1.18.24"
-  testImplementation "org.projectlombok:lombok:1.18.24"
-  testAnnotationProcessor "org.projectlombok:lombok:1.18.24"
+  annotationProcessor "org.projectlombok:lombok:1.18.26"
+  testImplementation "org.projectlombok:lombok:1.18.26"
+  testAnnotationProcessor "org.projectlombok:lombok:1.18.26"
 
   implementation "org.mongodb:mongodb-driver-reactivestreams:4.9.0"
 
@@ -62,7 +62,7 @@ jar {
       "Class-Path":
         "libraries/com.google.inject.guice-5.1.0.jar " +
           "libraries/com.google.guava-31.1-jre.jar " +
-          "libraries/org.projectlombok.lombok-1.18.24.jar " +
+          "libraries/org.projectlombok.lombok-1.18.26.jar " +
           "libraries/org.mongodbmongodb.driver.reactivestreams-4.8.1.jar " +
           "libraries/org.deeplearning4j-1.0.0-M2.1.jar " +
           "libraries/org.json.json-20211205.jar " +
