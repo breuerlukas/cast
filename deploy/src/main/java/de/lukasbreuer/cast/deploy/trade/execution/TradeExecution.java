@@ -9,6 +9,10 @@ import de.lukasbreuer.cast.deploy.investopedia.LoginPage;
 import de.lukasbreuer.cast.deploy.investopedia.TradePage;
 import de.lukasbreuer.cast.deploy.model.Model;
 import de.lukasbreuer.cast.deploy.model.ModelCollection;
+import de.lukasbreuer.cast.deploy.notification.Device;
+import de.lukasbreuer.cast.deploy.notification.DeviceCollection;
+import de.lukasbreuer.cast.deploy.notification.Notification;
+import de.lukasbreuer.cast.deploy.notification.NotificationFactory;
 import de.lukasbreuer.cast.deploy.portfolio.Stock;
 import de.lukasbreuer.cast.deploy.trade.Trade;
 import de.lukasbreuer.cast.deploy.trade.TradeCollection;
@@ -25,12 +29,14 @@ import java.util.function.Consumer;
 public final class TradeExecution {
   public static void createAndInitialize(
     Log log, ModelCollection modelCollection, TradeCollection tradeCollection,
-    BankAccountCollection bankAccountCollection, String investopediaUsername,
+    BankAccountCollection bankAccountCollection, DeviceCollection deviceCollection,
+    NotificationFactory notificationFactory, String investopediaUsername,
     String investopediaPassword, String investopediaGame, Stock stock,
     Consumer<TradeExecution> futureExecution
   ) {
     var execution = create(log, modelCollection, tradeCollection, bankAccountCollection,
-      investopediaUsername, investopediaPassword, investopediaGame, stock);
+      deviceCollection, notificationFactory, investopediaUsername,
+      investopediaPassword, investopediaGame, stock);
     execution.initialize(() -> futureExecution.accept(execution));
   }
 
@@ -43,6 +49,8 @@ public final class TradeExecution {
   private final ModelCollection modelCollection;
   private final TradeCollection tradeCollection;
   private final BankAccountCollection bankAccountCollection;
+  private final DeviceCollection deviceCollection;
+  private final NotificationFactory notificationFactory;
   private final String investopediaUsername;
   private final String investopediaPassword;
   private final String investopediaGame;
@@ -102,6 +110,7 @@ public final class TradeExecution {
       LoginPage.create(browser, investopediaUsername, investopediaPassword).open();
       TradePage.create(browser, investopediaGame, stock.formattedStockName(),
         tradeType, amount).open();
+      sendNotification(tradeType);
       log.fine("Successfully performed " + stock.formattedStockName() + " trade");
       success.run();
     } catch (Exception exception) {
@@ -122,6 +131,29 @@ public final class TradeExecution {
     options.addArguments("--headless");
     options.addArguments("--user-agent=" + BROWSER_USER_AGENT);
     driver.capabilities(options);
+  }
+
+  private void sendNotification(TradeType tradeType) {
+    var title = "Trade stock " + stock.formattedStockName();
+    var body = "Stock is about to be " + (tradeType.isBuy() ? "bought" : "sold");
+    var icon = "/img/logo.png";
+    deviceCollection.allDevices(devices -> devices.forEach(device ->
+      sendNotification(device, title, body, icon)));
+  }
+
+  private void sendNotification(
+    Device device, String title, String body, String icon
+  ) {
+    var notification = notificationFactory.create(device, title, body, icon);
+    try {
+      var response = notification.send();
+      if (response == Notification.Status.SUCCESSFUL) {
+        return;
+      }
+      deviceCollection.removeDevice(device, success -> {});
+    } catch (Exception exception) {
+      exception.printStackTrace();
+    }
   }
 
   private void storeTrade(
