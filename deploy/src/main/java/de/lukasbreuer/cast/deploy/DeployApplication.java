@@ -8,6 +8,8 @@ import de.lukasbreuer.cast.core.log.Log;
 import de.lukasbreuer.cast.deploy.command.*;
 import de.lukasbreuer.cast.deploy.finance.BankAccountCollection;
 import de.lukasbreuer.cast.deploy.model.ModelCollection;
+import de.lukasbreuer.cast.deploy.notification.DeviceCollection;
+import de.lukasbreuer.cast.deploy.notification.NotificationFactory;
 import de.lukasbreuer.cast.deploy.portfolio.StockCollection;
 import de.lukasbreuer.cast.deploy.trade.TradeCollection;
 import de.lukasbreuer.cast.deploy.trade.TradeSchedule;
@@ -39,6 +41,9 @@ public final class DeployApplication {
       injector.getInstance(TradeCollection.class)));
     commandRegistry.register(BankAccountCommand.create(log,
       injector.getInstance(BankAccountCollection.class)));
+    commandRegistry.register(NotificationCommand.create(log,
+      injector.getInstance(DeviceCollection.class),
+      injector.getInstance(NotificationFactory.class)));
     commandRegistry.register(ShutdownCommand.create(log));
   }
 }
