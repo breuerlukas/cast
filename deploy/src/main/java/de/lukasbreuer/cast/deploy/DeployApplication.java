@@ -44,6 +44,7 @@ public final class DeployApplication {
     commandRegistry.register(NotificationCommand.create(log,
       injector.getInstance(DeviceCollection.class),
       injector.getInstance(NotificationFactory.class)));
+    commandRegistry.register(ScheduleCommand.create(log));
     commandRegistry.register(ShutdownCommand.create(log));
   }
 }

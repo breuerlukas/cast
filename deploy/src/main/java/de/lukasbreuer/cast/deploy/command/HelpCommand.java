@@ -19,6 +19,8 @@ public final class HelpCommand extends Command {
     log().info("- model <stock>");
     log().info("- trades <stock>");
     log().info("- bankAccounts");
+    log().info("- notification <title> <body> <icon>");
+    log().info("- schedule");
     log().info("- shutdown");
     return true;
   }
