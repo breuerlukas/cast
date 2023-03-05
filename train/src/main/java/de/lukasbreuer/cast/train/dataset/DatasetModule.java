@@ -26,7 +26,7 @@ public final class DatasetModule extends AbstractModule {
     return MODEL_TRAIN_MAXIMUM_TRADES;
   }
 
-  private static final int MODEL_EVALUATION_PERIOD = 420;
+  private static final int MODEL_EVALUATION_PERIOD = 365;
 
   @Provides
   @Singleton
@@ -98,7 +98,7 @@ public final class DatasetModule extends AbstractModule {
     return MODEL_NOISE_REMOVAL_STEP_SIZE;
   }
 
-  private static final int MODEL_INPUT_SIZE_PER_DAY = 42;
+  private static final int MODEL_INPUT_SIZE_PER_DAY = 34;
 
   @Provides
   @Singleton
@@ -107,7 +107,7 @@ public final class DatasetModule extends AbstractModule {
     return MODEL_INPUT_SIZE_PER_DAY;
   }
 
-  private static final int MODEL_DAY_LONGEST_REVIEW = 21;
+  private static final int MODEL_DAY_LONGEST_REVIEW = 16;
 
   @Provides
   @Singleton

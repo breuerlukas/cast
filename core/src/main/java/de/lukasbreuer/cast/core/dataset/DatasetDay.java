@@ -19,11 +19,11 @@ public final class DatasetDay {
     calculations.addAll(createRegularReviewIndicatorBundle(ExponentialMovingAverageIndicator.class));
     calculations.addAll(createRegularReviewIndicatorBundle(ChangeRateIndicator.class));
     calculations.addAll(createRegularReviewIndicatorBundle(RelativeStrengthIndicator.class));
-    calculations.addAll(createRegularReviewIndicatorBundle(CommodityChannelIndicator.class));
+    //calculations.addAll(createRegularReviewIndicatorBundle(CommodityChannelIndicator.class));
     calculations.addAll(createRegularReviewIndicatorBundle(StochasticOscillatorIndicator.class));
     calculations.addAll(createRegularReviewIndicatorBundle(AverageRangeIndicator.class));
     calculations.addAll(createRegularReviewIndicatorBundle(BalanceVolumeIndicator.class));
-    calculations.addAll(createReviewIndicatorBundle(DirectionalMovementIndicator.class, new int[] {4, 8, 12, 16}));
+    //calculations.addAll(createReviewIndicatorBundle(DirectionalMovementIndicator.class, new int[] {4, 8, 12, 16}));
     calculations.add(indicatorRepository.find(BullishPatternIndicator.class).calculate(index));
     calculations.add(indicatorRepository.find(BearishPatternIndicator.class).calculate(index));
     data = calculations.stream().mapToDouble(value -> value).toArray();
@@ -32,7 +32,7 @@ public final class DatasetDay {
   private <T extends ReviewIndicator> List<Double> createRegularReviewIndicatorBundle(
     Class<T> indicatorType
   ) {
-    return createReviewIndicatorBundle(indicatorType, new int[] {6, 9, 14, 21});
+    return createReviewIndicatorBundle(indicatorType, new int[] {4, 8, 12, 16});
   }
 
   private <T extends ReviewIndicator> List<Double> createReviewIndicatorBundle(

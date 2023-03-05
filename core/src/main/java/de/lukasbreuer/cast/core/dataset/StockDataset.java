@@ -99,7 +99,7 @@ public final class StockDataset {
     return inputData;
   }
 
-  private static final int TRADE_VALUE_DISTRIBUTION = 3;
+  private static final int TRADE_VALUE_DISTRIBUTION = 1;
 
   private double calculateTradeValue(
     List<Integer> optimalTradeDates, int currentDate
