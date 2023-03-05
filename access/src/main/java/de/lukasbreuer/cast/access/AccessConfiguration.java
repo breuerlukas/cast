@@ -5,6 +5,8 @@ import com.google.inject.Inject;
 import de.lukasbreuer.cast.access.account.verification.VerificationFactory;
 import de.lukasbreuer.cast.core.log.Log;
 import de.lukasbreuer.cast.deploy.model.ModelCollection;
+import de.lukasbreuer.cast.deploy.notification.DeviceCollection;
+import de.lukasbreuer.cast.deploy.notification.NotificationConfiguration;
 import de.lukasbreuer.cast.deploy.portfolio.StockCollection;
 import de.lukasbreuer.cast.deploy.trade.TradeCollection;
 import jakarta.annotation.PostConstruct;
@@ -23,6 +25,10 @@ public class AccessConfiguration {
   private ModelCollection modelCollection;
   @Inject
   private TradeCollection tradeCollection;
+  @Inject
+  private DeviceCollection deviceCollection;
+  @Inject
+  private NotificationConfiguration notificationConfiguration;
   @Inject
   private Key secretKey;
   @Inject
@@ -46,6 +52,16 @@ public class AccessConfiguration {
   @Bean
   TradeCollection provideTradeCollection() {
     return tradeCollection;
+  }
+
+  @Bean
+  DeviceCollection provideDeviceCollection() {
+    return deviceCollection;
+  }
+
+  @Bean
+  NotificationConfiguration provideNotificationConfiguration() {
+    return notificationConfiguration;
   }
 
   @Bean

@@ -5,6 +5,7 @@ import de.lukasbreuer.cast.core.log.Log;
 import de.lukasbreuer.cast.deploy.finance.FinanceModule;
 import de.lukasbreuer.cast.deploy.investopedia.InvestopediaModule;
 import de.lukasbreuer.cast.deploy.model.ModelModule;
+import de.lukasbreuer.cast.deploy.notification.NotificationModule;
 import de.lukasbreuer.cast.deploy.portfolio.PortfolioModule;
 import de.lukasbreuer.cast.deploy.trade.TradeModule;
 import lombok.AccessLevel;
@@ -24,6 +25,7 @@ public class DeployModule extends CoreModule {
     install(TradeModule.create());
     install(InvestopediaModule.create());
     install(FinanceModule.create());
+    install(NotificationModule.create());
   }
 
   @Override
