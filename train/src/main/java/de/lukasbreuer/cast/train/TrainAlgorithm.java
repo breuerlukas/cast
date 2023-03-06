@@ -7,7 +7,7 @@ import de.lukasbreuer.cast.core.symbol.Symbol;
 import de.lukasbreuer.cast.core.trade.TradeType;
 import de.lukasbreuer.cast.train.dataset.StockDatasetFactory;
 import de.lukasbreuer.cast.train.evaluation.EvaluationFactory;
-import de.lukasbreuer.cast.train.evaluation.IllustrationFactory;
+import de.lukasbreuer.cast.train.evaluation.Illustration;
 import de.lukasbreuer.cast.train.neuralnetwork.NeuralNetworkFactory;
 import lombok.RequiredArgsConstructor;
 import org.nd4j.linalg.factory.Nd4j;
@@ -21,7 +21,6 @@ public final class TrainAlgorithm {
   private final StockDatasetFactory datasetFactory;
   private final NeuralNetworkFactory neuralNetworkFactory;
   private final EvaluationFactory evaluationFactory;
-  private final IllustrationFactory illustrationFactory;
   private Symbol symbol;
   private NeuralNetwork buyNeuralNetwork;
   private NeuralNetwork sellNeuralNetwork;
@@ -47,23 +46,23 @@ public final class TrainAlgorithm {
     saveSellNetwork();
   }
 
-  private void initializeBuyNetwork() throws Exception {
+  private void initializeBuyNetwork() {
     buyNeuralNetwork = buildNeuralNetwork(TradeType.BUY);
     buyEvaluationDataset = datasetFactory.createAndBuild(symbol, TradeType.BUY, ModelState.EVALUATING, seed);
   }
 
-  private void initializeSellNetwork() throws Exception {
+  private void initializeSellNetwork() {
     sellNeuralNetwork = buildNeuralNetwork(TradeType.SELL);
     sellEvaluationDataset = datasetFactory.createAndBuild(symbol, TradeType.SELL, ModelState.EVALUATING, seed);
   }
 
-  private NeuralNetwork buildNeuralNetwork(TradeType tradeType) throws Exception {
+  private NeuralNetwork buildNeuralNetwork(TradeType tradeType) {
     var dataset = datasetFactory.createAndBuild(symbol, tradeType, ModelState.TRAINING, seed);
     var network = neuralNetworkFactory.create(tradeType, dataset.historyIterator(), seed);
     network.build();
     var evaluation = evaluationFactory.create(tradeType, network, dataset);
     evaluation.analyse();
-    var illustration = illustrationFactory.create(tradeType, evaluation, dataset, seed);
+    var illustration = Illustration.create(tradeType, evaluation, dataset, seed);
     illustration.plot();
     System.out.println(Arrays.toString(dataset.raw().get(0).getKey().get(0)));
     return network;
@@ -84,7 +83,7 @@ public final class TrainAlgorithm {
     var buyEvaluation = evaluationFactory.create(TradeType.BUY,
       buyNeuralNetwork, buyEvaluationDataset);
     buyEvaluation.analyse();
-    var buyIllustration = illustrationFactory.create(TradeType.BUY,
+    var buyIllustration = Illustration.create(TradeType.BUY,
       buyEvaluation, buyEvaluationDataset, seed);
     buyIllustration.plot();
   }
@@ -94,7 +93,7 @@ public final class TrainAlgorithm {
     var sellEvaluation = evaluationFactory.create(TradeType.SELL,
       sellNeuralNetwork, sellEvaluationDataset);
     sellEvaluation.analyse();
-    var sellIllustration = illustrationFactory.create(TradeType.SELL,
+    var sellIllustration = Illustration.create(TradeType.SELL,
       sellEvaluation, sellEvaluationDataset, seed);
     sellIllustration.plot();
   }

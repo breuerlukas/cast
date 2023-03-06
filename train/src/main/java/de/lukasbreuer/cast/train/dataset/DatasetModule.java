@@ -80,24 +80,6 @@ public final class DatasetModule extends AbstractModule {
     return MODEL_TOTAL_BATCHES;
   }
 
-  private static final int MODEL_TRADE_GENERALISATION_STEP_SIZE = 9;
-
-  @Provides
-  @Singleton
-  @Named("modelTradeGeneralisationStepSize")
-  int provideModelTradeGeneralisationStepSize() {
-    return MODEL_TRADE_GENERALISATION_STEP_SIZE;
-  }
-
-  private static final int MODEL_NOISE_REMOVAL_STEP_SIZE = 9;
-
-  @Provides
-  @Singleton
-  @Named("modelNoiseRemovalStepSize")
-  int provideModelNoiseRemovalStepSize() {
-    return MODEL_NOISE_REMOVAL_STEP_SIZE;
-  }
-
   private static final int MODEL_INPUT_SIZE_PER_DAY = 34;
 
   @Provides

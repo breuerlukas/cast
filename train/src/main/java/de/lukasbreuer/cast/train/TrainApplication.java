@@ -3,7 +3,6 @@ package de.lukasbreuer.cast.train;
 import com.google.inject.Guice;
 import de.lukasbreuer.cast.train.dataset.StockDatasetFactory;
 import de.lukasbreuer.cast.train.evaluation.EvaluationFactory;
-import de.lukasbreuer.cast.train.evaluation.IllustrationFactory;
 import de.lukasbreuer.cast.train.neuralnetwork.NeuralNetworkFactory;
 
 public final class TrainApplication {
@@ -12,8 +11,7 @@ public final class TrainApplication {
     var stockAlgorithm = TrainAlgorithm.create("ON", 1,
       injector.getInstance(StockDatasetFactory.class),
       injector.getInstance(NeuralNetworkFactory.class),
-      injector.getInstance(EvaluationFactory.class),
-      injector.getInstance(IllustrationFactory.class));
+      injector.getInstance(EvaluationFactory.class));
     stockAlgorithm.initialize();
     stockAlgorithm.processBuyNetwork();
     //stockAlgorithm.processSellNetwork();

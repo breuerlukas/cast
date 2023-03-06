@@ -7,7 +7,6 @@ import de.lukasbreuer.cast.core.symbol.HistoryEntry;
 import de.lukasbreuer.cast.core.trade.TradeType;
 import lombok.RequiredArgsConstructor;
 
-import java.util.AbstractMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -18,8 +17,6 @@ public final class Illustration {
   private final Evaluation evaluation;
   private final StockDataset dataset;
   private final int seed;
-  private final int evaluationPeriod;
-  private final int generalisationStepSize;
 
   public void plot() {
     Plot plot = Plot.create();
@@ -32,16 +29,6 @@ public final class Illustration {
 
   private void addStockEvolution(Plot plot) {
     var prices = dataset.historyData().stream().map(HistoryEntry::close).collect(Collectors.toList());
-    var averageData = Lists.<Map.Entry<Integer, Double>>newArrayList();
-    for (var i = 1; i < evaluationPeriod / generalisationStepSize; i++) {
-      var entryIndex = i * generalisationStepSize;
-      averageData.add(new AbstractMap.SimpleEntry<>(calculateDayFromStep(i, generalisationStepSize),
-        calculateMovingAverage(prices, entryIndex, generalisationStepSize)));
-    }
-    plot.plot()
-      .add(averageData.stream().map(Map.Entry::getKey).collect(Collectors.toList()),
-        averageData.stream().map(Map.Entry::getValue).collect(Collectors.toList()))
-      .color("black");
     plot.plot().add(prices).label("Prices").color("blue");
   }
 
@@ -96,20 +83,5 @@ public final class Illustration {
     } catch (Exception exception) {
       exception.printStackTrace();
     }
-  }
-
-  private int calculateDayFromStep(int step, int stepSize) {
-    return step * stepSize - (stepSize > 1 ? ((stepSize - 1) / 2) : 0);
-  }
-
-  private double calculateMovingAverage(
-    List<Double> prices, int index, int review
-  ) {
-    var value = 0.0D;
-    for (var i = 0; i < review; i++) {
-      value += prices.get(index - i);
-    }
-    value /= review;
-    return value;
   }
 }

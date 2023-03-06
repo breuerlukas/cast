@@ -33,8 +33,6 @@ public final class StockDataset {
   private final int sellReviewPeriod;
   private final int batchSize;
   private final int totalBatches;
-  private final int tradeGeneralisationStepSize;
-  private final int tradeNoiseRemovalStepSize;
   private final int inputSizePerDay;
   private final int dayLongestReview;
   private List<Map.Entry<List<double[]>, Double>> dataset = Lists.newArrayList();
