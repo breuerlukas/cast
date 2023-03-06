@@ -1,9 +1,14 @@
 package de.lukasbreuer.cast.train.dataset;
 
+import com.clearspring.analytics.util.Lists;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import com.google.inject.name.Named;
+import de.lukasbreuer.cast.core.dataset.DatasetDay;
+import de.lukasbreuer.cast.core.dataset.indicator.IndicatorRepository;
+import de.lukasbreuer.cast.core.symbol.HistoryEntry;
+import de.lukasbreuer.cast.core.symbol.Symbol;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor(staticName = "create")
@@ -62,15 +67,6 @@ public final class DatasetModule extends AbstractModule {
     return MODEL_TOTAL_BATCHES;
   }
 
-  private static final int MODEL_INPUT_SIZE_PER_DAY = 34;
-
-  @Provides
-  @Singleton
-  @Named("modelInputSizePerDay")
-  int provideInputSizePerDay() {
-    return MODEL_INPUT_SIZE_PER_DAY;
-  }
-
   private static final int MODEL_DAY_LONGEST_REVIEW = 16;
 
   @Provides
@@ -78,5 +74,21 @@ public final class DatasetModule extends AbstractModule {
   @Named("modelDayLongestReview")
   int provideDayLongestReview() {
     return MODEL_DAY_LONGEST_REVIEW;
+  }
+
+  @Provides
+  @Singleton
+  @Named("modelInputSizePerDay")
+  int provideInputSizePerDay(@Named("modelDayLongestReview") int dayLongestReview) {
+    var data = Lists.<HistoryEntry>newArrayList();
+    var emptyEntry = HistoryEntry.create(Symbol.create("", 0), 0, 0, 0, 0, 0, 0);
+    for (var i = 0; i < dayLongestReview + 1; i++) {
+      data.add(emptyEntry);
+    }
+    var indicatorRepository = IndicatorRepository.create(data);
+    indicatorRepository.fill();
+    var datasetDay = DatasetDay.create(dayLongestReview, indicatorRepository);
+    datasetDay.build();
+    return datasetDay.raw().length;
   }
 }
