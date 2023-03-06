@@ -19,25 +19,12 @@ public final class Evaluation {
   private final int buyReviewPeriod;
   private final int sellReviewPeriod;
   private final int dayLongestReview;
-  private final int evaluationMaximumTrades;
   private Map<Integer, Float> timePredictionAllocation;
   private List<Integer> optimalSignals;
-  private List<Integer> determinedSignals;
 
   public void analyse() {
     timePredictionAllocation = createTimePredictionAllocation();
     optimalSignals = findOptimalSignals();
-    determinedSignals = selectPromisingSignals(timePredictionAllocation);
-  }
-
-  private List<Integer> selectPromisingSignals(
-    Map<Integer, Float> timePredictionAllocation
-  ) {
-    return timePredictionAllocation.entrySet().stream()
-      .sorted(Map.Entry.<Integer, Float>comparingByValue().reversed())
-      .map(Map.Entry::getKey)
-      .limit(evaluationMaximumTrades)
-      .collect(Collectors.toList());
   }
 
   private List<Integer> findOptimalSignals() {
@@ -70,9 +57,5 @@ public final class Evaluation {
 
   public List<Integer> optimalSignals() {
     return List.copyOf(optimalSignals);
-  }
-
-  public List<Integer> determinedSignals() {
-    return List.copyOf(determinedSignals);
   }
 }

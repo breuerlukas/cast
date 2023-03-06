@@ -44,10 +44,6 @@ public final class Illustration {
         line.label("Optimal");
       }
     }
-    for (var determinedSignal : evaluation.determinedSignals()) {
-      plot.plot().add(List.of(determinedSignal, determinedSignal),
-        List.of(0, ILLUSTRATION_SCALE)).color("red");
-    }
   }
 
   private void addTimePredictionGraph(Plot plot) {

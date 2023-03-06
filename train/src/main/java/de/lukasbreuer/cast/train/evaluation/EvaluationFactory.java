@@ -18,13 +18,11 @@ public final class EvaluationFactory {
   private final int sellReviewPeriod;
   @Inject @Named("modelDayLongestReview")
   private final int dayLongestReview;
-  @Inject @Named("modelEvaluationMaximumTrades")
-  private final int evaluationMaximumTrades;
 
   public Evaluation create(
     TradeType tradeType, NeuralNetwork neuralNetwork, StockDataset evaluationDataset
   ) {
     return Evaluation.create(tradeType, neuralNetwork, evaluationDataset,
-      buyReviewPeriod, sellReviewPeriod, dayLongestReview, evaluationMaximumTrades);
+      buyReviewPeriod, sellReviewPeriod, dayLongestReview);
   }
 }

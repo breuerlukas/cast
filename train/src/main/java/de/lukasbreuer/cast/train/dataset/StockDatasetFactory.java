@@ -15,12 +15,8 @@ import lombok.RequiredArgsConstructor;
 public final class StockDatasetFactory {
   @Inject @Named("modelTrainPeriod")
   private final int trainPeriod;
-  @Inject @Named("modelTrainMaximumTrades")
-  private final int trainMaximumTrades;
   @Inject @Named("modelEvaluationPeriod")
   private final int evaluationPeriod;
-  @Inject @Named("modelEvaluationMaximumTrades")
-  private final int evaluationMaximumTrades;
   @Inject @Named("modelBuyReviewPeriod")
   private final int buyReviewPeriod;
   @Inject @Named("modelSellReviewPeriod")
@@ -46,7 +42,7 @@ public final class StockDatasetFactory {
     Symbol symbol, TradeType tradeType, ModelState modelState, int seed
   ) {
     return StockDataset.create(symbol, tradeType, modelState, seed, trainPeriod,
-      trainMaximumTrades, evaluationPeriod, evaluationMaximumTrades, buyReviewPeriod,
-      sellReviewPeriod, batchSize, totalBatches, inputSizePerDay, dayLongestReview);
+      evaluationPeriod, buyReviewPeriod, sellReviewPeriod, batchSize,
+      totalBatches, inputSizePerDay, dayLongestReview);
   }
 }

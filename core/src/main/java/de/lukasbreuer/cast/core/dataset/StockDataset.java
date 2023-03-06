@@ -26,9 +26,7 @@ public final class StockDataset {
   private final ModelState modelState;
   private final int seed;
   private final int trainPeriod;
-  private final int trainMaximumTrades;
   private final int evaluationPeriod;
-  private final int evaluationMaximumTrades;
   private final int buyReviewPeriod;
   private final int sellReviewPeriod;
   private final int batchSize;
