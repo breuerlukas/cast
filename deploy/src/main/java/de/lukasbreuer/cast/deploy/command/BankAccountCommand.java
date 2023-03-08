@@ -4,6 +4,7 @@ import com.clearspring.analytics.util.Lists;
 import de.lukasbreuer.cast.core.command.Command;
 import de.lukasbreuer.cast.core.log.Log;
 import de.lukasbreuer.cast.deploy.finance.BankAccount;
+import de.lukasbreuer.cast.deploy.finance.BankAccountAccess;
 import de.lukasbreuer.cast.deploy.finance.BankAccountCollection;
 
 import java.util.List;
@@ -20,7 +21,8 @@ public final class BankAccountCommand extends Command {
 
   private BankAccountCommand(Log log, BankAccountCollection bankAccountCollection) {
     super(log, "bankAccount", new String[] {"bankAccounts"},
-      new String[] {"add <name, money>", "remove <name>"});
+      new String[] {"add <name, money>", "remove <name>",
+        "deposit <name> <money>", "debit <name> <money>"});
     this.bankAccountCollection = bankAccountCollection;
   }
 
@@ -35,6 +37,12 @@ public final class BankAccountCommand extends Command {
     }
     if (arguments[0].equalsIgnoreCase("remove")) {
       return executeRemove(arguments);
+    }
+    if (
+      arguments[0].equalsIgnoreCase("deposit") ||
+        arguments[0].equalsIgnoreCase("debit")
+    ) {
+      return executeMoneyChange(arguments);
     }
     return false;
   }
@@ -59,6 +67,34 @@ public final class BankAccountCommand extends Command {
     bankAccountCollection.removeBankAccount(bankAccountName, success ->
       log().info("Bank Account " + bankAccountName + " has been successfully removed"));
     return true;
+  }
+
+  private boolean executeMoneyChange(String[] arguments) {
+    if (arguments.length != 3) {
+      return false;
+    }
+    var accessType = arguments[0].equalsIgnoreCase("deposit") ?
+      BankAccountAccess.AccessType.DEPOSIT : BankAccountAccess.AccessType.DEBIT;
+    var bankAccountName = arguments[1].toUpperCase();
+    var money = Double.parseDouble(arguments[2]);
+    bankAccountCollection.findBankAccountByName(bankAccountName, bankAccount ->
+      executeMoneyChange(bankAccount, accessType, money));
+    return true;
+  }
+
+  private void executeMoneyChange(
+    BankAccount bankAccount, BankAccountAccess.AccessType accessType,
+    double money
+  ) {
+    if (accessType.isDeposit()) {
+      bankAccount.deposit(money);
+    }
+    if (accessType.isDebit()) {
+      bankAccount.debit(money);
+    }
+    bankAccountCollection.updateBankAccount(bankAccount, success ->
+      log().info("Successfully update balance of bank account " +
+        bankAccount.name().toLowerCase()));
   }
 
   private void printBankAccounts(List<BankAccount> bankAccounts) {

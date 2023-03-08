@@ -20,7 +20,15 @@ public class BankAccountAccess {
 
   public enum AccessType {
     DEPOSIT,
-    DEBIT
+    DEBIT;
+
+    public boolean isDeposit() {
+      return this == DEPOSIT;
+    }
+
+    public boolean isDebit() {
+      return this == DEBIT;
+    }
   }
 
   private final UUID id;
