@@ -31,6 +31,7 @@ public final class DatasetModule extends AbstractModule {
     return MODEL_EVALUATION_PERIOD;
   }
 
+  //NOTE: ES: 7 * 1; ON: 7 * 4
   private static final int MODEL_BUY_REVIEW_PERIOD = 7 * 4;
 
   @Provides
