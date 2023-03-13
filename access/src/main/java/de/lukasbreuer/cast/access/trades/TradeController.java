@@ -76,19 +76,24 @@ public final class TradeController {
     }
     var response = Maps.<String, Object>newHashMap();
     response.put("trades", currentTrades.stream()
-      .map(trade -> transformCurrentTrade(trade, currentStockPrice(trade.stock())))
+      .map(trade -> transformCurrentTrade(trade, findStockPrice(trade.stock(), 0),
+        findStockPrice(trade.stock(), 1)))
       .collect(Collectors.toList()));
     futureResponse.complete(response);
   }
 
-  private double currentStockPrice(String stock) {
-    return Symbol.createAndFetch(stock, 1).findPartOfHistory(1).get(0).close();
+  private double findStockPrice(String stock, int viewback) {
+    return Symbol.createAndFetch(stock, viewback + 1)
+      .findPartOfHistory(viewback + 1).get(0).close();
   }
 
-  private Map<String, String> transformCurrentTrade(Trade trade, double currentPrice) {
+  private Map<String, String> transformCurrentTrade(
+    Trade trade, double currentPrice, double yesterdaysPrice
+  ) {
     var regularTransformation = transformTrade(trade);
     regularTransformation.remove("tradeType");
     regularTransformation.put("currentPrice", String.valueOf(currentPrice));
+    regularTransformation.put("yesterdaysPrice", String.valueOf(yesterdaysPrice));
     return regularTransformation;
   }
 
