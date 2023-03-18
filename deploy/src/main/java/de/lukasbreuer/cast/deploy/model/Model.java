@@ -16,27 +16,34 @@ import java.util.UUID;
 
 @Accessors(fluent = true)
 public final class Model {
-  public static Model of(Log log, Document document) {
-    return create(log, UUID.fromString(document.getString("id")),
-      document.getString("stock"), document.getString("buyModelPath"),
-      document.getString("sellModelPath"), document.getInteger("buyReviewPeriod"),
-      document.getInteger("sellReviewPeriod"), document.getDouble("buyTradePredictionMinimum"),
+  public static Model of(
+    Log log, int inputSizePerDay, int dayLongestReview, Document document
+  ) {
+    return create(log, inputSizePerDay, dayLongestReview,
+      UUID.fromString(document.getString("id")), document.getString("stock"),
+      document.getString("buyModelPath"), document.getString("sellModelPath"),
+      document.getInteger("buyReviewPeriod"), document.getInteger("sellReviewPeriod"),
+      document.getDouble("buyTradePredictionMinimum"),
       document.getDouble("sellTradePredictionMinimum"));
   }
 
   public static Model create(
-    Log log, UUID id, String stock, String buyModelPath, String sellModelPath,
-    int buyReviewPeriod, int sellReviewPeriod, double buyTradePredictionMinimum,
+    Log log, int inputSizePerDay, int dayLongestReview, UUID id, String stock,
+    String buyModelPath, String sellModelPath, int buyReviewPeriod,
+    int sellReviewPeriod, double buyTradePredictionMinimum,
     double sellTradePredictionMinimum
   ) {
-    return new Model(log, id, stock, buyModelPath, sellModelPath, buyReviewPeriod,
-      sellReviewPeriod, buyTradePredictionMinimum, sellTradePredictionMinimum);
+    return new Model(log, inputSizePerDay, dayLongestReview, id, stock,
+      buyModelPath, sellModelPath, buyReviewPeriod, sellReviewPeriod,
+      buyTradePredictionMinimum, sellTradePredictionMinimum);
   }
 
-  private Log log;
+  private final Log log;
+  private final int inputSizePerDay;
+  private final int dayLongestReview;
   @Getter
-  private UUID id;
-  private String stock;
+  private final  UUID id;
+  private final String stock;
   @Getter @Setter(AccessLevel.PRIVATE)
   private String buyModelPath;
   @Getter @Setter(AccessLevel.PRIVATE)
@@ -54,11 +61,14 @@ public final class Model {
   private NeuralNetwork sellNeuralNetwork;
 
   private Model(
-    Log log, UUID id, String stock, String buyModelPath, String sellModelPath,
-    int buyReviewPeriod, int sellReviewPeriod, double buyTradePredictionMinimum,
+    Log log, int inputSizePerDay, int dayLongestReview, UUID id, String stock,
+    String buyModelPath, String sellModelPath, int buyReviewPeriod,
+    int sellReviewPeriod, double buyTradePredictionMinimum,
     double sellTradePredictionMinimum
   ) {
     this.log = log;
+    this.inputSizePerDay = inputSizePerDay;
+    this.dayLongestReview = dayLongestReview;
     this.id = id;
     this.stock = stock;
     this.buyModelPath = buyModelPath;
@@ -69,12 +79,12 @@ public final class Model {
     this.sellTradePredictionMinimum = sellTradePredictionMinimum;
   }
 
-  public void initialize() {
+  public void initialize(Runnable completed) {
     try {
-      symbol = Symbol.createAndFetch(stock, -1);
       var executionPath = System.getProperty("user.dir");
       buyNeuralNetwork = NeuralNetwork.createAndLoad(executionPath + buyModelPath);
       sellNeuralNetwork = NeuralNetwork.createAndLoad(executionPath + sellModelPath);
+      symbol = Symbol.createAndFetch(stock, -1, completed);
       log.info("The " + stock.toUpperCase() + " model has been successfully " +
         "loaded and initialized");
     } catch (Exception exception) {
@@ -83,14 +93,11 @@ public final class Model {
     }
   }
 
-  private static final int INPUT_SIZE_PER_DAY = 42;
-  private static final int DAY_LONGEST_REVIEW = 21;
-
   public float[] predict(TradeType tradeType, int timeSpan) {
     var reviewPeriod = tradeType.isBuy() ? buyReviewPeriod : sellReviewPeriod;
     var dataset = StockDataset.create(symbol, tradeType, ModelState.EVALUATING,
-      0, 0, timeSpan + DAY_LONGEST_REVIEW + reviewPeriod, buyReviewPeriod,
-      sellReviewPeriod, 0, 0, INPUT_SIZE_PER_DAY, DAY_LONGEST_REVIEW);
+      0, 0, timeSpan + dayLongestReview + reviewPeriod, buyReviewPeriod,
+      sellReviewPeriod, 0, 0, inputSizePerDay, dayLongestReview);
     dataset.build();
     var predictions = new float[timeSpan];
     for (var i = 0; i < timeSpan; i++) {

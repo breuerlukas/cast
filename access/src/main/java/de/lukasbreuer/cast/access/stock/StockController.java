@@ -32,8 +32,8 @@ public final class StockController {
   ) {
     var completableFuture = new CompletableFuture<Map<String, Object>>();
     var reviewPeriod = Integer.parseInt((String) input.get("reviewPeriod"));
-    new Thread(() -> findPrices(completableFuture, Symbol.createAndFetch(
-      (String) input.get("stock"), reviewPeriod).findPartOfHistory(reviewPeriod))).start();
+    Symbol.createAndFetch((String) input.get("stock"), reviewPeriod, symbol ->
+      findPrices(completableFuture, symbol.findTotalHistory()));
     return completableFuture;
   }
 
@@ -71,8 +71,8 @@ public final class StockController {
     modelCollection.findByStock(stock, model ->
       tradeCollection.findLatestByStock(stock, TradeType.BUY, latestBuy ->
         tradeCollection.findLatestByStock(stock, TradeType.SELL, latestSell ->
-          new Thread(() -> findPredictions(futureResponse, model, reviewPeriod,
-            latestBuy, latestSell)).start())));
+          model.initialize(() -> findPredictions(futureResponse, model, reviewPeriod,
+            latestBuy, latestSell)))));
   }
 
   private void findPredictions(
@@ -86,7 +86,6 @@ public final class StockController {
     ) {
       tradeType = TradeType.SELL;
     }
-    model.initialize();
     var response = Maps.<String, Object>newHashMap();
     response.put("predictions", model.predict(tradeType, reviewPeriod));
     futureResponse.complete(response);

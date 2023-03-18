@@ -2,6 +2,7 @@ package de.lukasbreuer.cast.access.trades;
 
 import com.clearspring.analytics.util.Lists;
 import com.google.common.collect.Maps;
+import de.lukasbreuer.cast.core.symbol.HistoryEntry;
 import de.lukasbreuer.cast.core.symbol.Symbol;
 import de.lukasbreuer.cast.core.trade.TradeType;
 import de.lukasbreuer.cast.deploy.portfolio.Stock;
@@ -74,17 +75,39 @@ public final class TradeController {
         currentTrades.add(latestBuy.get());
       }
     }
-    var response = Maps.<String, Object>newHashMap();
-    response.put("trades", currentTrades.stream()
-      .map(trade -> transformCurrentTrade(trade, findStockPrice(trade.stock(), 0),
-        findStockPrice(trade.stock(), 1)))
-      .collect(Collectors.toList()));
-    futureResponse.complete(response);
+    createCurrentTradesResponse(currentTrades, futureResponse::complete);
   }
 
-  private double findStockPrice(String stock, int viewback) {
-    return Symbol.createAndFetch(stock, viewback + 1)
-      .findPartOfHistory(viewback + 1).get(0).close();
+  private void createCurrentTradesResponse(
+    List<Trade> currentTrades, Consumer<Map<String, Object>> futureResponse
+  ) {
+    var trades = Lists.<Map<String, String>>newArrayList();
+    for (var trade : currentTrades) {
+      findLastStockPrices(trade.stock(), 2, stockPrices ->
+        processCurrentTrade(futureResponse, trades, currentTrades.size(),
+          transformCurrentTrade(trade, stockPrices.get(1), stockPrices.get(0))));
+    }
+  }
+
+  private void processCurrentTrade(
+    Consumer<Map<String, Object>> futureResponse,
+    List<Map<String, String>> trades, int currentTradesAmount,
+    Map<String, String> currentTrade
+  ) {
+    trades.add(currentTrade);
+    if (trades.size() >= currentTradesAmount) {
+      var response = Maps.<String, Object>newHashMap();
+      response.put("trades", trades);
+      futureResponse.accept(response);
+    }
+  }
+
+  private void findLastStockPrices(
+    String stock, int viewback, Consumer<List<Double>> futureStockPrice
+  ) {
+    Symbol.createAndFetch(stock, viewback, symbol ->
+      futureStockPrice.accept(symbol.findTotalHistory()
+        .stream().map(HistoryEntry::close).collect(Collectors.toList())));
   }
 
   private Map<String, String> transformCurrentTrade(

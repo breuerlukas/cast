@@ -8,17 +8,28 @@ import de.lukasbreuer.cast.deploy.model.ModelCollection;
 import java.util.UUID;
 
 public final class ModelCommand extends Command {
-  public static ModelCommand create(Log log, ModelCollection modelCollection) {
-    return new ModelCommand(log, modelCollection);
+  public static ModelCommand create(
+    Log log, int inputSizePerDay, int dayLongestReview,
+    ModelCollection modelCollection
+  ) {
+    return new ModelCommand(log, inputSizePerDay, dayLongestReview,
+      modelCollection);
   }
 
   private final ModelCollection modelCollection;
+  private final int inputSizePerDay;
+  private final int dayLongestReview;
 
-  private ModelCommand(Log log, ModelCollection modelCollection) {
+  private ModelCommand(
+    Log log, int inputSizePerDay, int dayLongestReview,
+    ModelCollection modelCollection
+  ) {
     super(log, "model", new String[] {"models"}, new String[] {"stock", "add <stock> <buy model> " +
       "<sell model> <buy review period> <sell review period> <buy prediction minimum> " +
       "<sell prediction minimum>", "update <stock> <parameter> <value>", "remove <stock>"});
     this.modelCollection = modelCollection;
+    this.inputSizePerDay = inputSizePerDay;
+    this.dayLongestReview = dayLongestReview;
   }
 
   @Override
@@ -51,10 +62,10 @@ public final class ModelCommand extends Command {
     var sellReviewPeriod = Integer.parseInt(arguments[5]);
     var buyTradePredictionMinimum = Double.parseDouble(arguments[6]);
     var sellTradePredictionMaximum = Double.parseDouble(arguments[7]);
-    modelCollection.addModel(Model.create(log(), UUID.randomUUID(), stock,
-      buyModelPath, sellModelPath, buyReviewPeriod, sellReviewPeriod,
-      buyTradePredictionMinimum, sellTradePredictionMaximum), success ->
-      log().info("Stock " + stock + " has been successfully added"));
+    modelCollection.addModel(Model.create(log(), inputSizePerDay, dayLongestReview,
+      UUID.randomUUID(), stock, buyModelPath, sellModelPath, buyReviewPeriod,
+      sellReviewPeriod, buyTradePredictionMinimum, sellTradePredictionMaximum),
+      success -> log().info("Stock " + stock + " has been successfully added"));
     return true;
   }
 

@@ -2,6 +2,7 @@ package de.lukasbreuer.cast.access;
 
 import com.google.inject.Guice;
 import com.google.inject.Inject;
+import com.google.inject.name.Named;
 import de.lukasbreuer.cast.access.account.verification.VerificationFactory;
 import de.lukasbreuer.cast.core.log.Log;
 import de.lukasbreuer.cast.deploy.model.ModelCollection;
@@ -10,6 +11,7 @@ import de.lukasbreuer.cast.deploy.notification.NotificationConfiguration;
 import de.lukasbreuer.cast.deploy.portfolio.StockCollection;
 import de.lukasbreuer.cast.deploy.trade.TradeCollection;
 import jakarta.annotation.PostConstruct;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -19,6 +21,10 @@ import java.security.Key;
 public class AccessConfiguration {
   @Inject
   private Log log;
+  @Inject @Named("modelInputSizePerDay")
+  private int inputSizePerDay;
+  @Inject @Named("modelDayLongestReview")
+  private int dayLongestReview;
   @Inject
   private StockCollection stockCollection;
   @Inject
@@ -37,6 +43,18 @@ public class AccessConfiguration {
   @Bean
   Log provideLog() {
     return log;
+  }
+
+  @Bean
+  @Qualifier("modelInputSizePerDay")
+  int inputSizePerDay() {
+    return inputSizePerDay;
+  }
+
+  @Bean
+  @Qualifier("modelDayLongestReview")
+  int dayLongestReview() {
+    return dayLongestReview;
   }
 
   @Bean

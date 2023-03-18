@@ -64,8 +64,7 @@ public final class TradeExecution {
 
   private void initialize(Model model, Runnable completed) {
     this.model = model;
-    model.initialize();
-    completed.run();
+    model.initialize(completed);
   }
 
   public void verify(TradeType tradeType, Consumer<Action> actionFuture) {

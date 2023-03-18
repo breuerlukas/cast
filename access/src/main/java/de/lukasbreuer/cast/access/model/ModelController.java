@@ -6,6 +6,7 @@ import de.lukasbreuer.cast.deploy.model.Model;
 import de.lukasbreuer.cast.deploy.model.ModelCollection;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -17,14 +18,18 @@ import java.util.concurrent.CompletableFuture;
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ModelController {
   private final Log log;
+  @Qualifier("modelInputSizePerDay")
+  private final int inputSizePerDay;
+  @Qualifier("modelDayLongestReview")
+  private final int dayLongestReview;
   private final ModelCollection modelCollection;
 
   @RequestMapping(path = "/model/add", method = RequestMethod.POST)
   public void addModel(
     @RequestBody Map<String, Object> input
   ) {
-    modelCollection.addModel(Model.create(log, UUID.randomUUID(),
-      (String) input.get("stock"), (String) input.get("buyModelPath"),
+    modelCollection.addModel(Model.create(log, inputSizePerDay, dayLongestReview,
+      UUID.randomUUID(), (String) input.get("stock"), (String) input.get("buyModelPath"),
       (String) input.get("sellModelPath"), Integer.parseInt((String) input.get("buyReviewPeriod")),
       Integer.parseInt((String) input.get("sellReviewPeriod")),
       Double.parseDouble((String) input.get("buyTradePredictionMinimum")),

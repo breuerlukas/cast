@@ -27,19 +27,19 @@ public final class TrainAlgorithm {
   private StockDataset buyEvaluationDataset;
   private StockDataset sellEvaluationDataset;
 
-  public void initialize() {
+  public void initialize(Runnable completed) {
     Nd4j.getRandom().setSeed(seed);
-    symbol = Symbol.createAndFetch(symbolName, -1);
+    symbol = Symbol.createAndFetch(symbolName, -1, completed);
   }
 
-  public void processBuyNetwork() throws Exception {
+  public void processBuyNetwork() {
     initializeBuyNetwork();
     trainBuyNetwork();
     evaluateBuyNetwork();
     saveBuyNetwork();
   }
 
-  public void processSellNetwork() throws Exception {
+  public void processSellNetwork() {
     initializeSellNetwork();
     trainSellNetwork();
     evaluateSellNetwork();
@@ -100,13 +100,21 @@ public final class TrainAlgorithm {
 
   private final String MODEL_PATH = "/models/";
 
-  private void saveBuyNetwork() throws Exception {
-    buyNeuralNetwork.save(System.getProperty("user.dir") + MODEL_PATH +
-      symbolName.toUpperCase() + "/buyModel.zip");
+  private void saveBuyNetwork() {
+    try {
+      buyNeuralNetwork.save(System.getProperty("user.dir") + MODEL_PATH +
+        symbolName.toUpperCase() + "/buyModel.zip");
+    } catch (Exception exception) {
+      exception.printStackTrace();
+    }
   }
 
-  private void saveSellNetwork() throws Exception {
-    sellNeuralNetwork.save(System.getProperty("user.dir") + MODEL_PATH +
-      symbolName.toUpperCase() + "/sellModel.zip");
+  private void saveSellNetwork() {
+    try {
+      sellNeuralNetwork.save(System.getProperty("user.dir") + MODEL_PATH +
+        symbolName.toUpperCase() + "/sellModel.zip");
+    } catch (Exception exception) {
+      exception.printStackTrace();
+    }
   }
 }

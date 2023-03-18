@@ -2,6 +2,8 @@ package de.lukasbreuer.cast.deploy;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
+import com.google.inject.Key;
+import com.google.inject.name.Names;
 import de.lukasbreuer.cast.core.command.CommandRegistry;
 import de.lukasbreuer.cast.core.command.CommandTask;
 import de.lukasbreuer.cast.core.log.Log;
@@ -36,6 +38,8 @@ public final class DeployApplication {
     commandRegistry.register(PortfolioCommand.create(log,
       injector.getInstance(StockCollection.class)));
     commandRegistry.register(ModelCommand.create(log,
+      injector.getInstance(Key.get(Integer.class, Names.named("modelInputSizePerDay"))),
+      injector.getInstance(Key.get(Integer.class, Names.named("modelDayLongestReview"))),
       injector.getInstance(ModelCollection.class)));
     commandRegistry.register(TradeCommand.create(log,
       injector.getInstance(TradeCollection.class)));
