@@ -14,15 +14,15 @@ public final class DatasetDay {
 
   public void build() {
     var calculations = Lists.<Double>newArrayList();
-    calculations.addAll(createReviewIndicatorBundle(ChangeIndicator.class, new int[] {0, 1, 2, 3}));
+    //calculations.addAll(createReviewIndicatorBundle(ChangeIndicator.class, new int[] {0, 1, 2, 3}));
     calculations.addAll(createRegularReviewIndicatorBundle(MovingAverageIndicator.class));
     calculations.addAll(createRegularReviewIndicatorBundle(ExponentialMovingAverageIndicator.class));
     calculations.addAll(createRegularReviewIndicatorBundle(ChangeRateIndicator.class));
-    calculations.addAll(createRegularReviewIndicatorBundle(RelativeStrengthIndicator.class));
-    //calculations.addAll(createRegularReviewIndicatorBundle(CommodityChannelIndicator.class));
-    calculations.addAll(createRegularReviewIndicatorBundle(StochasticOscillatorIndicator.class));
+    //calculations.addAll(createRegularReviewIndicatorBundle(RelativeStrengthIndicator.class));
+    calculations.addAll(createRegularReviewIndicatorBundle(CommodityChannelIndicator.class));
+    //calculations.addAll(createRegularReviewIndicatorBundle(StochasticOscillatorIndicator.class));
     calculations.addAll(createRegularReviewIndicatorBundle(AverageRangeIndicator.class));
-    calculations.addAll(createRegularReviewIndicatorBundle(BalanceVolumeIndicator.class));
+    //calculations.addAll(createRegularReviewIndicatorBundle(BalanceVolumeIndicator.class));
     //calculations.addAll(createReviewIndicatorBundle(DirectionalMovementIndicator.class, new int[] {4, 8, 12, 16}));
     calculations.add(indicatorRepository.find(BullishPatternIndicator.class).calculate(index));
     calculations.add(indicatorRepository.find(BearishPatternIndicator.class).calculate(index));
