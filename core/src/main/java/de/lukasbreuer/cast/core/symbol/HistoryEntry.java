@@ -8,7 +8,6 @@ import lombok.experimental.Accessors;
 @Accessors(fluent = true)
 @RequiredArgsConstructor(staticName = "create")
 public final class HistoryEntry {
-  private final Symbol symbol;
   private final long timeStep;
   private final double open;
   private final double close;

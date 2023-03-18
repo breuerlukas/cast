@@ -5,10 +5,10 @@ import de.lukasbreuer.cast.core.neuralnetwork.ModelState;
 import de.lukasbreuer.cast.core.neuralnetwork.NeuralNetwork;
 import de.lukasbreuer.cast.core.symbol.Symbol;
 import de.lukasbreuer.cast.core.trade.TradeType;
-import de.lukasbreuer.cast.train.dataset.StockDatasetFactory;
+import de.lukasbreuer.cast.core.dataset.StockDatasetFactory;
 import de.lukasbreuer.cast.train.evaluation.EvaluationFactory;
 import de.lukasbreuer.cast.train.evaluation.Illustration;
-import de.lukasbreuer.cast.train.neuralnetwork.NeuralNetworkFactory;
+import de.lukasbreuer.cast.core.neuralnetwork.NeuralNetworkFactory;
 import lombok.RequiredArgsConstructor;
 import org.nd4j.linalg.factory.Nd4j;
 

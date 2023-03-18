@@ -2,8 +2,6 @@ package de.lukasbreuer.cast.train;
 
 import de.lukasbreuer.cast.core.CoreModule;
 import de.lukasbreuer.cast.core.log.Log;
-import de.lukasbreuer.cast.train.dataset.DatasetModule;
-import de.lukasbreuer.cast.train.neuralnetwork.NeuralNetworkModule;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 
@@ -16,8 +14,6 @@ public final class TrainModule extends CoreModule {
   @Override
   protected void configure() {
     super.configure();
-    install(DatasetModule.create());
-    install(NeuralNetworkModule.create());
   }
 
   @Override

@@ -1,10 +1,8 @@
-package de.lukasbreuer.cast.train.neuralnetwork;
+package de.lukasbreuer.cast.core.neuralnetwork;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.google.inject.name.Named;
-import de.lukasbreuer.cast.core.neuralnetwork.HistoryIterator;
-import de.lukasbreuer.cast.core.neuralnetwork.NeuralNetwork;
 import de.lukasbreuer.cast.core.trade.TradeType;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;

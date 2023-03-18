@@ -1,9 +1,8 @@
-package de.lukasbreuer.cast.train.dataset;
+package de.lukasbreuer.cast.core.dataset;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.google.inject.name.Named;
-import de.lukasbreuer.cast.core.dataset.StockDataset;
 import de.lukasbreuer.cast.core.neuralnetwork.ModelState;
 import de.lukasbreuer.cast.core.symbol.Symbol;
 import de.lukasbreuer.cast.core.trade.TradeType;
