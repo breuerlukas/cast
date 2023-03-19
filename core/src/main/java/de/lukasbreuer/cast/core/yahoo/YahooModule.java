@@ -6,6 +6,8 @@ import com.google.inject.Singleton;
 import com.google.inject.name.Named;
 import lombok.RequiredArgsConstructor;
 
+import java.util.List;
+
 @RequiredArgsConstructor(staticName = "create")
 public final class YahooModule extends AbstractModule {
   @Provides
@@ -16,8 +18,8 @@ public final class YahooModule extends AbstractModule {
 
   @Provides
   @Singleton
-  @Named("yahooApiKey")
-  String provideYahooConfiguration(YahooConfiguration configuration) {
-    return configuration.apiKey();
+  @Named("yahooApiKeys")
+  List<String> provideYahooConfiguration(YahooConfiguration configuration) {
+    return configuration.apiKeys();
   }
 }

@@ -13,18 +13,19 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ThreadLocalRandom;
 
 @CrossOrigin
 @RestController
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class TrendController {
-  @Qualifier("yahooApiKey")
-  private final String yahooApiKey;
+  @Qualifier("yahooApiKeys")
+  private final List<String> yahooApiKeys;
 
   @RequestMapping(path = "/trends", method = RequestMethod.GET)
   public CompletableFuture<Map<String, Object>> findTrends() {
     var completableFuture = new CompletableFuture<Map<String, Object>>();
-    TrendRequest.create(yahooApiKey).send().thenAccept(trendingStocks ->
+    TrendRequest.create(findApiKey()).send().thenAccept(trendingStocks ->
       findStockInformation(trendingStocks.stream().filter(stock ->
         stock.matches("[a-zA-Z]+")).limit(10).toList())
         .thenAccept(completableFuture::complete));
@@ -37,7 +38,7 @@ public final class TrendController {
     var futureResponse = new CompletableFuture<Map<String, Object>>();
     var stocks = Lists.<Map<String, String>>newArrayList();
     for (var stock : trendingStocks) {
-      Symbol.createAndFetch(stock, 1, symbol -> symbol.profile(yahooApiKey,
+      Symbol.createAndFetch(stock, 1, symbol -> symbol.profile(findApiKey(),
         profile -> processStockData(futureResponse, trendingStocks, stocks,
           symbol, profile)));
     }
@@ -71,5 +72,9 @@ public final class TrendController {
     result.put("website", website);
     result.put("price", String.valueOf(price));
     return result;
+  }
+
+  private String findApiKey() {
+    return yahooApiKeys.get(ThreadLocalRandom.current().nextInt(0, yahooApiKeys.size()));
   }
 }

@@ -16,16 +16,17 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import java.security.Key;
+import java.util.List;
 
 @Configuration
 public class AccessConfiguration {
   @Inject
   private Log log;
-  @Inject @Named("yahooApiKey")
-  private String yahooApiKey;
-  @Inject @Named("modelInputSizePerDay")
+  @Inject @Named ("yahooApiKeys")
+  private List<String> yahooApiKeys;
+  @Inject @Named ("modelInputSizePerDay")
   private int inputSizePerDay;
-  @Inject @Named("modelDayLongestReview")
+  @Inject @Named ("modelDayLongestReview")
   private int dayLongestReview;
   @Inject
   private StockCollection stockCollection;
@@ -48,9 +49,9 @@ public class AccessConfiguration {
   }
 
   @Bean
-  @Qualifier("yahooApiKey")
-  String yahooApiKey() {
-    return yahooApiKey;
+  @Qualifier("yahooApiKeys")
+  List<String> yahooApiKey() {
+    return yahooApiKeys;
   }
 
   @Bean
