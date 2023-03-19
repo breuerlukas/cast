@@ -56,6 +56,10 @@ public final class Symbol {
   }
 
   public void profile(String apiKey, Consumer<SymbolProfile> futureProfile) {
+    if (history.size() == 0) {
+      futureProfile.accept(SymbolProfile.create(name, "-", "-", "-"));
+      return;
+    }
     FinanceProfileRequest.create(name, apiKey).send()
       .thenAccept(profileData -> FinanceQuoteRequest.create(name, apiKey).send()
         .thenAccept(company -> futureProfile.accept(SymbolProfile.create(name,

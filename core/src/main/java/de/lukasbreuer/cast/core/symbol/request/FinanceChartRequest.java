@@ -7,9 +7,11 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.net.URI;
+import java.net.URLEncoder;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
@@ -25,7 +27,8 @@ public final class FinanceChartRequest implements FinanceRequest<Map<Long, Histo
   @Override
   public CompletableFuture<Map<Long, HistoryEntry>> send() {
     var request = HttpRequest.newBuilder()
-      .uri(URI.create(String.format(URL_FORMAT, symbol, range, interval)))
+      .uri(URI.create(String.format(URL_FORMAT,
+        URLEncoder.encode(symbol, StandardCharsets.UTF_8), range, interval)))
       .GET().build();
     return HttpClient.newHttpClient()
       .sendAsync(request, HttpResponse.BodyHandlers.ofString())
@@ -34,8 +37,14 @@ public final class FinanceChartRequest implements FinanceRequest<Map<Long, Histo
   }
 
   private Map<Long, HistoryEntry> createHistoryData(String body) {
-    var json = new JSONObject(body).getJSONObject("chart").getJSONArray("result");
-    var firstResult = json.getJSONObject(0);
+    var json = new JSONObject(body).getJSONObject("chart");
+    if (json.isNull("result") || json.getJSONArray("result").isEmpty()) {
+      return Maps.newHashMap();
+    }
+    var firstResult = json.getJSONArray("result").getJSONObject(0);
+    if (!firstResult.has("timestamp")) {
+      return Maps.newHashMap();
+    }
     var timestamps = firstResult.getJSONArray("timestamp");
     var quotes = firstResult.getJSONObject("indicators").getJSONArray("quote").getJSONObject(0);
     var open = quotes.getJSONArray("open");
