@@ -21,6 +21,8 @@ import java.security.Key;
 public class AccessConfiguration {
   @Inject
   private Log log;
+  @Inject @Named("yahooApiKey")
+  private String yahooApiKey;
   @Inject @Named("modelInputSizePerDay")
   private int inputSizePerDay;
   @Inject @Named("modelDayLongestReview")
@@ -43,6 +45,12 @@ public class AccessConfiguration {
   @Bean
   Log provideLog() {
     return log;
+  }
+
+  @Bean
+  @Qualifier("yahooApiKey")
+  String yahooApiKey() {
+    return yahooApiKey;
   }
 
   @Bean
