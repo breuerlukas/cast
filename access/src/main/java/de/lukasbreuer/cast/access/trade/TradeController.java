@@ -1,4 +1,4 @@
-package de.lukasbreuer.cast.access.trades;
+package de.lukasbreuer.cast.access.trade;
 
 import com.clearspring.analytics.util.Lists;
 import com.google.common.collect.Maps;
