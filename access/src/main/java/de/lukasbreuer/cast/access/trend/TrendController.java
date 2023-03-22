@@ -7,9 +7,11 @@ import de.lukasbreuer.cast.core.symbol.SymbolProfile;
 import de.lukasbreuer.cast.deploy.trend.TrendRequest;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import org.nd4j.common.primitives.Atomic;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -26,26 +28,57 @@ public final class TrendController {
   public CompletableFuture<Map<String, Object>> findTrends() {
     var completableFuture = new CompletableFuture<Map<String, Object>>();
     TrendRequest.create(findApiKey()).send().thenAccept(trendingStocks ->
-      findStockInformation(trendingStocks.stream().filter(stock ->
-        stock.matches("[a-zA-Z]+")).limit(10).toList())
-        .thenAccept(completableFuture::complete));
+      findStockInformation(trendingStocks).thenAccept(completableFuture::complete));
     return completableFuture;
   }
 
   private CompletableFuture<Map<String, Object>> findStockInformation(
     List<String> trendingStocks
   ) {
-    var futureResponse = new CompletableFuture<Map<String, Object>>();
-    var stocks = Lists.<Map<String, String>>newArrayList();
+    var symbolResponse = new CompletableFuture<List<Symbol>>();
+    var symbols = Lists.<Symbol>newArrayList();
     for (var stock : trendingStocks) {
-      Symbol.createAndFetch(stock, 1, symbol -> symbol.profile(findApiKey(),
-        profile -> processStockData(futureResponse, trendingStocks, stocks,
-          symbol, profile)));
+      Symbol.createAndFetch(stock, 1, symbol ->
+        processSymbol(symbolResponse, trendingStocks, symbols, symbol));
     }
-    return futureResponse;
+    var informationResponse = new CompletableFuture<Map<String, Object>>();
+    symbolResponse.thenAccept(trendingSymbols ->
+      findSymbolInformation(trendingStocks, trendingSymbols)
+        .thenAccept(informationResponse::complete));
+    return informationResponse;
   }
 
-  private void processStockData(
+  private void processSymbol(
+    CompletableFuture<List<Symbol>> futureResponse, List<String> trendingStocks,
+    List<Symbol> symbols, Symbol symbol
+  ) {
+    symbols.add(symbol);
+    if (symbols.size() == trendingStocks.size()) {
+      futureResponse.complete(symbols);
+    }
+  }
+
+  private CompletableFuture<Map<String, Object>> findSymbolInformation(
+    List<String> trendingStocks, List<Symbol> symbols
+  ) {
+    var synchronizedTrendingStocks = Collections.synchronizedList(trendingStocks);
+    var informationResponse = new CompletableFuture<Map<String, Object>>();
+    var information = Lists.<Map<String, String>>newArrayList();
+    var acceptedSymbols = 0;
+    for (var symbol : symbols) {
+      if (!symbol.name().matches("[a-zA-Z]+") || acceptedSymbols >= 10) {
+        synchronizedTrendingStocks.remove(symbol.name());
+        continue;
+      }
+      symbol.profile(findApiKey(), profile ->
+        processProfile(informationResponse, synchronizedTrendingStocks,
+          information, symbol, profile));
+      acceptedSymbols += 1;
+    }
+    return informationResponse;
+  }
+
+  private void processProfile(
     CompletableFuture<Map<String, Object>> futureResponse, List<String> trendingStocks,
     List<Map<String, String>> stocks, Symbol symbol, SymbolProfile profile
   ) {
