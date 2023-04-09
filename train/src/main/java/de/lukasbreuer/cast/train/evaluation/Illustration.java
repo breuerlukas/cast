@@ -32,19 +32,19 @@ public final class Illustration {
     plot.plot().add(prices).label("Prices").color("blue");
   }
 
-  private static final int ILLUSTRATION_SCALE = 75;
-
   private void addTradeSignals(Plot plot) {
     for (var i = 0; i < evaluation.optimalSignals().size(); i++) {
       var optimalSignal = evaluation.optimalSignals().get(i);
       var line = plot.plot().add(List.of(optimalSignal, optimalSignal),
-          List.of(ILLUSTRATION_SCALE / 4, ILLUSTRATION_SCALE + (ILLUSTRATION_SCALE / 4)))
+          List.of(evaluation.lowestPrice(), evaluation.highestPrice()))
         .color("green");
       if (i == evaluation.optimalSignals().size() - 1) {
         line.label("Optimal");
       }
     }
   }
+
+  private static final float PREDICTION_GRAPH_HEIGHT = 0.2f;
 
   private void addTimePredictionGraph(Plot plot) {
     var timePredictionEvaluation = evaluation.timePredictionAllocation();
@@ -56,8 +56,8 @@ public final class Illustration {
     var maximumPrediction = timePredictionEvaluation.entrySet().stream()
       .max(Map.Entry.comparingByValue()).get().getValue();
     for (var prediction : timePredictionEvaluation.values()) {
-      predictions.add(ILLUSTRATION_SCALE / 2 + ((prediction - minimumPrediction) /
-        (maximumPrediction - minimumPrediction)) * ILLUSTRATION_SCALE / 8);
+      predictions.add((float) ((evaluation.lowestPrice() - evaluation.priceSpan() * PREDICTION_GRAPH_HEIGHT) + ((prediction - minimumPrediction) /
+        (maximumPrediction - minimumPrediction)) * (evaluation.priceSpan() * PREDICTION_GRAPH_HEIGHT)));
     }
     plot.plot().add(dates, predictions).label("Prediction Distribution").color("magenta");
   }
