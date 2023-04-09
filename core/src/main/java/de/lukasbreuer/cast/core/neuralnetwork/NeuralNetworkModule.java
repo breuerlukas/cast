@@ -8,11 +8,11 @@ import lombok.RequiredArgsConstructor;
 import org.deeplearning4j.nn.weights.WeightInit;
 import org.nd4j.linalg.activations.Activation;
 import org.nd4j.linalg.learning.config.IUpdater;
-import org.nd4j.linalg.learning.config.Nesterovs;
+import org.nd4j.linalg.learning.config.Sgd;
 
 @RequiredArgsConstructor(staticName = "create")
 public final class NeuralNetworkModule extends AbstractModule {
-  private static final int NETWORK_EPOCHS = 50;
+  private static final int NETWORK_EPOCHS = 100;
 
   @Provides
   @Singleton
@@ -21,7 +21,7 @@ public final class NeuralNetworkModule extends AbstractModule {
     return NETWORK_EPOCHS;
   }
 
-  private static final WeightInit NETWORK_WEIGHT_INIT = WeightInit.RELU;
+  private static final WeightInit NETWORK_WEIGHT_INIT = WeightInit.XAVIER;
 
   @Provides
   @Singleton
@@ -29,7 +29,7 @@ public final class NeuralNetworkModule extends AbstractModule {
     return NETWORK_WEIGHT_INIT;
   }
 
-  private static final Activation NETWORK_ACTIVATION = Activation.RELU;
+  private static final Activation NETWORK_ACTIVATION = Activation.TANH;
 
   @Provides
   @Singleton
@@ -37,7 +37,7 @@ public final class NeuralNetworkModule extends AbstractModule {
     return NETWORK_ACTIVATION;
   }
 
-  private static final IUpdater NETWORK_UPDATER = new Nesterovs(0.005, 0.9);
+  private static final IUpdater NETWORK_UPDATER = new Sgd(0.01);
 
   @Provides
   @Singleton
