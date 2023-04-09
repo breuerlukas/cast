@@ -53,7 +53,7 @@ public final class StockDataset {
       }
     }
     fillDataset();
-    dataset = normalizeData(dataset);
+    //dataset = normalizeData(dataset);
     historyIterator = HistoryIterator.create(dataset, new Random(seed), batchSize, totalBatches);
   }
 
