@@ -70,12 +70,12 @@ public final class TrainAlgorithm {
 
   private void trainBuyNetwork() {
     System.out.println("TRAIN BUY NETWORK");
-    buyNeuralNetwork.train();
+    buyNeuralNetwork.train(this::evaluateBuyNetwork);
   }
 
   private void trainSellNetwork() {
     System.out.println("TRAIN SELL NETWORK");
-    sellNeuralNetwork.train();
+    sellNeuralNetwork.train(this::evaluateSellNetwork);
   }
 
   private void evaluateBuyNetwork() {
