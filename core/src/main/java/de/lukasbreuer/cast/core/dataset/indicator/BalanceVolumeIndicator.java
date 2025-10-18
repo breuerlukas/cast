@@ -17,7 +17,7 @@ public final class BalanceVolumeIndicator extends ReviewIndicator {
 
   @Override
   public double calculate(int index, int review) {
-    var obv = 0;
+    double obv = 0;
     for (var i = 0; i < review; i++) {
       var currentVolume = data().get(index - i).volume();
       var previousVolume = data().get(index - i - 1).volume();
