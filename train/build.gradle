@@ -23,7 +23,7 @@ sourceSets {
 }
 
 dependencies {
-  testCompileOnly "org.junit.jupiter:junit-jupiter-api:5.10.2"
+  testCompileOnly "org.junit.jupiter:junit-jupiter-api:6.0.0"
   testImplementation "org.junit.jupiter:junit-jupiter-engine:6.0.0"
 
   implementation("de.lukasbreuer.cast:core:1.0.0-SNAPSHOT")
@@ -43,7 +43,7 @@ dependencies {
   implementation "org.deeplearning4j:deeplearning4j-core:1.0.0-M2.1"
   implementation "org.nd4j:nd4j-native-platform:1.0.0-M2.1"
 
-  implementation group: "org.json", name: "json", version: "20230227"
+  implementation group: "org.json", name: "json", version: "20250517"
 
   implementation "com.github.sh0nk:matplotlib4j:0.5.0"
 }
