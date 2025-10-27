@@ -38,7 +38,7 @@ dependencies {
   testImplementation "org.projectlombok:lombok:1.18.32"
   testAnnotationProcessor "org.projectlombok:lombok:1.18.32"
 
-  implementation "org.mongodb:mongodb-driver-reactivestreams:4.9.1"
+  implementation "org.mongodb:mongodb-driver-reactivestreams:5.6.1"
 
   implementation "org.deeplearning4j:deeplearning4j-core:1.0.0-M2.1"
   implementation "org.nd4j:nd4j-native-platform:1.0.0-M2.1"
