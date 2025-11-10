@@ -50,7 +50,7 @@ public final class VerificationController {
   public Map<String, Object> isValid(@RequestBody Map<String, Object> input) {
     var response = Maps.<String, Object>newHashMap();
     try {
-      Jwts.parserBuilder()
+      Jwts.parser()
         .setSigningKey(secretKey)
         .build()
         .parseClaimsJws((String) input.get("token"));

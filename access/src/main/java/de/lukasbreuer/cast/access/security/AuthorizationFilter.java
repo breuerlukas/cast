@@ -47,7 +47,7 @@ public class AuthorizationFilter extends OncePerRequestFilter {
 
   private boolean validateApiKey(String apiKey) {
     try {
-      Jwts.parserBuilder()
+      Jwts.parser()
         .setSigningKey(secretKey)
         .build()
         .parseClaimsJws(apiKey);
