@@ -28,7 +28,7 @@ dependencies {
 
   implementation "com.google.inject:guice:5.1.0"
 
-  implementation "com.google.guava:guava:31.1-jre"
+  implementation "com.google.guava:guava:33.5.0-jre"
 
   implementation "org.projectlombok:lombok:1.18.42"
   annotationProcessor "org.projectlombok:lombok:1.18.42"
@@ -57,7 +57,7 @@ jar {
       "Main-Class": "de.lukasbreuer.cast.train.TrainApplication",
       "Class-Path":
         "libraries/com.google.inject.guice-5.1.0.jar " +
-          "libraries/com.google.guava-31.1-jre.jar " +
+          "libraries/com.google.guava-33.5.0-jre.jar " +
           "libraries/org.projectlombok.lombok-1.18.42.jar " +
           "libraries/org.mongodbmongodb.driver.reactivestreams-4.8.1.jar " +
           "libraries/org.deeplearning4j-1.0.0-M2.1.jar " +
