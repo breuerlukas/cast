@@ -26,7 +26,7 @@ dependencies {
   implementation("de.lukasbreuer.cast:core:1.0.0-SNAPSHOT")
   archiveImplementation("de.lukasbreuer.cast:core:1.0.0-SNAPSHOT")
 
-  implementation "com.google.inject:guice:5.1.0"
+  implementation "com.google.inject:guice:7.0.0"
 
   implementation "com.google.guava:guava:31.1-jre"
 
@@ -56,7 +56,7 @@ jar {
     attributes(
       "Main-Class": "de.lukasbreuer.cast.train.TrainApplication",
       "Class-Path":
-        "libraries/com.google.inject.guice-5.1.0.jar " +
+        "libraries/com.google.inject.guice-7.0.0.jar " +
           "libraries/com.google.guava-31.1-jre.jar " +
           "libraries/org.projectlombok.lombok-1.18.42.jar " +
           "libraries/org.mongodbmongodb.driver.reactivestreams-4.8.1.jar " +
