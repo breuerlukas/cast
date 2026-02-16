@@ -20,8 +20,8 @@ sourceSets {
 }
 
 dependencies {
-  testCompileOnly "org.junit.jupiter:junit-jupiter-api:6.0.2"
-  testImplementation "org.junit.jupiter:junit-jupiter-engine:6.0.2"
+  testCompileOnly "org.junit.jupiter:junit-jupiter-api:6.0.3"
+  testImplementation "org.junit.jupiter:junit-jupiter-engine:6.0.3"
 
   implementation("de.lukasbreuer.cast:core:1.0.0-SNAPSHOT")
   archiveImplementation("de.lukasbreuer.cast:core:1.0.0-SNAPSHOT")
